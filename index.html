@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Аварийный Комиссар 24/7</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      font-family: Arial, sans-serif;
+      height: 100%;
+    }
+
+    .hero {
+      background: url('background.jpg') no-repeat center center/cover;
+      height: 100vh;
+      color: white;
+      position: relative;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .hero a {
+      background: #ffcc00;
+      color: black;
+      padding: 15px 25px;
+      margin: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .hero a:hover {
+      background: #e6b800;
+    }
+
+    .section {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .footer {
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>Аварийный комиссар 24/7</h1>
+      <p>Приедем за 15 минут. Работаем со всеми страховыми компаниями.</p>
+      <a href="tel:+79999999999">Позвонить сейчас</a>
+      <a href="#contact">Вызвать комиссара</a>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <h2>О нас</h2>
+    <p>Мы работаем круглосуточно и помогаем при ДТП: оформление, консультация, документы для страховой. Опыт более 7 лет.</p>
+  </section>
+
+  <section class="section" id="services">
+    <h2>Наши услуги</h2>
+    <ul style="list-style:none; padding: 0;">
+      <li>— Оформление ДТП на месте</li>
+      <li>— Консультации 24/7</li>
+      <li>— Подготовка документов для страховой</li>
+      <li>— Независимая экспертиза</li>
+    </ul>
+  </section>
+
+  <section class="section" id="contact">
+    <h2>Контакты</h2>
+    <p>Телефон: <a href="tel:+79999999999">+7 (999) 999-99-99</a></p>
+    <p>WhatsApp / Telegram: @komissar_136</p>
+    <p>Email: info@komissar136.ru</p>
+  </section>
+
+  <footer class="footer">
+    &copy; 2025 Аварийный Комиссар. Все права защищены.
+  </footer>
+
+</body>
+</html>
