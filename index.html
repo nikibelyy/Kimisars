@@ -10,10 +10,8 @@
   --bg:#0b0f14;
   --glass-1: rgba(255,255,255,0.06);
   --glass-2: rgba(255,255,255,0.08);
-  --accent:#ff3b30; /* iOS red for emergency */
-  --accent-2:#0a84ff; /* blue accent */
+  --accent:#ff3b30;
   --card-radius:20px;
-  --safe-padding:18px;
   --glass-blur:18px;
   --muted: rgba(255,255,255,0.72);
 }
@@ -36,7 +34,6 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:18px;
 }
 
 /* App frame */
@@ -51,34 +48,11 @@ body{
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
 }
 
-/* Top status bar mimic */
-.statusbar{
-  height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  color:var(--muted);
-  font-size:13px;
-  padding:4px 6px;
-  opacity:0.95;
-}
-.status-left, .status-right{display:flex;align-items:center;gap:8px}
-.pill{
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
-  padding:6px 10px;
-  border-radius:14px;
-  backdrop-filter: blur(6px) saturate(120%);
-  -webkit-backdrop-filter: blur(6px) saturate(120%);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
-}
-
 /* Header */
 .header{
   display:flex;
   align-items:center;
   gap:12px;
-  margin-top:8px;
 }
 .logo{
   width:56px;
@@ -97,8 +71,6 @@ body{
   margin-top:18px;
   border-radius:var(--card-radius);
   padding:18px;
-  position:relative;
-  overflow:visible;
   background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
   backdrop-filter: blur(var(--glass-blur)) saturate(120%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
@@ -118,40 +90,12 @@ body{
 .title{font-size:18px;font-weight:600;letter-spacing: -0.02em}
 .sub{font-size:13px;color:var(--muted);margin-top:4px}
 
-/* Small action buttons */
-.actions{display:flex;gap:10px;margin-top:10px}
-.btn{
-  padding:10px 14px;
-  border-radius:14px;
-  font-weight:600;
-  border:none;
-  cursor:pointer;
-  font-size:15px;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-.btn:active{transform:translateY(1px)}
-.btn-ghost{
-  background: transparent;
-  color:var(--muted);
-  border: 1px solid rgba(255,255,255,0.04);
-}
-.btn-call{
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  color:var(--accent);
-  border: 1px solid rgba(255,59,48,0.12);
-  box-shadow: 0 6px 18px rgba(255,59,48,0.06);
-}
-
 /* Big red emergency call */
 .call-area{
   margin-top:16px;
   display:flex;
-  gap:12px;
   align-items:center;
+  justify-content:center;
 }
 .big-call{
   flex:1;
@@ -174,44 +118,6 @@ body{
   display:grid;place-items:center;
   background: linear-gradient(180deg,#ff6a5a,#ff2d1f);
   font-weight:700;font-size:18px;box-shadow:0 10px 30px rgba(255,59,48,0.18);
-}
-
-/* small info card (replaced map) */
-.info-block{
-  margin-top:14px;
-  border-radius:14px;
-  overflow:hidden;
-  background:
-    linear-gradient(180deg, rgba(10,14,20,0.12), rgba(10,14,20,0.06));
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:12px;
-  color:var(--muted);
-  font-size:13px;
-  border:1px solid rgba(255,255,255,0.03);
-  padding:12px;
-}
-
-/* bottom toolbar */
-.toolbar{
-  display:flex;
-  gap:10px;
-  margin-top:16px;
-  justify-content:space-between;
-}
-.icon-btn{
-  flex:1;
-  padding:10px;
-  border-radius:12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.03);
-  display:flex;
-  gap:8px;
-  align-items:center;
-  justify-content:center;
-  color:var(--muted);
-  font-weight:600;
 }
 
 /* modal */
@@ -241,33 +147,18 @@ body{
 @media (max-width:420px){
   body{padding:12px}
   .app{border-radius:18px;padding:12px}
-  .statusbar{font-size:12px}
   .logo{width:48px;height:48px}
 }
 </style>
 </head>
 <body>
   <div class="app" role="application" aria-label="Вызов аварийного комиссара приложение">
-    <div class="statusbar" aria-hidden="true">
-      <div class="status-left">
-        <div class="pill">ТЕЛ</div>
-        <div style="font-weight:700">09:41</div>
-      </div>
-      <div class="status-right">
-        <div class="pill">LTE</div>
-        <div>🔋 86%</div>
-      </div>
-    </div>
-
     <div class="header" role="banner">
       <div class="logo" aria-hidden="true">АК</div>
       <div style="flex:1;min-width:0">
         <div class="title">Аварийный комиссар</div>
         <div class="sub">Быстрая помощь при ДТП — вызов и заявка</div>
       </div>
-      <button class="btn btn-ghost" id="profileBtn" aria-label="Профиль">
-        Профиль
-      </button>
     </div>
 
     <div class="card" role="region" aria-labelledby="statusTitle">
@@ -282,29 +173,11 @@ body{
         </div>
       </div>
 
-      <!-- Убрана карта и геолокация — вместо этого информационный блок -->
-      <div class="info-block" aria-hidden="false">
-        <div style="flex:1">
-          <div class="title">Информация</div>
-          <div class="sub">Если вы хотите, позже можно добавить отправку адреса вручную или интеграцию с картами.</div>
-        </div>
-      </div>
-
       <div class="call-area" role="group" aria-label="Экстренный вызов">
         <div class="big-call" id="emergencyCall" role="button" aria-pressed="false" tabindex="0">
           <div class="ring">ВЫЗОВ</div>
           <div style="margin-top:8px;font-weight:700">Вызвать комиссара</div>
         </div>
-
-        <div style="width:110px;display:flex;flex-direction:column;gap:8px">
-          <button class="btn btn-ghost" id="chatBtn">Чат</button>
-          <button class="btn btn-ghost" id="docsBtn">Документы</button>
-        </div>
-      </div>
-
-      <div class="toolbar" aria-hidden="false">
-        <div class="icon-btn" id="contactsBtn">Контакты</div>
-        <div class="icon-btn" id="instructionsBtn">Инструкции</div>
       </div>
     </div>
   </div>
@@ -322,7 +195,6 @@ body{
   </div>
 
 <script>
-/* Interactive behavior (карта/геолокация удалены) */
 const modal = document.getElementById('modal');
 const emergency = document.getElementById('emergencyCall');
 const statusText = document.getElementById('statusText');
@@ -353,7 +225,6 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
     { transform: 'scale(1)' }
   ], { duration: 600, easing:'ease-out' });
 
-  // temporary toast
   const t = document.createElement('div');
   t.textContent = 'Комиссар оповещён';
   Object.assign(t.style, {
@@ -364,28 +235,10 @@ document.getElementById('confirmBtn').addEventListener('click', ()=>{
   setTimeout(()=> t.remove(), 2000);
 });
 
-/* Modal: close on backdrop click and Escape */
 modal.addEventListener('click', (e)=>{
   if(e.target === modal) closeModal();
 });
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
-
-/* Placeholder interactions for other buttons (для демо) */
-document.getElementById('chatBtn').addEventListener('click', ()=>{
-  alert('Откроется чат (заглушка).');
-});
-document.getElementById('docsBtn').addEventListener('click', ()=>{
-  alert('Документы (заглушка).');
-});
-document.getElementById('contactsBtn').addEventListener('click', ()=>{
-  alert('Контакты (заглушка).');
-});
-document.getElementById('instructionsBtn').addEventListener('click', ()=>{
-  alert('Инструкции по оформлению ДТП (заглушка).');
-});
-document.getElementById('profileBtn').addEventListener('click', ()=>{
-  alert('Профиль (заглушка).');
-});
 </script>
 </body>
 </html>
