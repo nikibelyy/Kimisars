@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Вызов аварийного комиссара — iOS26 style</title>
-
+<title>Аварийный комиссар — iOS26 style</title>
 <style>
 :root{
   --bg:#0b0f14;
@@ -15,230 +14,196 @@
   --glass-blur:18px;
   --muted: rgba(255,255,255,0.72);
 }
-
-/* Basic reset */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI",
-               Roboto, "Helvetica Neue", Arial;
+  font-family: -apple-system,"SF Pro Text","SF Pro Display",system-ui;
   background:
     radial-gradient(1200px 600px at 10% 10%, rgba(10,60,120,0.12), transparent 8%),
     radial-gradient(900px 400px at 90% 90%, rgba(200,30,90,0.06), transparent 10%),
     linear-gradient(180deg,#071019 0%, #0e141a 100%);
-  color: #fff;
-  -webkit-font-smoothing:antialiased;
-  -webkit-text-size-adjust:100%;
+  color:#fff;
   padding:28px;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:center;
+  overflow-y:auto;
 }
-
-/* App frame */
 .app{
   width:100%;
-  max-width:480px;
+  max-width:520px;
   border-radius:28px;
   padding:18px;
-  position:relative;
-  overflow:hidden;
-  box-shadow: 0 20px 40px rgba(2,6,12,0.6);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+  box-shadow:0 20px 40px rgba(2,6,12,0.6);
+  animation:fadeIn 0.6s ease;
 }
-
-/* Header */
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
 .header{
-  display:flex;
-  align-items:center;
-  gap:12px;
+  display:flex;align-items:center;gap:12px;
 }
 .logo{
-  width:56px;
-  height:56px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  font-weight:700;
-  font-size:20px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  box-shadow: 0 8px 20px rgba(2,6,12,0.6);
+  width:56px;height:56px;border-radius:14px;display:grid;place-items:center;
+  font-weight:700;font-size:20px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+  box-shadow:0 8px 20px rgba(2,6,12,0.6);
 }
-
-/* Main card (glass) */
+.title{font-size:20px;font-weight:600;}
+.sub{font-size:13px;color:var(--muted);margin-top:4px;}
 .card{
-  margin-top:18px;
-  border-radius:var(--card-radius);
-  padding:18px;
-  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
-  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 10px 30px rgba(5,10,20,0.5);
+  margin-top:18px;padding:18px;border-radius:var(--card-radius);
+  background:linear-gradient(180deg,var(--glass-1),var(--glass-2));
+  backdrop-filter:blur(var(--glass-blur)) saturate(120%);
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 10px 30px rgba(5,10,20,0.5);
+  animation:fadeUp 0.5s ease;
 }
-
-/* Info rows */
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(15px);}
+  to{opacity:1; transform:translateY(0);}
 }
-.row .meta{display:flex;flex-direction:column;flex:1;min-width:0}
-.title{font-size:18px;font-weight:600;letter-spacing: -0.02em}
-.sub{font-size:13px;color:var(--muted);margin-top:4px}
-
-/* Big red emergency call */
-.call-area{
-  margin-top:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+.row{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.meta{display:flex;flex-direction:column;flex:1;}
 .big-call{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:16px;
-  border-radius:16px;
-  background: linear-gradient(180deg, rgba(255,59,48,0.12), rgba(255,59,48,0.06));
-  color: #fff;
-  box-shadow: 0 20px 40px rgba(255,59,48,0.06);
-  cursor:pointer;
-  transition:transform .18s ease;
-  border: 1px solid rgba(255,59,48,0.12);
+  margin-top:16px;display:flex;flex-direction:column;align-items:center;
+  padding:16px;border-radius:16px;
+  background:linear-gradient(180deg,rgba(255,59,48,0.12),rgba(255,59,48,0.06));
+  border:1px solid rgba(255,59,48,0.12);
+  cursor:pointer;transition:transform 0.18s ease, box-shadow 0.3s ease;
 }
-.big-call:hover{transform:translateY(-4px)}
-.big-call .ring{
-  width:68px;height:68px;border-radius:999px;
-  display:grid;place-items:center;
-  background: linear-gradient(180deg,#ff6a5a,#ff2d1f);
-  font-weight:700;font-size:18px;box-shadow:0 10px 30px rgba(255,59,48,0.18);
+.big-call:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(255,59,48,0.2);}
+.ring{
+  width:68px;height:68px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(180deg,#ff6a5a,#ff2d1f);
+  font-weight:700;font-size:18px;
+  box-shadow:0 10px 30px rgba(255,59,48,0.18);
 }
-
-/* modal */
+form label{display:block;font-weight:500;margin:10px 0 4px;}
+form input, form textarea{
+  width:100%;padding:10px;border-radius:12px;border:none;
+  background:rgba(255,255,255,0.05);color:#fff;
+  font-size:14px;resize:none;
+}
+form textarea{min-height:80px;}
+.btn-primary{
+  margin-top:14px;padding:10px 16px;border:none;border-radius:12px;
+  background:linear-gradient(180deg,#34c759,#28a745);color:#fff;font-weight:600;
+  cursor:pointer;transition:background 0.2s ease;
+}
+.btn-primary:hover{background:linear-gradient(180deg,#28a745,#218838);}
 .modal-backdrop{
-  position:fixed;
-  inset:0;
-  background: rgba(2,6,12,0.45);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:30;
+  position:fixed;inset:0;background:rgba(2,6,12,0.45);
+  display:none;align-items:center;justify-content:center;z-index:30;
 }
 .modal{
-  width:92%;
-  max-width:420px;
-  border-radius:18px;
-  padding:18px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  backdrop-filter: blur(20px);
+  width:92%;max-width:420px;border-radius:18px;padding:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+  backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 30px 60px rgba(3,6,12,0.6);
+  box-shadow:0 30px 60px rgba(3,6,12,0.6);
 }
-.modal h3{margin:0 0 10px 0}
-.modal .modal-actions{display:flex;gap:10px;margin-top:14px;justify-content:flex-end}
-
-/* small responsiveness */
-@media (max-width:420px){
-  body{padding:12px}
-  .app{border-radius:18px;padding:12px}
-  .logo{width:48px;height:48px}
-}
+.modal-actions{display:flex;gap:10px;margin-top:14px;justify-content:flex-end;}
+.btn{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;}
+.btn-cancel{background:rgba(255,255,255,0.1);color:#fff;}
+.btn-confirm{background:linear-gradient(180deg,#ff6a5a,#ff2d1f);color:#fff;}
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Вызов аварийного комиссара приложение">
-    <div class="header" role="banner">
-      <div class="logo" aria-hidden="true">АК</div>
-      <div style="flex:1;min-width:0">
-        <div class="title">Аварийный комиссар</div>
-        <div class="sub">Быстрая помощь при ДТП — вызов и заявка</div>
-      </div>
-    </div>
-
-    <div class="card" role="region" aria-labelledby="statusTitle">
-      <div class="row">
-        <div class="meta">
-          <div id="statusTitle" class="title">Статус заявки</div>
-          <div class="sub" id="statusText">Ожидает подтверждения</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-weight:700">ID 00421</div>
-          <div class="sub">10 минут назад</div>
-        </div>
-      </div>
-
-      <div class="call-area" role="group" aria-label="Экстренный вызов">
-        <div class="big-call" id="emergencyCall" role="button" aria-pressed="false" tabindex="0">
-          <div class="ring">ВЫЗОВ</div>
-          <div style="margin-top:8px;font-weight:700">Вызвать комиссара</div>
-        </div>
-      </div>
+<div class="app">
+  <div class="header">
+    <div class="logo">АК</div>
+    <div>
+      <div class="title">Аварийный комиссар</div>
+      <div class="sub">Помощь при ДТП — вызов, данные и описание</div>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <h3>Подтвердите вызов</h3>
-      <p id="modalText">Вы действительно хотите вызвать аварийного комиссара?</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="cancelBtn">Отмена</button>
-        <button class="btn" id="confirmBtn" style="background: linear-gradient(180deg,#ff6a5a,#ff2d1f); color:white; border:none;">Вызвать</button>
+  <!-- Статус -->
+  <div class="card">
+    <div class="row">
+      <div class="meta">
+        <div class="title">Статус заявки</div>
+        <div class="sub" id="statusText">Ожидает подтверждения</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700">ID 00421</div>
+        <div class="sub">10 мин назад</div>
       </div>
     </div>
+    <div class="big-call" id="emergencyCall">
+      <div class="ring">ВЫЗОВ</div>
+      <div style="margin-top:8px;font-weight:700">Вызвать комиссара</div>
+    </div>
   </div>
+
+  <!-- Данные водителя -->
+  <div class="card">
+    <div class="title">Данные водителя</div>
+    <form id="driverForm">
+      <label>ФИО</label>
+      <input type="text" name="fio" placeholder="Иванов Иван Иванович" required>
+      <label>Номер телефона</label>
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
+      <label>Номер автомобиля</label>
+      <input type="text" name="car" placeholder="A123BC 77" required>
+    </form>
+  </div>
+
+  <!-- Описание происшествия -->
+  <div class="card">
+    <div class="title">Описание ДТП</div>
+    <form id="accidentForm">
+      <label>Место происшествия</label>
+      <input type="text" name="place" placeholder="Город, улица, дом" required>
+      <label>Описание</label>
+      <textarea name="desc" placeholder="Опишите обстоятельства ДТП" required></textarea>
+      <button type="submit" class="btn-primary">Отправить данные</button>
+    </form>
+  </div>
+</div>
+
+<!-- Модал -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3>Подтвердите вызов</h3>
+    <p>Вы действительно хотите вызвать аварийного комиссара?</p>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="cancelBtn">Отмена</button>
+      <button class="btn btn-confirm" id="confirmBtn">Вызвать</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const modal = document.getElementById('modal');
-const emergency = document.getElementById('emergencyCall');
-const statusText = document.getElementById('statusText');
+const modal=document.getElementById('modal');
+const emergency=document.getElementById('emergencyCall');
+const statusText=document.getElementById('statusText');
 
-function openModal(){
-  modal.style.display='flex';
-  modal.setAttribute('aria-hidden','false');
-}
-function closeModal(){
+emergency.addEventListener('click',()=>{modal.style.display='flex';});
+document.getElementById('cancelBtn').addEventListener('click',()=>{modal.style.display='none';});
+document.getElementById('confirmBtn').addEventListener('click',()=>{
   modal.style.display='none';
-  modal.setAttribute('aria-hidden','true');
-}
-
-emergency.addEventListener('click', openModal);
-emergency.addEventListener('keypress', (e)=>{
-  if(e.key === 'Enter' || e.key === ' ') openModal();
-});
-
-document.getElementById('cancelBtn').addEventListener('click', closeModal);
-
-document.getElementById('confirmBtn').addEventListener('click', ()=>{
-  closeModal();
-  statusText.textContent = 'Заявка отправлена — комиссар в пути';
-  emergency.setAttribute('aria-pressed','true');
-  emergency.animate([
-    { transform: 'scale(1)' },
-    { transform: 'scale(1.06)' },
-    { transform: 'scale(1)' }
-  ], { duration: 600, easing:'ease-out' });
-
-  const t = document.createElement('div');
-  t.textContent = 'Комиссар оповещён';
-  Object.assign(t.style, {
-    position:'fixed', left:'50%', bottom:'36px', transform:'translateX(-50%)',
-    padding:'10px 16px', borderRadius:'12px', background:'rgba(0,0,0,0.6)', color:'#fff', zIndex:60
+  statusText.textContent='Заявка отправлена — комиссар в пути';
+  const t=document.createElement('div');
+  t.textContent='Комиссар оповещён';
+  Object.assign(t.style,{
+    position:'fixed',left:'50%',bottom:'36px',transform:'translateX(-50%)',
+    padding:'10px 16px',borderRadius:'12px',background:'rgba(0,0,0,0.6)',
+    color:'#fff',zIndex:60
   });
   document.body.appendChild(t);
-  setTimeout(()=> t.remove(), 2000);
+  setTimeout(()=>t.remove(),2000);
 });
+modal.addEventListener('click',e=>{if(e.target===modal) modal.style.display='none';});
 
-modal.addEventListener('click', (e)=>{
-  if(e.target === modal) closeModal();
+document.getElementById('accidentForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  alert('Данные о ДТП отправлены.');
 });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 </script>
 </body>
 </html>
