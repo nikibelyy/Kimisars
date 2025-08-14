@@ -3,306 +3,389 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SAMP Admin — iOS 26 Style</title>
+<title>Вызов аварийного комиссара — iOS26 style</title>
+
 <style>
-  :root{
-    --bg:#0b0c10;
-    --glass-bg: rgba(255,255,255,0.06);
-    --glass-strong: rgba(255,255,255,0.08);
-    --accent: linear-gradient(135deg,#6ee7b7 0%, #6ec1ff 60%, #b08bff 100%);
-    --card-radius: 16px;
-    --shadow: 0 8px 30px rgba(2,6,23,0.6);
-    --glass-border: rgba(255,255,255,0.06);
-    --muted: rgba(255,255,255,0.65);
-    font-family: -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  }
+:root{
+  --bg:#0b0f14;
+  --glass-1: rgba(255,255,255,0.06);
+  --glass-2: rgba(255,255,255,0.08);
+  --accent:#ff3b30; /* iOS red for emergency */
+  --accent-2:#0a84ff; /* blue accent */
+  --card-radius:20px;
+  --safe-padding:18px;
+  --glass-blur:18px;
+  --muted: rgba(255,255,255,0.72);
+}
 
-  html,body{height:100%;margin:0;background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(110,199,255,0.03), transparent 8%),
-    linear-gradient(180deg,#05060a 0%, #081018 45%, #071226 100%);
-    color: #fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
+/* Basic reset */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: -apple-system, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(10,60,120,0.12), transparent 8%),
+    radial-gradient(900px 400px at 90% 90%, rgba(200,30,90,0.06), transparent 10%),
+    linear-gradient(180deg,#071019 0%, #0e141a 100%);
+  color: #fff;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  padding:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
 
-  /* layout */
-  .app{
-    display:grid;
-    grid-template-columns: 260px 1fr;
-    gap:24px;
-    padding:28px;
-    height:100vh;
-    box-sizing:border-box;
-  }
+/* App frame */
+.app{
+  width:100%;
+  max-width:480px;
+  border-radius:28px;
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+  box-shadow: 0 20px 40px rgba(2,6,12,0.6);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
 
-  /* SIDEBAR — glass */
-  .sidebar{
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    border-radius: 20px;
-    padding:18px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(14px) saturate(120%);
-    -webkit-backdrop-filter: blur(14px) saturate(120%);
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
+/* Top status bar mimic */
+.statusbar{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+  font-size:13px;
+  padding:4px 6px;
+  opacity:0.95;
+}
+.status-left, .status-right{display:flex;align-items:center;gap:8px}
+.pill{
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  padding:6px 10px;
+  border-radius:14px;
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
+}
 
-  .brand{
-    display:flex;align-items:center;gap:12px;
-  }
-  .logo{
-    width:46px;height:46px;border-radius:12px;
-    background:linear-gradient(135deg,#7b61ff 0%, #5fe0c9 100%);
-    display:flex;align-items:center;justify-content:center;font-weight:700;
-    box-shadow: 0 6px 18px rgba(92,53,255,0.18), inset 0 -6px 24px rgba(255,255,255,0.02);
-  }
-  .brand h1{font-size:15px;margin:0;letter-spacing:0.1px}
-  .brand p{margin:0;font-size:12px;color:var(--muted)}
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:8px;
+}
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-weight:700;
+  font-size:20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  box-shadow: 0 8px 20px rgba(2,6,12,0.6);
+}
 
-  nav{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-  .nav-item{
-    display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;
-    cursor:pointer;color:var(--muted);font-size:14px;
-  }
-  .nav-item.active{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:#fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);}
+/* Main card (glass) */
+.card{
+  margin-top:18px;
+  border-radius:var(--card-radius);
+  padding:18px;
+  position:relative;
+  overflow:visible;
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 30px rgba(5,10,20,0.5);
+}
 
-  .status{
-    margin-top:auto;
-    padding:10px;border-radius:12px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    display:flex;justify-content:space-between;align-items:center;font-size:13px;
-  }
+/* Info rows */
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.row .meta{display:flex;flex-direction:column;flex:1;min-width:0}
+.title{font-size:18px;font-weight:600;letter-spacing: -0.02em}
+.sub{font-size:13px;color:var(--muted);margin-top:4px}
 
-  /* MAIN area */
-  .main{
-    overflow:auto;
-    padding:8px 10px;
-  }
+/* Small action buttons */
+.actions{display:flex;gap:10px;margin-top:10px}
+.btn{
+  padding:10px 14px;
+  border-radius:14px;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+  font-size:15px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.btn:active{transform:translateY(1px)}
+.btn-ghost{
+  background: transparent;
+  color:var(--muted);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.btn-call{
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  color:var(--accent);
+  border: 1px solid rgba(255,59,48,0.12);
+  box-shadow: 0 6px 18px rgba(255,59,48,0.06);
+}
 
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;
-  }
-  .search{
-    flex:1;max-width:520px;display:flex;gap:10px;align-items:center;
-    background: var(--glass-bg); padding:10px;border-radius:14px;border:1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-  }
-  .search input{background:transparent;border:0;outline:0;color:#fff;font-size:14px;width:100%}
-  .controls{display:flex;gap:10px;align-items:center}
+/* Big red emergency call */
+.call-area{
+  margin-top:16px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.big-call{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:16px;
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(255,59,48,0.12), rgba(255,59,48,0.06));
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(255,59,48,0.06);
+  cursor:pointer;
+  transition:transform .18s ease;
+  border: 1px solid rgba(255,59,48,0.12);
+}
+.big-call:hover{transform:translateY(-4px)}
+.big-call .ring{
+  width:68px;height:68px;border-radius:999px;
+  display:grid;place-items:center;
+  background: linear-gradient(180deg,#ff6a5a,#ff2d1f);
+  font-weight:700;font-size:18px;box-shadow:0 10px 30px rgba(255,59,48,0.18);
+}
 
-  .grid{
-    display:grid;grid-template-columns: repeat(3,1fr);gap:16px;margin-bottom:18px;
-  }
-  .card{
-    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    border-radius: var(--card-radius); padding:16px; box-shadow: var(--shadow); border:1px solid var(--glass-border);
-    backdrop-filter: blur(12px);
-  }
-  .card h3{margin:0 0 6px 0;font-size:14px}
-  .stat{font-size:20px;font-weight:700}
+/* small info card (replaced map) */
+.info-block{
+  margin-top:14px;
+  border-radius:14px;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg, rgba(10,14,20,0.12), rgba(10,14,20,0.06));
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  color:var(--muted);
+  font-size:13px;
+  border:1px solid rgba(255,255,255,0.03);
+  padding:12px;
+}
 
-  /* table */
-  .panel{
-    margin-top:6px;
-  }
-  table{
-    width:100%;border-collapse:collapse;font-size:14px;background:transparent;color:#fff;
-  }
-  thead th{ text-align:left;font-size:12px;color:var(--muted);padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
-  tbody td{padding:12px;border-bottom:1px dashed rgba(255,255,255,0.02)}
-  .player-name{display:flex;align-items:center;gap:10px}
-  .avatar{
-    width:36px;height:36px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,#ffd3a5,#fd6585); font-weight:600;color:#051;box-shadow:0 6px 18px rgba(253,101,133,0.14);
-  }
-  .btn{
-    padding:8px 12px;border-radius:10px;border:0;background:transparent;color:#fff;cursor:pointer;
-    border:1px solid rgba(255,255,255,0.04);
-  }
-  .btn.primary{
-    background: linear-gradient(90deg,#5fe0c9,#6ec1ff); color:#021;
-    box-shadow: 0 8px 20px rgba(94,224,201,0.12);
-    border: none;
-  }
-  .toggle{
-    width:44px;height:26px;border-radius:20px;background:rgba(255,255,255,0.06);position:relative;border:1px solid rgba(255,255,255,0.03);
-  }
-  .toggle .dot{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:all .18s ease}
-  .toggle.on{background:linear-gradient(90deg,#6fe7c3,#8bb4ff)}
-  .toggle.on .dot{left:21px}
+/* bottom toolbar */
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+  justify-content:space-between;
+}
+.icon-btn{
+  flex:1;
+  padding:10px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  font-weight:600;
+}
 
-  /* small screens */
-  @media (max-width:980px){
-    .app{grid-template-columns:1fr; padding:16px}
-    .grid{grid-template-columns: repeat(2,1fr)}
-    .sidebar{order:2;display:flex;flex-direction:row;overflow:auto;height:74px;padding:12px;border-radius:14px}
-    nav{flex-direction:row}
-    .brand{display:none}
-  }
-  @media (max-width:600px){
-    .grid{grid-template-columns:1fr}
-  }
+/* modal */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background: rgba(2,6,12,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:30;
+}
+.modal{
+  width:92%;
+  max-width:420px;
+  border-radius:18px;
+  padding:18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  backdrop-filter: blur(20px);
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 30px 60px rgba(3,6,12,0.6);
+}
+.modal h3{margin:0 0 10px 0}
+.modal .modal-actions{display:flex;gap:10px;margin-top:14px;justify-content:flex-end}
 
-  /* micro animations */
-  .fade-in{animation: fade .45s cubic-bezier(.2,.9,.2,1)}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* small responsiveness */
+@media (max-width:420px){
+  body{padding:12px}
+  .app{border-radius:18px;padding:12px}
+  .statusbar{font-size:12px}
+  .logo{width:48px;height:48px}
+}
 </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar fade-in" aria-label="Sidebar">
-      <div class="brand">
-        <div class="logo">S</div>
-        <div>
-          <h1>SAMP Admin</h1>
-          <p>iOS 26 · Liquid Glass</p>
-        </div>
+  <div class="app" role="application" aria-label="Вызов аварийного комиссара приложение">
+    <div class="statusbar" aria-hidden="true">
+      <div class="status-left">
+        <div class="pill">ТЕЛ</div>
+        <div style="font-weight:700">09:41</div>
       </div>
+      <div class="status-right">
+        <div class="pill">LTE</div>
+        <div>🔋 86%</div>
+      </div>
+    </div>
 
-      <nav aria-label="Основная навигация">
-        <div class="nav-item active" data-section="dashboard">🏠 Дашборд</div>
-        <div class="nav-item" data-section="players">👥 Игроки</div>
-        <div class="nav-item" data-section="servers">🖥️ Серверы</div>
-        <div class="nav-item" data-section="bans">⛔ Банлист</div>
-        <div class="nav-item" data-section="settings">⚙️ Настройки</div>
-      </nav>
+    <div class="header" role="banner">
+      <div class="logo" aria-hidden="true">АК</div>
+      <div style="flex:1;min-width:0">
+        <div class="title">Аварийный комиссар</div>
+        <div class="sub">Быстрая помощь при ДТП — вызов и заявка</div>
+      </div>
+      <button class="btn btn-ghost" id="profileBtn" aria-label="Профиль">
+        Профиль
+      </button>
+    </div>
 
-      <div class="status" role="status">
-        <div>
-          <div style="font-size:13px;color:var(--muted)">Server</div>
-          <div style="font-weight:700">Online — 3/5</div>
+    <div class="card" role="region" aria-labelledby="statusTitle">
+      <div class="row">
+        <div class="meta">
+          <div id="statusTitle" class="title">Статус заявки</div>
+          <div class="sub" id="statusText">Ожидает подтверждения</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:13px;color:var(--muted)">Map</div>
-          <div style="font-weight:700">LV-RP</div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main" id="main">
-      <div class="topbar">
-        <div class="search" role="search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="rgba(255,255,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="rgba(255,255,255,0.6)" stroke-width="1.6"/></svg>
-          <input placeholder="Поиск игрока, IP или ID..." />
-        </div>
-
-        <div class="controls">
-          <button class="btn">Экспорт</button>
-          <button class="btn primary">Подключиться к серверу</button>
+          <div style="font-weight:700">ID 00421</div>
+          <div class="sub">10 минут назад</div>
         </div>
       </div>
 
-      <section class="grid">
-        <div class="card">
-          <h3>Игроков онлайн</h3>
-          <div class="stat" id="statPlayers">124</div>
-          <div style="font-size:12px;color:var(--muted)">Последнее обновление: <span id="statUpdated">сейчас</span></div>
+      <!-- Убрана карта и геолокация — вместо этого информационный блок -->
+      <div class="info-block" aria-hidden="false">
+        <div style="flex:1">
+          <div class="title">Информация</div>
+          <div class="sub">Если вы хотите, позже можно добавить отправку адреса вручную или интеграцию с картами.</div>
+        </div>
+      </div>
+
+      <div class="call-area" role="group" aria-label="Экстренный вызов">
+        <div class="big-call" id="emergencyCall" role="button" aria-pressed="false" tabindex="0">
+          <div class="ring">ВЫЗОВ</div>
+          <div style="margin-top:8px;font-weight:700">Вызвать комиссара</div>
         </div>
 
-        <div class="card">
-          <h3>Серверы</h3>
-          <div class="stat">5</div>
-          <div style="font-size:12px;color:var(--muted)">Активных: 3</div>
+        <div style="width:110px;display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-ghost" id="chatBtn">Чат</button>
+          <button class="btn btn-ghost" id="docsBtn">Документы</button>
         </div>
+      </div>
 
-        <div class="card">
-          <h3>Баны (30d)</h3>
-          <div class="stat">12</div>
-          <div style="font-size:12px;color:var(--muted)">Апелляции: 2</div>
-        </div>
-      </section>
+      <div class="toolbar" aria-hidden="false">
+        <div class="icon-btn" id="contactsBtn">Контакты</div>
+        <div class="icon-btn" id="instructionsBtn">Инструкции</div>
+      </div>
+    </div>
+  </div>
 
-      <section class="panel card">
-        <h3 style="margin-bottom:12px">Игроки онлайн</h3>
-        <div style="overflow:auto">
-          <table aria-describedby="players-table">
-            <thead>
-              <tr>
-                <th>Игрок</th>
-                <th>IP / Ping</th>
-                <th>Статус</th>
-                <th>Действие</th>
-              </tr>
-            </thead>
-            <tbody id="playersTbody">
-              <!-- JS fills rows -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-    </main>
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h3>Подтвердите вызов</h3>
+      <p id="modalText">Вы действительно хотите вызвать аварийного комиссара?</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelBtn">Отмена</button>
+        <button class="btn" id="confirmBtn" style="background: linear-gradient(180deg,#ff6a5a,#ff2d1f); color:white; border:none;">Вызвать</button>
+      </div>
+    </div>
   </div>
 
 <script>
-  // sample data (можно заменить на fetch к API)
-  const players = [
-    {id: 1, name:"RomaK", ip:"93.92.10.11", ping:23, status:"playing"},
-    {id: 2, name:"SnipeGod", ip:"77.12.5.3", ping:120, status:"idle"},
-    {id: 3, name:"Anna", ip:"188.45.9.77", ping:45, status:"playing"},
-    {id: 4, name:"Vlad", ip:"10.0.0.4", ping:340, status:"lag"},
-    {id: 5, name:"NoName", ip:"178.63.22.11", ping:60, status:"playing"},
-  ];
+/* Interactive behavior (карта/геолокация удалены) */
+const modal = document.getElementById('modal');
+const emergency = document.getElementById('emergencyCall');
+const statusText = document.getElementById('statusText');
 
-  const tbody = document.getElementById('playersTbody');
-  function renderRows(){
-    tbody.innerHTML = '';
-    players.forEach(p=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>
-          <div class="player-name">
-            <div class="avatar">${p.name[0].toUpperCase()}</div>
-            <div>
-              <div style="font-weight:700">${p.name} <span style="font-weight:400;color:var(--muted);font-size:12px">#${p.id}</span></div>
-              <div style="font-size:12px;color:var(--muted)">Role: Player</div>
-            </div>
-          </div>
-        </td>
-        <td><div style="font-size:13px">${p.ip} • <span style="color:var(--muted)">${p.ping}ms</span></div></td>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="font-size:13px;color:${p.status==='playing'?'#8ff':'var(--muted)'}">${p.status}</div>
-            <div class="toggle ${p.ping>250?'':'on'}" role="switch" aria-checked="${p.ping<=250}">
-              <div class="dot"></div>
-            </div>
-          </div>
-        </td>
-        <td>
-          <button class="btn" onclick="kick(${p.id})">Кик</button>
-          <button class="btn primary" onclick="goto(${p.id})">Открыть</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    })
-  }
-  function kick(id){ alert('Kick игрока ID '+id+' (пример)'); }
-  function goto(id){ alert('Открыть профиль игрока ID '+id+' (пример)'); }
+function openModal(){
+  modal.style.display='flex';
+  modal.setAttribute('aria-hidden','false');
+}
+function closeModal(){
+  modal.style.display='none';
+  modal.setAttribute('aria-hidden','true');
+}
 
-  renderRows();
+emergency.addEventListener('click', openModal);
+emergency.addEventListener('keypress', (e)=>{
+  if(e.key === 'Enter' || e.key === ' ') openModal();
+});
 
-  // tiny nav behavior
-  document.querySelectorAll('.nav-item').forEach(el=>{
-    el.addEventListener('click', e=>{
-      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-      el.classList.add('active');
-      // простая имитация переключения
-      const s = el.dataset.section;
-      if(s === 'players'){
-        document.getElementById('statPlayers').textContent = players.length;
-      }
-    })
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+document.getElementById('confirmBtn').addEventListener('click', ()=>{
+  closeModal();
+  statusText.textContent = 'Заявка отправлена — комиссар в пути';
+  emergency.setAttribute('aria-pressed','true');
+  emergency.animate([
+    { transform: 'scale(1)' },
+    { transform: 'scale(1.06)' },
+    { transform: 'scale(1)' }
+  ], { duration: 600, easing:'ease-out' });
+
+  // temporary toast
+  const t = document.createElement('div');
+  t.textContent = 'Комиссар оповещён';
+  Object.assign(t.style, {
+    position:'fixed', left:'50%', bottom:'36px', transform:'translateX(-50%)',
+    padding:'10px 16px', borderRadius:'12px', background:'rgba(0,0,0,0.6)', color:'#fff', zIndex:60
   });
+  document.body.appendChild(t);
+  setTimeout(()=> t.remove(), 2000);
+});
 
-  // realtime feel: обновление времени
-  document.getElementById('statUpdated').textContent = new Date().toLocaleTimeString();
+/* Modal: close on backdrop click and Escape */
+modal.addEventListener('click', (e)=>{
+  if(e.target === modal) closeModal();
+});
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
-  // accessibility: keyboard focus styles
-  document.addEventListener('keyup', (e)=>{
-    if(e.key === 'k' && (e.ctrlKey || e.metaKey)){
-      document.querySelector('.search input').focus();
-    }
-  });
+/* Placeholder interactions for other buttons (для демо) */
+document.getElementById('chatBtn').addEventListener('click', ()=>{
+  alert('Откроется чат (заглушка).');
+});
+document.getElementById('docsBtn').addEventListener('click', ()=>{
+  alert('Документы (заглушка).');
+});
+document.getElementById('contactsBtn').addEventListener('click', ()=>{
+  alert('Контакты (заглушка).');
+});
+document.getElementById('instructionsBtn').addEventListener('click', ()=>{
+  alert('Инструкции по оформлению ДТП (заглушка).');
+});
+document.getElementById('profileBtn').addEventListener('click', ()=>{
+  alert('Профиль (заглушка).');
+});
 </script>
 </body>
 </html>
