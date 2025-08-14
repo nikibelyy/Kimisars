@@ -3,207 +3,332 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Аварийный комиссар — iOS26 style</title>
+<title>Профиль — iOS-style (фейк, тестовый шаблон)</title>
+
+<!-- Шрифты: используем системный стек (не встраиваем SF Pro напрямую) -->
 <style>
-:root{
-  --bg:#0b0f14;
-  --glass-1: rgba(255,255,255,0.06);
-  --glass-2: rgba(255,255,255,0.08);
-  --accent:#ff3b30;
-  --card-radius:20px;
-  --glass-blur:18px;
-  --muted: rgba(255,255,255,0.72);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: -apple-system,"SF Pro Text","SF Pro Display",system-ui;
-  background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(10,60,120,0.12), transparent 8%),
-    radial-gradient(900px 400px at 90% 90%, rgba(200,30,90,0.06), transparent 10%),
-    linear-gradient(180deg,#071019 0%, #0e141a 100%);
-  color:#fff;
-  padding:28px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  overflow-y:auto;
-}
-.app{
-  width:100%;
-  max-width:520px;
-  border-radius:28px;
-  padding:18px;
-  background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-  box-shadow:0 20px 40px rgba(2,6,12,0.6);
-  animation:fadeIn 0.6s ease;
-}
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-.header{
-  display:flex;align-items:center;gap:12px;
-}
-.logo{
-  width:56px;height:56px;border-radius:14px;display:grid;place-items:center;
-  font-weight:700;font-size:20px;
-  background:linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
-  box-shadow:0 8px 20px rgba(2,6,12,0.6);
-}
-.title{font-size:20px;font-weight:600;}
-.sub{font-size:13px;color:var(--muted);margin-top:4px;}
-.card{
-  margin-top:18px;padding:18px;border-radius:var(--card-radius);
-  background:linear-gradient(180deg,var(--glass-1),var(--glass-2));
-  backdrop-filter:blur(var(--glass-blur)) saturate(120%);
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 10px 30px rgba(5,10,20,0.5);
-  animation:fadeUp 0.5s ease;
-}
-@keyframes fadeUp{
-  from{opacity:0; transform:translateY(15px);}
-  to{opacity:1; transform:translateY(0);}
-}
-.row{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;}
-.meta{display:flex;flex-direction:column;flex:1;}
-.big-call{
-  margin-top:16px;display:flex;flex-direction:column;align-items:center;
-  padding:16px;border-radius:16px;
-  background:linear-gradient(180deg,rgba(255,59,48,0.12),rgba(255,59,48,0.06));
-  border:1px solid rgba(255,59,48,0.12);
-  cursor:pointer;transition:transform 0.18s ease, box-shadow 0.3s ease;
-}
-.big-call:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(255,59,48,0.2);}
-.ring{
-  width:68px;height:68px;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(180deg,#ff6a5a,#ff2d1f);
-  font-weight:700;font-size:18px;
-  box-shadow:0 10px 30px rgba(255,59,48,0.18);
-}
-form label{display:block;font-weight:500;margin:10px 0 4px;}
-form input, form textarea{
-  width:100%;padding:10px;border-radius:12px;border:none;
-  background:rgba(255,255,255,0.05);color:#fff;
-  font-size:14px;resize:none;
-}
-form textarea{min-height:80px;}
-.btn-primary{
-  margin-top:14px;padding:10px 16px;border:none;border-radius:12px;
-  background:linear-gradient(180deg,#34c759,#28a745);color:#fff;font-weight:600;
-  cursor:pointer;transition:background 0.2s ease;
-}
-.btn-primary:hover{background:linear-gradient(180deg,#28a745,#218838);}
-.modal-backdrop{
-  position:fixed;inset:0;background:rgba(2,6,12,0.45);
-  display:none;align-items:center;justify-content:center;z-index:30;
-}
-.modal{
-  width:92%;max-width:420px;border-radius:18px;padding:18px;
-  background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 30px 60px rgba(3,6,12,0.6);
-}
-.modal-actions{display:flex;gap:10px;margin-top:14px;justify-content:flex-end;}
-.btn{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;}
-.btn-cancel{background:rgba(255,255,255,0.1);color:#fff;}
-.btn-confirm{background:linear-gradient(180deg,#ff6a5a,#ff2d1f);color:#fff;}
+  :root{
+    --bg:#0b0b0c;
+    --card-bg: rgba(255,255,255,0.06);
+    --glass: rgba(255,255,255,0.08);
+    --accent: #00a3ff;
+    --muted: rgba(255,255,255,0.7);
+    --radius: 18px;
+    --glass-blur: 14px;
+    --gap: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color-scheme: dark;
+  }
+
+  /* Page layout */
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      linear-gradient(180deg, rgba(10,10,11,1) 0%, rgba(6,6,7,1) 100%);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    color: #fff;
+    padding: 20px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+  }
+
+  .viewport{
+    width:100%;
+    max-width:920px; /* desktop container */
+  }
+
+  /* iOS-like large title header */
+  header.appbar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 8px 4px;
+    margin-bottom: 12px;
+  }
+  .title {
+    font-size:28px;
+    font-weight:700;
+    line-height:1;
+    letter-spacing:-0.4px;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  /* Main content area */
+  main{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:var(--gap);
+  }
+
+  /* Card (glassmorphism) */
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border-radius:var(--radius);
+    padding:16px;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 8px 30px rgba(2,6,10,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* Profile top */
+  .profile-top{
+    display:flex;
+    gap:14px;
+    align-items:center;
+  }
+
+  .avatar{
+    width:78px;
+    height:78px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#222,#111);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:28px;
+    color: #fff;
+    flex-shrink:0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .profile-meta{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .name{
+    font-size:18px;
+    font-weight:700;
+  }
+  .small{
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  /* Info grid */
+  .info-grid{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns: repeat(2,1fr);
+    gap:10px;
+  }
+  .info-item{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;
+    padding:10px;
+    border:1px solid rgba(255,255,255,0.02);
+  }
+  .info-title{font-size:12px;color:var(--muted)}
+  .info-value{font-weight:600;margin-top:6px}
+
+  /* Buttons row */
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+  }
+  .btn{
+    padding:10px 12px;
+    border-radius:14px;
+    font-weight:600;
+    font-size:14px;
+    background:linear-gradient(180deg,var(--accent), #0072d8);
+    color:white;
+    border:none;
+    cursor:pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  }
+  .btn.ghost{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:var(--muted);
+    box-shadow:none;
+  }
+
+  /* Sections */
+  section.sep{
+    margin-top:6px;
+  }
+  .section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .section-title h3{margin:0;font-size:14px}
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .list .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    border-radius:12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.02);
+  }
+  .muted{color:var(--muted);font-size:13px}
+
+  /* Footer small print */
+  footer{
+    margin-top:18px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    opacity:0.9;
+  }
+
+  /* Desktop layout adjustments */
+  @media(min-width:780px){
+    main{
+      grid-template-columns: 360px 1fr;
+      align-items:start;
+    }
+    .card.large{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+  }
+
+  /* Accessibility focus */
+  .btn:focus, .card:focus {outline: 3px solid rgba(0,163,255,0.18); outline-offset:4px}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="header">
-    <div class="logo">АК</div>
-    <div>
-      <div class="title">Аварийный комиссар</div>
-      <div class="sub">Помощь при ДТП — вызов, данные и описание</div>
-    </div>
-  </div>
-
-  <!-- Статус -->
-  <div class="card">
-    <div class="row">
-      <div class="meta">
-        <div class="title">Статус заявки</div>
-        <div class="sub" id="statusText">Ожидает подтверждения</div>
+  <div class="viewport" role="main">
+    <header class="appbar" aria-hidden="false">
+      <div>
+        <div class="title">Профиль (демо)</div>
+        <div class="subtitle">Прототип — iOS-style интерфейс</div>
       </div>
-      <div style="text-align:right">
-        <div style="font-weight:700">ID 00421</div>
-        <div class="sub">10 мин назад</div>
+    </header>
+
+    <main>
+      <!-- Left column: карточка профиля -->
+      <div class="card large" aria-labelledby="profile-heading">
+        <div>
+          <div class="profile-top">
+            <div class="avatar" aria-hidden="true">JD</div>
+            <div class="profile-meta">
+              <div id="profile-heading" class="name">Джон Доу (фейковый)</div>
+              <div class="small">Разработчик · Тестовый аккаунт</div>
+              <div class="small">Город: Таллин (пример)</div>
+            </div>
+          </div>
+
+          <div class="info-grid" aria-hidden="false">
+            <div class="info-item">
+              <div class="info-title">Возраст</div>
+              <div class="info-value">30</div>
+            </div>
+            <div class="info-item">
+              <div class="info-title">Опыт</div>
+              <div class="info-value">8 лет</div>
+            </div>
+            <div class="info-item">
+              <div class="info-title">Риски</div>
+              <div class="info-value">Низкий</div>
+            </div>
+            <div class="info-item">
+              <div class="info-title">Статус</div>
+              <div class="info-value">Фиктивный</div>
+            </div>
+          </div>
+
+          <div class="actions" role="toolbar" aria-label="действия">
+            <button class="btn" onclick="alert('Это демо-кнопка — никаких действий с реальными данными')">Связаться</button>
+            <button class="btn ghost" onclick="alert('Демонстрация шаблона')">Ещё</button>
+          </div>
+        </div>
+
+        <div style="margin-top:auto">
+          <div class="section-title" style="margin-top:14px">
+            <h3>Краткая заметка</h3>
+            <div class="muted">обновлено: 15 авг 2025</div>
+          </div>
+          <p class="small muted">Этот профиль полностью вымышлен. Используй шаблон для макетов и тестирования. Не размещай реальную личную информацию без согласия.</p>
+        </div>
       </div>
-    </div>
-    <div class="big-call" id="emergencyCall">
-      <div class="ring">ВЫЗОВ</div>
-      <div style="margin-top:8px;font-weight:700">Вызвать комиссара</div>
-    </div>
-  </div>
 
-  <!-- Данные водителя -->
-  <div class="card">
-    <div class="title">Данные водителя</div>
-    <form id="driverForm">
-      <label>ФИО</label>
-      <input type="text" name="fio" placeholder="Иванов Иван Иванович" required>
-      <label>Номер телефона</label>
-      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
-      <label>Номер автомобиля</label>
-      <input type="text" name="car" placeholder="A123BC 77" required>
-    </form>
-  </div>
+      <!-- Right column: доп. информация / лог -->
+      <div>
+        <div class="card">
+          <div class="section-title">
+            <h3>Активность (фиктивная)</h3>
+            <div class="muted">—</div>
+          </div>
+          <div class="list" aria-live="polite">
+            <div class="row">
+              <div>
+                <div style="font-weight:600">Публичный пост</div>
+                <div class="muted">12 июл 2025 — пример</div>
+              </div>
+              <div class="muted">Просмотр</div>
+            </div>
 
-  <!-- Описание происшествия -->
-  <div class="card">
-    <div class="title">Описание ДТП</div>
-    <form id="accidentForm">
-      <label>Место происшествия</label>
-      <input type="text" name="place" placeholder="Город, улица, дом" required>
-      <label>Описание</label>
-      <textarea name="desc" placeholder="Опишите обстоятельства ДТП" required></textarea>
-      <button type="submit" class="btn-primary">Отправить данные</button>
-    </form>
-  </div>
-</div>
+            <div class="row">
+              <div>
+                <div style="font-weight:600">Портфолио (ссылка)</div>
+                <div class="muted">github.com/example</div>
+              </div>
+              <div class="muted">Открыть</div>
+            </div>
 
-<!-- Модал -->
-<div class="modal-backdrop" id="modal">
-  <div class="modal">
-    <h3>Подтвердите вызов</h3>
-    <p>Вы действительно хотите вызвать аварийного комиссара?</p>
-    <div class="modal-actions">
-      <button class="btn btn-cancel" id="cancelBtn">Отмена</button>
-      <button class="btn btn-confirm" id="confirmBtn">Вызвать</button>
-    </div>
+            <div class="row">
+              <div>
+                <div style="font-weight:600">Профиль: публичная заметка</div>
+                <div class="muted">Описание — демонстрация</div>
+              </div>
+              <div class="muted">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card sep" style="margin-top:12px">
+          <div class="section-title">
+            <h3>Теги</h3>
+            <div class="muted">тест</div>
+          </div>
+          <div class="list">
+            <div class="row"><div>Фронтенд</div><div class="muted">UI</div></div>
+            <div class="row"><div>Прототип</div><div class="muted">Демо</div></div>
+            <div class="row"><div>Не реальныe данные</div><div class="muted">privacy</div></div>
+          </div>
+        </div>
+
+        <footer>
+          Этот шаблон — демо. Не используйте для сбора реальной личной информации.
+        </footer>
+      </div>
+    </main>
   </div>
-</div>
 
 <script>
-const modal=document.getElementById('modal');
-const emergency=document.getElementById('emergencyCall');
-const statusText=document.getElementById('statusText');
-
-emergency.addEventListener('click',()=>{modal.style.display='flex';});
-document.getElementById('cancelBtn').addEventListener('click',()=>{modal.style.display='none';});
-document.getElementById('confirmBtn').addEventListener('click',()=>{
-  modal.style.display='none';
-  statusText.textContent='Заявка отправлена — комиссар в пути';
-  const t=document.createElement('div');
-  t.textContent='Комиссар оповещён';
-  Object.assign(t.style,{
-    position:'fixed',left:'50%',bottom:'36px',transform:'translateX(-50%)',
-    padding:'10px 16px',borderRadius:'12px',background:'rgba(0,0,0,0.6)',
-    color:'#fff',zIndex:60
-  });
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2000);
-});
-modal.addEventListener('click',e=>{if(e.target===modal) modal.style.display='none';});
-
-document.getElementById('accidentForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  alert('Данные о ДТП отправлены.');
-});
+  // Минимальные интерактивные элементы — всё безопасно, без сбора данных.
+  // Можно расширить: переключатели, динамические данные (фейковые),
+  // но избегай интеграции с внешними API, если содержится личная информация.
+  // Пример: рендер выдуманных заметок
+  (function(){
+    // демонстрационная замена данных (фиктивные)
+    const nameEl = document.querySelector('.name');
+    // Если хочешь, меняй сюда фиктивные имена
+    const demoNames = ['Джон Доу', 'Алексей Т.', 'Мария И.','Тестовый Аккаунт'];
+    nameEl.textContent = demoNames[Math.floor(Math.random()*demoNames.length)] + ' (фейк)';
+  })();
 </script>
 </body>
 </html>
