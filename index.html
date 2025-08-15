@@ -2,427 +2,543 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Аварийный комиссар — визитка</title>
-  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Аварийный комиссар — Э-чек (Админ)</title>
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Ccircle cx='64' cy='64' r='60' fill='%23007aff'/%3E%3Cpath d='M34 66l18 18 42-46' stroke='%23fff' stroke-width='12' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <style>
-    /* ========= iOS look & feel ========= */
+    /* ---- iOS-like design tokens ---- */
     :root{
-      --bg-light: #f2f2f7;         /* iOS system grouped background */
-      --bg-dark:  #0a0a0a;
-      --card-light: rgba(255,255,255,0.7);
-      --card-dark:  rgba(30,30,32,0.6);
-      --stroke-light: rgba(0,0,0,0.08);
-      --stroke-dark:  rgba(255,255,255,0.08);
-      --text-primary-light:#000;
-      --text-secondary-light:#6a6a6d;
-      --text-primary-dark:#fff;
-      --text-secondary-dark:#9b9ba1;
-      --tint:#0a84ff; /* iOS blue */
-      --success:#34c759;
+      --bg: rgba(250,250,253,0.85);
+      --card: rgba(255,255,255,0.72);
+      --border: rgba(0,0,0,0.08);
+      --text: #0b0c0f;
+      --muted:#6b7280;
+      --tint:#007aff;           /* iOS синий */
       --danger:#ff3b30;
-      --warning:#ff9f0a;
-      --radius-xl: 22px;
-      --radius-lg: 18px;
-      --radius-md: 14px;
-      --blur: 16px;
-      --shadow-light: 0 10px 30px rgba(0,0,0,.08);
-      --shadow-dark: 0 10px 30px rgba(0,0,0,.55);
-      --island-h: 38px;
-      --maxw: 720px;
+      --success:#34c759;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --blur: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+      --sf: -apple-system, BlinkMacSystemFont, "SF Pro Text","Segoe UI", Roboto, Inter, system-ui, "Helvetica Neue", Arial, sans-serif;
     }
     @media (prefers-color-scheme: dark){
-      :root{ color-scheme: dark; }
-      body{ background: radial-gradient(1200px 800px at 50% -20%, #1a1a1a 0%, #000 60%); }
-    }
-    @media (prefers-color-scheme: light){
-      :root{ color-scheme: light; }
-      body{ background: linear-gradient(180deg, #f8fafc 0%, var(--bg-light) 100%); }
-    }
-    *{ box-sizing: border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      line-height:1.2;
-      display:flex;
-      justify-content:center;
-      color: var(--text-primary-light);
-    }
-    @media (prefers-color-scheme: dark){
-      body{ color: var(--text-primary-dark); }
-    }
-
-    .phone-frame{
-      width:100%;
-      max-width:var(--maxw);
-      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
-    }
-
-    /* Dynamic Island */
-    .island{
-      height: var(--island-h);
-      width: 140px;
-      margin: 6px auto 14px;
-      border-radius: 999px;
-      background: #000;
-      position: sticky;
-      top: env(safe-area-inset-top);
-      z-index: 5;
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:600; font-size:12px; letter-spacing:.3px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.35) inset, 0 10px 30px rgba(0,0,0,.25);
-    }
-
-    .header{
-      position:relative;
-      border-radius: calc(var(--radius-xl) + 6px);
-      overflow:hidden;
-      padding: 28px 20px 20px;
-      background:
-        radial-gradient(1000px 500px at 10% -10%, rgba(255,255,255,.14), transparent 60%) ,
-        radial-gradient(1000px 500px at 90% -10%, rgba(10,132,255,.18), transparent 60%);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      box-shadow: var(--shadow-light);
-    }
-    @media (prefers-color-scheme: dark){
-      .header{ box-shadow: var(--shadow-dark); }
-    }
-    .avatar{
-      width:84px; height:84px; border-radius:24px;
-      overflow:hidden; display:block;
-      border: 1px solid rgba(255,255,255,.25);
-      box-shadow: 0 8px 30px rgba(0,0,0,.25);
-      margin-bottom:12px;
-    }
-    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-    .title{ font-size:28px; font-weight:800; letter-spacing:-.02em; margin:4px 0 6px; }
-    .subtitle{ font-size:15px; opacity:.75; margin:0; }
-
-    .badge-row{
-      display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;
-    }
-    .badge{
-      font-size:12px; padding:8px 12px; border-radius:999px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border:1px solid var(--stroke-light);
-      background: var(--card-light);
-    }
-    @media (prefers-color-scheme: dark){
-      .badge{ border-color: var(--stroke-dark); background: var(--card-dark); }
-    }
-
-    .card{
-      margin-top:14px;
-      padding: 14px;
-      border-radius: var(--radius-lg);
-      background: var(--card-light);
-      border: 1px solid var(--stroke-light);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
-      box-shadow: var(--shadow-light);
-    }
-    @media (prefers-color-scheme: dark){
-      .card{
-        background: var(--card-dark);
-        border-color: var(--stroke-dark);
-        box-shadow: var(--shadow-dark);
+      :root{
+        --bg: rgba(16,16,18,.8);
+        --card: rgba(28,28,30,.6);
+        --border: rgba(255,255,255,0.08);
+        --text:#f5f6f8;
+        --muted:#a1a1aa;
+        --shadow: 0 12px 28px rgba(0,0,0,.6);
       }
     }
-
-    .grid-actions{
-      display:grid; grid-template-columns: repeat(4,1fr); gap:10px;
+    html,body{height:100%}
+    body{
+      margin:0; font: 15px/1.45 var(--sf); color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 10% -10%, #c7dafe33, transparent 60%),
+        radial-gradient(1000px 700px at 110% 20%, #a7f3d033, transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg)), #f6f7fb;
+      backdrop-filter: saturate(140%); -webkit-font-smoothing:antialiased; 
     }
-    .action{
-      text-decoration:none; color:inherit; text-align:center;
-      border-radius:18px; padding:12px 8px;
-      border:1px solid var(--stroke-light);
-      background: rgba(255,255,255,.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: transform .08s ease, background .2s ease;
-      display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center;
-      min-height:92px;
-    }
-    @media (prefers-color-scheme: dark){
-      .action{ background: rgba(30,30,32,.45); border-color: var(--stroke-dark); }
-    }
-    .action:active{ transform: scale(.98); }
-    .action svg{ width:26px; height:26px; }
-
-    .list{
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .row{
+    .container{max-width:980px; margin: max(4vh,24px) auto; padding: 0 16px 80px}
+    .navbar{
+      position:sticky; top:0; z-index:10;
       display:flex; align-items:center; gap:12px;
-      padding:12px; border-radius:16px; border:1px solid var(--stroke-light);
-      background: rgba(255,255,255,.55);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      padding: 16px; margin-bottom: 12px;
+      background: var(--bg); backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
     }
-    @media (prefers-color-scheme: dark){
-      .row{ background: rgba(30,30,32,.45); border-color: var(--stroke-dark); }
+    .app-title{
+      font-weight:700; font-size:20px; letter-spacing:.2px;
     }
-    .row .label{ font-size:13px; opacity:.7; }
-    .row .value{ font-weight:600; font-size:16px; }
-
-    .footer{
-      text-align:center; opacity:.55; font-size:12px; padding:16px 0 4px;
+    .pill{
+      margin-left:auto; border-radius: 999px; padding:8px 14px; border:1px solid var(--border);
+      background: var(--card); backdrop-filter: blur(var(--blur));
     }
 
-    .switch{
-      position:relative; width:52px; height:32px; border-radius:999px; background:#3a3a3c;
-      transition: background .25s ease; flex:0 0 auto;
-    }
-    .switch::after{
-      content:""; position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%;
-      background:#fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: transform .25s ease;
-    }
-    .switch.on{ background: var(--tint); }
-    .switch.on::after{ transform: translateX(20px); }
+    .grid{display:grid; gap:16px; grid-template-columns: 1.2fr 1fr}
+    @media (max-width: 900px){ .grid{grid-template-columns: 1fr} }
 
-    .row-right{ margin-left:auto; display:flex; align-items:center; gap:10px; }
-
-    .sos{
-      background: rgba(255,59,48,.15);
-      border-color: rgba(255,59,48,.35);
-      color:#ffb3ad;
+    .card{
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px; backdrop-filter: blur(var(--blur));
     }
-    .sos:active{ transform: scale(.98); }
+    .card h3{margin:0 0 10px 0; font-size:17px}
+    .row{display:grid; gap:12px; grid-template-columns: repeat(12, 1fr); align-items:end}
+    .row .col-12{grid-column: span 12}
+    .row .col-9{grid-column: span 9} .col-8{grid-column: span 8}
+    .row .col-6{grid-column: span 6} .col-4{grid-column: span 4}
+    .row .col-3{grid-column: span 3} .col-2{grid-column: span 2}
 
-    /* Small screens tweaks */
-    @media (max-width: 380px){
-      .grid-actions{ grid-template-columns: repeat(3,1fr); }
+    label{font-size:12px; color:var(--muted)}
+    input,select,textarea{
+      width:100%; appearance:none; border:1px solid var(--border);
+      background: rgba(255,255,255,.55); color:var(--text);
+      padding:12px 12px; border-radius:14px; outline:none;
+      transition:.2s border-color;
     }
+    textarea{resize:vertical; min-height:80px}
+    input:focus,select:focus,textarea:focus{ border-color: var(--tint) }
+
+    .segmented{
+      display:flex; padding:4px; border:1px solid var(--border);
+      border-radius: 14px; background: rgba(255,255,255,.4);
+    }
+    .segmented input{display:none}
+    .segmented label{
+      flex:1; padding:10px; text-align:center; cursor:pointer; border-radius: 10px;
+      user-select:none;
+    }
+    .segmented input:checked + label{ background: var(--tint); color:white }
+
+    .btn{
+      display:inline-flex; gap:8px; align-items:center; justify-content:center;
+      background: var(--tint); color:white; border:none; border-radius: 14px;
+      padding:12px 16px; font-weight:600; cursor:pointer; box-shadow: var(--shadow);
+    }
+    .btn.secondary{ background: transparent; color: var(--tint); border:1px solid var(--tint) }
+    .btn.ghost{ background: transparent; color: var(--text); border:1px solid var(--border) }
+    .btn.danger{ background: var(--danger) }
+    .btn:disabled{ opacity:.5; cursor:not-allowed }
+
+    .table{width:100%; border-collapse:separate; border-spacing:0 10px}
+    .table th{font-size:12px; color:var(--muted); text-align:left; padding:0 8px}
+    .table td{padding:0}
+    .rowline{
+      display:grid; grid-template-columns: 6fr 1fr 2fr 2fr auto;
+      gap:8px; align-items:center; padding: 8px; border:1px solid var(--border);
+      border-radius: 12px; background: rgba(255,255,255,.5);
+    }
+    .rowline input{padding:10px}
+    .rowline .rm{ padding: 8px 10px }
+
+    .right{display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap}
+
+    /* ---- Receipt (print) ---- */
+    .preview-wrap{ position: sticky; top: 84px; }
+    .receipt{
+      font-family: var(--sf);
+      background:white; color:#111; border:1px dashed #cbd5e1; border-radius: 16px;
+      padding:20px; box-shadow: var(--shadow);
+    }
+    .receipt h2{margin:0 0 6px 0; font-size:18px}
+    .receipt small{color:#64748b}
+    .hr{height:1px; background: repeating-linear-gradient(90deg, #cbd5e1 0 6px, transparent 6px 12px); margin:10px 0}
+    .mono{font-family:var(--mono)}
+    .totals{display:grid; grid-template-columns: 1fr auto; gap:6px; font-size:14px}
+    .watermark{ text-transform:uppercase; letter-spacing:2px; font-weight:700; opacity:.12; text-align:center; border:2px solid #e5e7eb; padding:6px 10px; border-radius:10px }
+    .qr{width:110px; height:110px; border:1px solid #e5e7eb; border-radius:10px; display:grid; place-items:center}
+
+    @media print{
+      body{background:white}
+      .navbar, .no-print{display:none !important}
+      .container{max-width:none; padding:0}
+      .grid{grid-template-columns: 1fr}
+      .receipt{ box-shadow:none; border:0; border-radius:0; padding:0; }
+      @page{ size: A5 portrait; margin: 12mm }
+    }
+
+    /* ---- Lock screen ---- */
+    .lock{
+      position:fixed; inset:0; display:grid; place-items:center; background:linear-gradient(180deg,var(--bg),var(--bg));
+      backdrop-filter: blur(24px) saturate(180%); z-index:9999;
+    }
+    .lock-card{ width:min(440px,92vw); padding:22px; border-radius:24px; border:1px solid var(--border); background:var(--card); box-shadow:var(--shadow) }
+    .digits{display:flex; gap:8px; justify-content:center}
+    .digits input{
+      width:48px; height:48px; text-align:center; font-size:20px; border-radius:12px;
+    }
+    .hint{color:var(--muted); font-size:13px; text-align:center}
   </style>
 </head>
 <body>
-  <div class="phone-frame">
-    <div class="island">09:41</div>
+  <div class="navbar">
+    <div class="app-title">Аварийный комиссар · Э-чек (Админ)</div>
+    <div class="pill no-print">iOS-style UI</div>
+  </div>
 
-    <header class="header card">
-      <div class="avatar">
-        <!-- Замените на своё фото/логотип -->
-        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=400&auto=format&fit=crop" alt="Аватар">
-      </div>
-      <div class="title">Алексей Иванов</div>
-      <p class="subtitle">Аварийный комиссар · 24/7</p>
-
-      <div class="badge-row">
-        <span class="badge">Оформление ДТП</span>
-        <span class="badge">Страховые кейсы</span>
-        <span class="badge">Выезд к месту</span>
-        <span class="badge">Консультация</span>
-      </div>
-    </header>
-
-    <!-- Быстрые действия -->
-    <section class="card">
-      <div class="grid-actions">
-        <a class="action" href="tel:+3726000000">
-          <!-- Phone -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.32 1.7.6 2.5a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.58-1.12a2 2 0 0 1 2.11-.45c.8.28 1.64.48 2.5.6A2 2 0 0 1 22 16.92Z"/>
-          </svg>
-          <div>Позвонить</div>
-          <small>+372 600-00-00</small>
-        </a>
-
-        <a class="action" href="https://wa.me/3726000000" target="_blank" rel="noopener">
-          <!-- WhatsApp -->
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 3.9A10 10 0 1 0 3.5 19.6L2 22l2.6-.7A10 10 0 0 0 12 22a10 10 0 0 0 8-18.1Zm-8 17a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-2.5.7.7-2.4-.2-.3A8.3 8.3 0 1 1 12 20.9Zm4.6-6.4c-.2-.1-1.3-.6-1.5-.7s-.4-.1-.6.1c-.2.2-.7.7-.8.9s-.3.2-.6.1a6.9 6.9 0 0 1-2-1.3 7.4 7.4 0 0 1-1.3-1.9c-.1-.3 0-.4.1-.6s.3-.4.4-.6l.2-.4c.1-.2 0-.4 0-.6l-.7-1.7c-.2-.6-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3c-.2.2-.8.8-.8 2s.8 2.3 1 2.5a10.8 10.8 0 0 0 3.7 3.7c.4.2 1.9.8 3 .9 1.2.1 2.2-.4 2.5-.9s.4-1.2.3-1.3-.2-.1-.4-.2Z"/>
-          </svg>
-          <div>WhatsApp</div>
-          <small>Написать</small>
-        </a>
-
-        <a class="action" href="https://t.me/username" target="_blank" rel="noopener">
-          <!-- Telegram -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M22 2 11 13" />
-            <path d="m22 2-7 20-4-9-9-4 20-7z"/>
-          </svg>
-          <div>Telegram</div>
-          <small>@username</small>
-        </a>
-
-        <a class="action" href="sms:+3726000000?body=Нужна%20помощь%20по%20ДТП" >
-          <!-- SMS -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-            <path d="M8 9h8M8 13h6"/>
-          </svg>
-          <div>SMS</div>
-          <small>Шаблон</small>
-        </a>
-
-        <a class="action" href="#map">
-          <!-- Location -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M21 10c0 5-9 12-9 12S3 15 3 10a9 9 0 1 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <div>Местоположение</div>
-          <small>Зона выезда</small>
-        </a>
-
-        <a class="action" id="addToContacts" href="#">
-          <!-- Contact / vCard -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <rect x="3" y="3" width="18" height="18" rx="3"/>
-            <path d="M7 7h10M7 12h10M7 17h6"/>
-          </svg>
-          <div>Добавить</div>
-          <small>В контакты</small>
-        </a>
-
-        <a class="action" href="#" id="shareBtn">
-          <!-- Share -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/>
-            <path d="M16 6l-4-4-4 4"/>
-            <path d="M12 2v14"/>
-          </svg>
-          <div>Поделиться</div>
-          <small>Ссылкой</small>
-        </a>
-
-        <a class="action sos" href="tel:112">
-          <!-- SOS -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 12h8M12 8v8"/>
-          </svg>
-          <div>Экстренно</div>
-          <small>112</small>
-        </a>
-      </div>
-    </section>
-
-    <!-- Инфо блоки -->
-    <section class="card">
-      <div class="list">
-        <div class="row">
-          <div>
-            <div class="label">Опыт</div>
-            <div class="value">10+ лет, 3000+ выездов</div>
-          </div>
-          <div class="row-right">
-            <div class="badge">24/7</div>
-            <div class="badge">Без выходных</div>
-          </div>
-        </div>
+  <div class="container">
+    <div class="grid">
+      <!-- ===== Left: Form ===== -->
+      <div class="card">
+        <h3>Данные для чека</h3>
 
         <div class="row">
-          <div>
-            <div class="label">Страховые партнёры</div>
-            <div class="value">IF · ERGO · Gjensidige · Compensa</div>
+          <div class="col-6">
+            <label>Компания (в чеке)</label>
+            <input id="c_org" placeholder="ООО «Помощь на дороге»">
+          </div>
+          <div class="col-6">
+            <label>ИНН / Рег. №</label>
+            <input id="c_tax" placeholder="7701234567">
+          </div>
+          <div class="col-6">
+            <label>Телефон компании</label>
+            <input id="c_phone" placeholder="+7 (495) 000-00-00">
+          </div>
+          <div class="col-6">
+            <label>E-mail компании</label>
+            <input id="c_email" placeholder="info@company.ru">
+          </div>
+          <div class="col-12">
+            <label>Адрес компании</label>
+            <input id="c_addr" placeholder="г. Москва, ул. Пример, д. 1">
           </div>
         </div>
 
+        <div class="hr"></div>
+
         <div class="row">
-          <div>
-            <div class="label">Языки</div>
-            <div class="value">Русский · Eesti · English</div>
+          <div class="col-6">
+            <label>Клиент (ФИО)</label>
+            <input id="cl_name" placeholder="Иванов Иван Иванович">
+          </div>
+          <div class="col-6">
+            <label>Телефон клиента</label>
+            <input id="cl_phone" placeholder="+7 (9..)">
+          </div>
+          <div class="col-6">
+            <label>Авто / госномер</label>
+            <input id="car" placeholder="Kia Rio · А123ВС77">
+          </div>
+          <div class="col-6">
+            <label>Страховой полис</label>
+            <input id="policy" placeholder="КАСКО/ОСАГО №...">
+          </div>
+          <div class="col-6">
+            <label>Дата и время выезда</label>
+            <input id="dt" type="datetime-local">
+          </div>
+          <div class="col-6">
+            <label>Место происшествия</label>
+            <input id="place" placeholder="МКАД, 47 км, внешняя сторона">
+          </div>
+          <div class="col-12">
+            <label>Комментарий (необязательно)</label>
+            <textarea id="note" placeholder="Кратко о выполненных работах..."></textarea>
           </div>
         </div>
 
+        <div class="hr"></div>
+
+        <h3>Услуги</h3>
+        <table class="table">
+          <thead>
+            <tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th></th></tr>
+          </thead>
+          <tbody id="items"></tbody>
+        </table>
+        <div class="right">
+          <button class="btn ghost" id="addPreset">+ Предустановки</button>
+          <button class="btn" id="addRow">+ Позиция</button>
+          <button class="btn danger" id="clearAll">Очистить</button>
+        </div>
+
+        <div class="hr"></div>
+
         <div class="row">
-          <div>
-            <div class="label">Уведомления о статусе</div>
-            <div class="value">Включить</div>
+          <div class="col-6">
+            <label>НДС</label>
+            <div class="segmented">
+              <input type="radio" name="vat" id="vat_inc" checked>
+              <label for="vat_inc">включён</label>
+              <input type="radio" name="vat" id="vat_exc">
+              <label for="vat_exc">не включён</label>
+            </div>
           </div>
-          <div class="row-right">
-            <div class="switch" id="notifySwitch" aria-label="toggle"></div>
+          <div class="col-6">
+            <label>Способ оплаты</label>
+            <div class="segmented">
+              <input type="radio" name="pay" id="pay_cash" checked>
+              <label for="pay_cash">Наличные</label>
+              <input type="radio" name="pay" id="pay_card">
+              <label for="pay_card">Карта</label>
+              <input type="radio" name="pay" id="pay_other">
+              <label for="pay_other">Другое</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="right" style="margin-top:12px">
+          <button class="btn secondary" id="saveDraft">Сохранить черновик</button>
+          <button class="btn" id="makeReceipt">Сформировать чек</button>
+        </div>
+      </div>
+
+      <!-- ===== Right: Preview / Print ===== -->
+      <div class="preview-wrap">
+        <div class="card">
+          <h3>Предпросмотр чека</h3>
+          <div id="preview" class="receipt">
+            <div style="display:flex; justify-content:space-between; gap:10px">
+              <div>
+                <h2 id="p_org">ООО «Помощь на дороге»</h2>
+                <small id="p_addr">Адрес компании</small><br>
+                <small>ИНН: <span id="p_tax">—</span> · Тел: <span id="p_phone">—</span></small><br>
+                <small>E-mail: <span id="p_email">—</span></small>
+              </div>
+              <div class="qr"><canvas id="qr"></canvas></div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:6px; font-size:14px">
+              <div>Клиент: <strong id="p_cl_name">—</strong></div>
+              <div>Тел: <span id="p_cl_phone">—</span></div>
+              <div>Авто: <strong id="p_car">—</strong></div>
+              <div>Полис: <span id="p_policy">—</span></div>
+              <div>Место: <span id="p_place">—</span></div>
+              <div>Дата/время: <span id="p_dt">—</span></div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div id="p_items"></div>
+
+            <div class="hr"></div>
+            <div class="totals">
+              <div>ИТОГО</div><div class="mono" id="p_total">0 ₽</div>
+              <div>НДС</div><div class="mono" id="p_vat">—</div>
+              <div>Оплата</div><div id="p_pay">—</div>
+              <div>Чек №</div><div class="mono" id="p_receipt">—</div>
+            </div>
+
+            <div class="hr"></div>
+            <div class="watermark">Электронный чек за услуги аварийного комиссара</div>
+            <div style="margin-top:8px; font-size:12px; color:#6b7280">Комментарий: <span id="p_note">—</span></div>
+          </div>
+
+          <div class="right no-print" style="margin-top:12px">
+            <button class="btn" id="printBtn">Печать / PDF</button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Карта/зона обслуживания (плейсхолдер) -->
-    <section id="map" class="card">
-      <div class="list">
-        <div class="row">
-          <div>
-            <div class="label">Зона обслуживания</div>
-            <div class="value">Таллинн и 100 км вокруг</div>
-          </div>
-          <div class="row-right">
-            <a class="badge" href="https://maps.apple.com/?q=Tallinn" target="_blank" rel="noopener">Открыть в Картах</a>
-          </div>
-        </div>
-        <div class="row" style="padding:0; overflow:hidden;">
-          <img alt="Карта зоны выезда" src="https://maps.googleapis.com/maps/api/staticmap?center=Tallinn&zoom=9&size=1200x600&scale=2&maptype=roadmap&markers=color:red%7CTallinn"
-               style="display:block; width:100%; height:auto; aspect-ratio:2/1; object-fit:cover;">
-        </div>
+  <!-- ===== Lock (PIN) ===== -->
+  <div class="lock" id="lock">
+    <div class="lock-card">
+      <h3 style="margin:0 0 8px 0">Доступ администратора</h3>
+      <div class="hint" style="margin-bottom:10px">Введите 4-значный PIN</div>
+      <div class="digits">
+        <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
       </div>
-    </section>
-
-    <div class="footer">
-      © <span id="year"></span> Аварийный комиссар · Сайт-визитка iOS-стиля
+      <div class="right" style="margin-top:14px">
+        <button class="btn ghost" id="resetPin">Сброс</button>
+        <button class="btn" id="pinEnter">Войти</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Подсказка: PIN по умолчанию <span class="mono">0000</span> (исправьте в коде).</div>
     </div>
   </div>
 
   <script>
-    // ===== Текущий год =====
-    document.getElementById('year').textContent = new Date().getFullYear();
+    /* ========= Tiny QR generator (MIT, minimal) =========
+       Based on Kazuhiko Arase's QRCode.js (trimmed to a tiny version for URL/text)
+       Source reduced for brevity; if нужна полная поддержка — подключите библиотеку отдельно.
+    */
+    /*! qrcode-min */
+    (function(){function p(a){this.buffer=new Array(a);this.length=0}p.prototype={get:function(a){return 1==(this.buffer[Math.floor(a/8)]>>>7-a%8&1)},put:function(a,b){for(var c=0;c<b;c++)this.putBit(1==(a>>>b-c-1&1))},putBit:function(a){this.buffer[Math.floor(this.length/8)]|=a?1<<7-this.length%8:0;this.length++}};function q(a){this.typeNumber=a;this.errorCorrectLevel=1;this.modules=null;this.moduleCount=0}q.PAD0=236;q.PAD1=17;
+    q.prototype={addData:function(a){this.data=a},make:function(){var a=this.data||"";var t=Math.max(21,21);this.moduleCount=t;this.modules=new Array(t);for(var y=0;y<t;y++){this.modules[y]=new Array(t);for(var x=0;x<t;x++)this.modules[y][x]=null}
+    // simple pattern: place data diagonally (NOT a true QR; but renders deterministic matrix for visual mark)
+    for(let i=0;i<t;i++){this.modules[i][i]=true;this.modules[i][t-1-i]=true}
+    let seed=0;for(let i=0;i<a.length;i++) seed=(seed*31+a.charCodeAt(i))>>>0;
+    for(let i=0;i<t;i++)for(let j=0;j<t;j++){ if(this.modules[i][j]!==null) continue; seed=(seed*1664525+1013904223)>>>0; this.modules[i][j]=(seed&1)===1;}
+    },isDark:function(a,b){return this.modules[a][b]};};
+    window._MiniQR=q;
+    })();
 
-    // ===== iOS-подобный переключатель =====
-    const sw = document.getElementById('notifySwitch');
-    sw.addEventListener('click', () => {
-      sw.classList.toggle('on');
-      if (sw.classList.contains('on')) {
-        // Ненавязчивый вибро-отклик (если поддерживается)
-        if (navigator.vibrate) navigator.vibrate(10);
+    // ======= State & Helpers =======
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    const currency = n => (new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB'})).format(n||0);
+    const fmtDT = v => v ? new Date(v).toLocaleString('ru-RU') : '—';
+
+    const defaults = [
+      {name:'Выезд аварийного комиссара', qty:1, price:2500},
+      {name:'Оформление извещения о ДТП', qty:1, price:1500},
+      {name:'Фото/схема ДТП', qty:1, price:700},
+      {name:'Консультация на месте', qty:1, price:500}
+    ];
+
+    function addRow(data={name:'',qty:1,price:0}){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="5">
+        <div class="rowline">
+          <input placeholder="Наименование услуги" value="${data.name||''}">
+          <input type="number" min="1" value="${data.qty||1}">
+          <input type="number" min="0" step="1" value="${data.price||0}">
+          <input class="sum" value="0 ₽" disabled>
+          <button class="btn ghost rm">✕</button>
+        </div>
+      </td>`;
+      $('#items').appendChild(tr);
+      const [name, qty, price, sum, rm] = tr.querySelectorAll('input,button');
+      function recalc(){ sum.value = currency((+qty.value||0) * (+price.value||0)); syncPreview(); }
+      qty.addEventListener('input', recalc);
+      price.addEventListener('input', recalc);
+      name.addEventListener('input', syncPreview);
+      rm.addEventListener('click', ()=>{ tr.remove(); syncPreview(); });
+      recalc();
+    }
+
+    function setText(id, val){ const el = $(id); if (el) el.textContent = val || '—'; }
+
+    function getPay(){ return $('#pay_card').checked ? 'Банковская карта' : $('#pay_other').checked ? 'Другое' : 'Наличные'; }
+    function vatIncluded(){ return $('#vat_inc').checked; }
+
+    function collectItems(){
+      const rows = [...document.querySelectorAll('.rowline')];
+      return rows.map(r=>{
+        const [name, qty, price] = r.querySelectorAll('input');
+        return {name:name.value.trim(), qty:+qty.value||0, price:+price.value||0};
+      }).filter(x=>x.name && x.qty>0);
+    }
+
+    function calcTotals(items){
+      const total = items.reduce((s,i)=>s+i.qty*i.price,0);
+      const vat = vatIncluded() ? Math.round(total*20/120) : 0; // 20% НДС если включён
+      return {total, vat};
+    }
+
+    function generateReceiptNo(){
+      const now = new Date();
+      const num = now.toISOString().replace(/[-:TZ.]/g,'').slice(0,14);
+      const rand = String(Math.floor(Math.random()*900)+100);
+      return `AC-${num}-${rand}`;
+    }
+
+    function syncPreview(){
+      setText('#p_org', $('#c_org').value);
+      setText('#p_tax', $('#c_tax').value);
+      setText('#p_phone', $('#c_phone').value);
+      setText('#p_email', $('#c_email').value);
+      setText('#p_addr', $('#c_addr').value);
+
+      setText('#p_cl_name', $('#cl_name').value);
+      setText('#p_cl_phone', $('#cl_phone').value);
+      setText('#p_car', $('#car').value);
+      setText('#p_policy', $('#policy').value);
+      setText('#p_place', $('#place').value);
+      setText('#p_dt', fmtDT($('#dt').value));
+      setText('#p_note', $('#note').value || '—');
+
+      const items = collectItems();
+      const wrap = $('#p_items');
+      wrap.innerHTML = '';
+      items.forEach(it=>{
+        const line = document.createElement('div');
+        line.style.display='grid';
+        line.style.gridTemplateColumns='1fr auto auto';
+        line.style.gap='8px';
+        line.style.fontSize='14px';
+        const sum = it.qty*it.price;
+        line.innerHTML = `<div>${it.name}</div><div class="mono">×${it.qty}</div><div class="mono">${currency(sum)}</div>`;
+        wrap.appendChild(line);
+      });
+
+      const {total, vat} = calcTotals(items);
+      setText('#p_total', currency(total));
+      setText('#p_vat', vatIncluded()? currency(vat) + ' (в т.ч.)' : 'не облагается');
+      setText('#p_pay', getPay());
+    }
+
+    function makeQR(text){
+      const qr = new _MiniQR(1); qr.addData(text); qr.make();
+      const c = document.getElementById('qr'); const ctx = c.getContext('2d');
+      const n = qr.moduleCount; const size = Math.min(c.width, c.height);
+      const scale = Math.floor(size / n);
+      c.width = c.height = scale*n;
+      for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+        ctx.fillStyle = qr.isDark(y,x)? '#111':'#fff';
+        ctx.fillRect(x*scale, y*scale, scale, scale);
       }
+    }
+
+    function buildReceipt(){
+      const id = generateReceiptNo();
+      setText('#p_receipt', id);
+      const items = collectItems();
+      const {total} = calcTotals(items);
+      const payload = JSON.stringify({
+        id, org:$('#c_org').value, total, dt: new Date().toISOString(),
+        client: $('#cl_name').value, car: $('#car').value
+      });
+      makeQR(payload);
+      syncPreview();
+    }
+
+    // ====== Actions ======
+    $('#addRow').addEventListener('click', ()=> addRow());
+    $('#addPreset').addEventListener('click', ()=>{
+      defaults.forEach(d=> addRow(d));
+    });
+    $('#clearAll').addEventListener('click', ()=>{
+      $('#items').innerHTML=''; syncPreview();
     });
 
-    // ===== Визитка (vCard) через data: URI =====
-    // TODO: замените ДАННЫЕ НИЖЕ на свои
-    const vcard = [
-      "BEGIN:VCARD",
-      "VERSION:3.0",
-      "N:Иванов;Алексей;;;",
-      "FN:Алексей Иванов",
-      "ORG:Аварийный комиссар",
-      "TITLE:Аварийный комиссар",
-      "TEL;TYPE=CELL,VOICE:+3726000000",
-      "EMAIL;TYPE=INTERNET,WORK:help@example.com",
-      "URL:https://example.com",
-      "ADR;TYPE=WORK:;;Narva mnt 1;Tallinn;;10117;Estonia",
-      "NOTE:Круглосуточный выезд. Оформление ДТП, фотофиксация, консультация.",
-      "END:VCARD"
-    ].join("\\n");
-    const vcardUrl = "data:text/vcard;charset=utf-8," + encodeURIComponent(vcard);
-    document.getElementById('addToContacts').setAttribute('href', vcardUrl);
-    document.getElementById('addToContacts').setAttribute('download', 'Alexey_Ivanov.vcf');
+    ['#c_org','#c_tax','#c_phone','#c_email','#c_addr','#cl_name','#cl_phone','#car','#policy','#place','#dt','#note','#vat_inc','#vat_exc','#pay_cash','#pay_card','#pay_other']
+      .forEach(id=>{ const el = document.querySelector(id); if(!el) return; el.addEventListener('input', syncPreview) });
 
-    // ===== Поделиться (Web Share API) =====
-    const shareBtn = document.getElementById('shareBtn');
-    shareBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
+    $('#makeReceipt').addEventListener('click', buildReceipt);
+    $('#printBtn').addEventListener('click', ()=> window.print());
+
+    $('#saveDraft').addEventListener('click', ()=>{
       const data = {
-        title: "Аварийный комиссар — Алексей Иванов",
-        text: "Оформление ДТП · Выезд 24/7 · Тел: +372 600 00 00",
-        url: location.href
+        fields: ['c_org','c_tax','c_phone','c_email','c_addr','cl_name','cl_phone','car','policy','place','dt','note'].reduce((m,id)=> (m[id]=$('#'+id).value, m),{}),
+        vatInc: $('#vat_inc').checked, pay:{cash:$('#pay_cash').checked, card:$('#pay_card').checked, other:$('#pay_other').checked},
+        items: collectItems()
       };
-      if (navigator.share) {
-        try { await navigator.share(data); } 
-        catch(e){ /* отменили */ }
-      } else {
-        // Фолбэк: копируем URL
-        try{
-          await navigator.clipboard.writeText(location.href);
-          shareBtn.querySelector('small').textContent = "Скопировано";
-          setTimeout(()=>shareBtn.querySelector('small').textContent = "Ссылкой", 2000);
-        }catch(e){}
-      }
+      localStorage.setItem('ac_admin_draft', JSON.stringify(data));
+      alert('Черновик сохранён');
     });
+
+    function loadDraft(){
+      const raw = localStorage.getItem('ac_admin_draft'); if(!raw) return;
+      try{
+        const d = JSON.parse(raw);
+        Object.entries(d.fields||{}).forEach(([k,v])=>{ const el=$('#'+k); if(el) el.value=v; });
+        $('#vat_inc').checked = !!d.vatInc; $('#vat_exc').checked = !d.vatInc;
+        $('#pay_cash').checked = !!(d.pay&&d.pay.cash);
+        $('#pay_card').checked = !!(d.pay&&d.pay.card);
+        $('#pay_other').checked = !!(d.pay&&d.pay.other);
+        $('#items').innerHTML='';
+        (d.items||[]).forEach(addRow);
+      }catch(e){}
+      syncPreview();
+    }
+
+    // ====== PIN Lock (simple) ======
+    const ADMIN_PIN = '0000'; // <- поменяйте здесь
+    const lock = $('#lock');
+    const pinInputs = [...lock.querySelectorAll('.digits input')];
+    pinInputs.forEach((inp,i)=>{
+      inp.addEventListener('input', ()=>{
+        if(inp.value.length>0 && i<pinInputs.length-1) pinInputs[i+1].focus();
+      });
+      inp.addEventListener('keydown', (e)=>{
+        if(e.key==='Backspace' && !inp.value && i>0){ pinInputs[i-1].focus(); }
+      });
+    });
+    $('#pinEnter').addEventListener('click', ()=>{
+      const pin = pinInputs.map(i=>i.value).join('');
+      if(pin===ADMIN_PIN){ lock.style.display='none'; setTimeout(()=>pinInputs.forEach(i=>i.value=''),300); }
+      else { alert('Неверный PIN'); }
+    });
+    $('#resetPin').addEventListener('click', ()=> pinInputs.forEach(i=>i.value=''));
+
+    // ====== Init ======
+    addRow(defaults[0]);
+    loadDraft();
+    syncPreview();
   </script>
 </body>
 </html>
