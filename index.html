@@ -1,466 +1,626 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a84ff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a84ff" media="(prefers-color-scheme: dark)">
-  <title>Калькулятор процентов — iOS-style</title>
-  <style>
-    /* ====== iOS-like Design System (no external assets) ====== */
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mini CRM — iOS style</title>
+<link rel="icon" href="data:," />
+<style>
+  :root{
+    --bg: #f3f4f6;
+    --card: rgba(255,255,255,0.7);
+    --border: rgba(0,0,0,0.06);
+    --text: #0b0c0f;
+    --muted: #6b7280;
+    --accent: #007aff;           /* iOS blue */
+    --good: #34c759;             /* iOS green */
+    --bad: #ff3b30;              /* iOS red */
+    --warn: #ff9f0a;
+    --shadow: 0 8px 24px rgba(0,0,0,0.08);
+    --radius: 16px;
+    --blur: 16px;
+  }
+  @media (prefers-color-scheme: dark){
     :root{
-      --tint: #0a84ff;          /* iOS blue */
-      --tint-2: color-mix(in srgb, var(--tint) 70%, white);
-      --bg: #f5f6f8;
-      --text: #0b0c0f;
-      --text-sec: #5b5d62;
-      --card: rgba(255,255,255,0.7);
-      --border: rgba(0,0,0,0.08);
-      --shadow: 0 10px 30px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-      --radius-outer: 28px;
-      --radius: 18px;
-      --radius-sm: 12px;
-      --blur: 16px;
-      --success: #34c759;
-      --danger: #ff3b30;
-      --warning: #ff9f0a;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --bg:#0b0c0f;
+      --card: rgba(22,23,28,0.6);
+      --border: rgba(255,255,255,0.08);
+      --text:#f6f7f9;
+      --muted:#a9acb2;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg: #0f1115;
-        --text: #e8e9ec;
-        --text-sec: #a9acb2;
-        --card: rgba(22,24,29,0.55);
-        --border: rgba(255,255,255,0.08);
-        --shadow: 0 10px 35px rgba(0,0,0,.55), 0 2px 10px rgba(0,0,0,.4);
-      }
-    }
+  }
+  html,body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text","Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    background: radial-gradient(1200px 800px at 10% -10%, rgba(0,122,255,0.07), transparent 60%),
+                radial-gradient(900px 700px at 110% 10%, rgba(52,199,89,0.08), transparent 55%),
+                var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .container{
+    max-width:1100px;
+    margin:24px auto;
+    padding:0 16px 64px;
+  }
+  header.app{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin:12px 0 20px;
+  }
+  .logo{
+    width:48px;height:48px; border-radius:14px;
+    backdrop-filter: blur(var(--blur));
+    background: var(--card);
+    border:1px solid var(--border);
+    box-shadow: var(--shadow);
+    display:grid; place-items:center;
+    font-weight:700; color:var(--accent);
+  }
+  .title h1{font-size:22px; margin:0;}
+  .title .sub{color:var(--muted); font-size:13px;}
+  .toolbar{
+    margin-left:auto; display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .btn{
+    appearance:none; border:1px solid var(--border); background:var(--card);
+    padding:10px 14px; border-radius:12px; cursor:pointer; box-shadow: var(--shadow);
+    backdrop-filter: blur(var(--blur));
+    display:inline-flex; align-items:center; gap:8px; font-weight:600;
+  }
+  .btn.primary{ border-color:transparent; background:linear-gradient(180deg, #1d8cff, #0a6bda); color:white; }
+  .btn.good{ background:linear-gradient(180deg, #45d86a, #1ea84a); color:white; border-color:transparent;}
+  .btn.warn{ background:linear-gradient(180deg, #ffb340, #ff9a0a); color:white; border-color:transparent;}
+  .btn:active{ transform: translateY(1px); }
 
-    html,body{
-      height:100%;
-      background: radial-gradient(1200px 800px at 80% -10%, color-mix(in srgb, var(--tint) 12%, var(--bg)) 0%, var(--bg) 50%) fixed;
-      margin:0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      color:var(--text);
-      font: 16px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, system-ui, sans-serif;
-    }
+  /* Cards / sections */
+  .grid{
+    display:grid; grid-template-columns: 1.1fr 1fr; gap:16px;
+  }
+  @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
 
-    .safe-area {
-      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    }
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(var(--blur));
+    padding:16px;
+  }
+  .card h2{font-size:16px; margin:0 0 8px;}
+  .split{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  .muted{ color:var(--muted); }
 
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: saturate(140%) blur(14px);
-      -webkit-backdrop-filter: saturate(140%) blur(14px);
-      background: color-mix(in srgb, var(--card) 70%, transparent);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav{
-      max-width: 920px; margin: 0 auto; display:flex; align-items:center; gap:12px;
-      padding: 14px 12px;
-    }
-    .badge{
-      inline-size: 34px; block-size:34px; flex:0 0 34px;
-      border-radius: 10px; display:grid; place-items:center;
-      background: linear-gradient(160deg, var(--tint), var(--tint-2));
-      color:white; font-weight:700; letter-spacing:.2px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.2), 0 6px 14px rgba(10,132,255,.35);
-    }
-    .title{
-      font-size: clamp(18px, 3vw, 22px); font-weight: 700; letter-spacing:.2px;
-    }
-    .subtitle{
-      color:var(--text-sec); font-size: 13px;
-    }
+  /* Plan widget */
+  .plan{
+    display:flex; align-items:center; gap:20px;
+  }
+  .ring{ width:140px; height:140px; position:relative; }
+  .ring svg{transform: rotate(-90deg);}
+  .ring .center{
+    position:absolute; inset:0; display:grid; place-items:center; text-align:center; font-weight:700;
+  }
+  .ring .center small{ display:block; color:var(--muted); font-weight:600; }
 
-    main{
-      max-width: 920px; margin: 24px auto; padding: 0 12px 28px;
-      display:grid; gap:20px;
-    }
+  .plan-controls{
+    display:grid; grid-template-columns: 1fr 1fr; gap:10px; width:100%;
+  }
+  .input, select{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); color:var(--text);
+  }
+  @media (prefers-color-scheme: dark){ .input, select{ background: rgba(30,31,36,0.6);} }
+  label{ font-size:12px; color:var(--muted); display:block; margin:6px 2px; }
 
-    .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      border-radius: var(--radius-outer);
-      overflow:hidden;
-    }
-    .card .content{ padding: 18px; }
-    .hero{
-      display:grid; gap:12px; padding: 22px 18px 10px;
-      background:
-        radial-gradient(800px 400px at 10% -5%, color-mix(in srgb,var(--tint) 15%, transparent), transparent 60%),
-        linear-gradient(180deg, color-mix(in srgb, var(--card) 70%, transparent), transparent);
-    }
-    .hero h1{
-      margin:0; font-size: clamp(28px, 6vw, 44px); line-height:1.05;
-      letter-spacing:-.3px;
-    }
-    .hero p{ margin:0; color:var(--text-sec); font-size: clamp(14px, 2.5vw, 16px); }
+  /* List */
+  .list-toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0 12px; }
+  table{
+    width:100%; border-collapse: collapse; overflow:hidden;
+  }
+  th, td{
+    padding:12px 10px; border-bottom:1px solid var(--border); font-size:14px;
+  }
+  th{ text-align:left; color:var(--muted); font-weight:700; }
+  tbody tr:hover{ background: rgba(0,0,0,0.04); }
+  @media (prefers-color-scheme: dark){ tbody tr:hover{ background: rgba(255,255,255,0.03);} }
 
-    /* Segmented control (iOS) */
-    .segment{
-      display:flex; gap:8px; padding:8px; border-radius: 20px;
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      border:1px solid var(--border);
-      overflow:auto;
-    }
-    .segment button{
-      appearance:none; border:0; padding:10px 14px; border-radius: 14px;
-      background: transparent; color: var(--text-sec);
-      font-weight:600; white-space:nowrap; transition: transform .06s ease, background .2s ease, color .2s ease;
-    }
-    .segment button[aria-pressed="true"]{
-      background: white; color:#111; box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 10px 25px rgba(0,0,0,.08);
-    }
-    @media (prefers-color-scheme: dark){
-      .segment button[aria-pressed="true"]{ background:#1b1f26; color:#fff; }
-    }
-    .segment button:active{ transform: scale(.98); }
+  .status{ padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; display:inline-block; }
+  .s-lead{ background: rgba(0,122,255,0.15); color:#007aff; }
+  .s-progress{ background: rgba(255,159,10,0.18); color:#b96a00; }
+  .s-won{ background: rgba(52,199,89,0.18); color:#1a7c3a; }
+  .s-lost{ background: rgba(255,59,48,0.18); color:#9e1c16; }
 
-    /* Form */
-    .grid{ display:grid; gap:12px; grid-template-columns: 1fr; }
-    @media (min-width: 720px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
+  /* Modal */
+  dialog{
+    border:none; border-radius:20px; padding:0; background:var(--card); box-shadow: 0 40px 120px rgba(0,0,0,0.35);
+    width:min(680px, 92vw);
+  }
+  dialog::backdrop{ backdrop-filter: blur(8px); background: rgba(0,0,0,0.25);}
+  .modal-head{ padding:16px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .modal-body{ padding:18px; display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .modal-actions{ padding:16px 18px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--border); }
+  @media (max-width:680px){ .modal-body{ grid-template-columns: 1fr; } }
 
-    .field{
-      display:grid; gap:8px; background: color-mix(in srgb, var(--card) 70%, transparent);
-      border:1px solid var(--border); border-radius: var(--radius); padding: 14px;
-    }
-    .label{ font-size:13px; color:var(--text-sec); display:flex; justify-content:space-between; gap:8px; align-items:center; }
-    .input{
-      display:flex; gap:10px; align-items:center; background: white; border:1px solid var(--border);
-      border-radius: 12px; padding: 10px 12px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 1px 0 rgba(0,0,0,.03);
-    }
-    @media (prefers-color-scheme: dark){
-      .input{ background:#0f1217; box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 1px 0 rgba(255,255,255,.02); }
-    }
-    .input input{
-      border:0; outline:0; flex:1; min-width:0; background:transparent; color:inherit;
-      font-size:clamp(16px, 2.6vw, 20px);
-    }
-    .suffix, .prefix{ font-family: var(--mono); opacity:.55; }
-    .hint{ font-size:12px; color:var(--text-sec); }
-    .error{ color:var(--danger); font-size:12px; display:none; }
+  /* Chips / misc */
+  .chip{ font-size:12px; padding:6px 10px; border-radius:999px; background: rgba(0,0,0,0.06); color:var(--muted);}
+  .kpi{ display:flex; gap:12px; flex-wrap:wrap; }
+  .kpi .card{ flex:1 1 220px; }
+  .kpi .value{ font-size:20px; font-weight:800; }
+  .right{ margin-left:auto; }
+  .link{ color:var(--accent); cursor:pointer; }
 
-    /* Primary button */
-    .actions{
-      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:flex-start;
-    }
-    .btn{
-      appearance:none; border:0; border-radius: 14px; padding: 12px 18px; font-weight:700;
-      background: linear-gradient(180deg, color-mix(in srgb, var(--tint) 92%, white), var(--tint));
-      color:white; box-shadow: 0 8px 20px rgba(10,132,255,.35), inset 0 0 0 1px rgba(255,255,255,.35);
-      transition: transform .06s ease, filter .2s ease, opacity .2s ease;
-    }
-    .btn:active{ transform: translateY(1px) scale(.99); }
-    .btn[disabled]{ opacity:.5; pointer-events:none; }
-
-    .btn-ghost{
-      background: transparent; color: var(--tint); border:1px solid color-mix(in srgb, var(--tint) 50%, var(--border));
-      box-shadow:none;
-    }
-
-    /* Result */
-    .result{
-      display:grid; gap:6px; border-radius: var(--radius); padding: 14px;
-      border:1px dashed var(--border);
-      background: color-mix(in srgb, var(--card) 60%, transparent);
-    }
-    .result .value{
-      font-size: clamp(22px, 6vw, 36px); font-weight:800; letter-spacing:-.3px;
-      display:flex; align-items:baseline; gap:8px; line-height:1.1;
-    }
-    .value small{ font-size:.45em; font-weight:600; color:var(--text-sec); }
-    .copy{
-      appearance:none; border:0; border-radius: 10px; padding:8px 10px; font-weight:600;
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      border:1px solid var(--border); cursor:pointer;
-    }
-
-    /* Footer */
-    footer{ color:var(--text-sec); font-size:12px; text-align:center; padding: 12px; }
-
-    /* Motion preferences */
-    @media (prefers-reduced-motion: reduce){
-      *{ transition:none !important; animation:none !important; }
-    }
-  </style>
+  /* Footer */
+  footer{ margin-top:24px; color:var(--muted); font-size:12px; text-align:center; }
+</style>
 </head>
 <body>
-  <header class="safe-area">
-    <div class="nav">
-      <div class="badge">%</div>
-      <div>
-        <div class="title">Калькулятор процентов</div>
-        <div class="subtitle">Минималистичный дизайн в стиле iOS</div>
+  <div class="container">
+    <header class="app">
+      <div class="logo">CRM</div>
+      <div class="title">
+        <h1>Ваша мини-CRM</h1>
+        <div class="sub">Локальное хранение · офлайн · iOS-стиль</div>
       </div>
-    </div>
-  </header>
-
-  <main class="safe-area">
-    <section class="card">
-      <div class="hero">
-        <h1>Считайте проценты быстро, красиво и точно</h1>
-        <p>Выберите режим, введите числа — результат появится автоматически. Работает офлайн.</p>
+      <div class="toolbar">
+        <button class="btn primary" id="addClientBtn">➕ Добавить клиента</button>
+        <button class="btn" id="exportBtn">⬇️ Экспорт</button>
+        <button class="btn" id="importBtn">⬆️ Импорт</button>
+        <input type="file" id="importFile" accept="application/json" hidden />
       </div>
-      <div class="content">
-        <!-- Segmented control -->
-        <div class="segment" role="tablist" aria-label="Режимы вычислений">
-          <button role="tab" aria-selected="true" aria-pressed="true" data-mode="of">Процент от числа</button>
-          <button role="tab" aria-selected="false" aria-pressed="false" data-mode="increase">Увеличить на %</button>
-          <button role="tab" aria-selected="false" aria-pressed="false" data-mode="decrease">Уменьшить на %</button>
-          <button role="tab" aria-selected="false" aria-pressed="false" data-mode="what">Какой это % от</button>
-          <button role="tab" aria-selected="false" aria-pressed="false" data-mode="find-whole">Найти число по %</button>
-        </div>
+    </header>
 
-        <!-- Dynamic form -->
-        <div class="grid" id="fields">
-          <!-- Поля подставляются скриптом -->
-        </div>
-
-        <div class="actions" style="margin-top:14px">
-          <button class="btn" id="calcBtn">Посчитать</button>
-          <button class="btn btn-ghost" id="clearBtn" aria-label="Очистить поля">Сбросить</button>
-          <span class="hint" id="hint"></span>
-        </div>
-
-        <div class="result" style="margin-top:14px" aria-live="polite">
-          <div class="label">Результат</div>
-          <div class="value"><span id="out">—</span> <small id="outUnit"></small></div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button class="copy" id="copyBtn">Скопировать</button>
-            <span class="hint" id="copyHint" aria-live="polite"></span>
+    <section class="grid">
+      <!-- PLAN / PROGRESS -->
+      <div class="card">
+        <h2>План месяца</h2>
+        <div class="plan">
+          <div class="ring" aria-label="Прогресс плана">
+            <svg width="140" height="140">
+              <defs>
+                <linearGradient id="grad">
+                  <stop offset="0%" stop-color="#1d8cff"/>
+                  <stop offset="100%" stop-color="#0a6bda"/>
+                </linearGradient>
+              </defs>
+              <circle cx="70" cy="70" r="60" stroke="rgba(0,0,0,0.08)" stroke-width="12" fill="none"/>
+              <circle id="ringProgress" cx="70" cy="70" r="60" stroke="url(#grad)" stroke-linecap="round" stroke-width="12" fill="none" stroke-dasharray="0 999"/>
+            </svg>
+            <div class="center">
+              <div id="percent" style="font-size:22px">0%</div>
+              <small id="progressText">0 / 0 ₽</small>
+            </div>
           </div>
+          <div class="plan-controls">
+            <div>
+              <label>Месяц</label>
+              <input class="input" id="monthPicker" type="month"/>
+            </div>
+            <div>
+              <label>План (₽)</label>
+              <input class="input" id="planInput" type="number" min="0" step="1000" placeholder="Например, 500000"/>
+            </div>
+            <div>
+              <label>Фильтр по статусу</label>
+              <select id="statusFilter">
+                <option value="all">Все</option>
+                <option value="lead">Лид</option>
+                <option value="in_progress">В работе</option>
+                <option value="won">Сделка закрыта (Won)</option>
+                <option value="lost">Сделка проиграна (Lost)</option>
+              </select>
+            </div>
+            <div>
+              <label>Поиск</label>
+              <input class="input" id="searchInput" type="search" placeholder="Имя, компания, телефон, e-mail"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi">
+        <div class="card">
+          <div class="muted">Клиентов в базе</div>
+          <div class="value" id="kpiClients">0</div>
+        </div>
+        <div class="card">
+          <div class="muted">Сделок закрыто (месяц)</div>
+          <div class="value" id="kpiWonCount">0</div>
+        </div>
+        <div class="card">
+          <div class="muted">Выручка (месяц)</div>
+          <div class="value" id="kpiWonSum">0 ₽</div>
         </div>
       </div>
     </section>
 
-    <footer>
-      Сделано для вас • Поддерживает светлую/тёмную темы • <span aria-hidden="true"></span>-вдохновение
-    </footer>
-  </main>
+    <!-- LIST -->
+    <section class="card" style="margin-top:16px;">
+      <div class="split">
+        <h2>Клиенты</h2>
+        <div class="right chip" id="currentMonthLabel"></div>
+      </div>
 
-  <script>
-    // ====== Utility: number parsing/formatting with care for locales ======
-    const fmt = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 10 });
-    function toNumber(v){
-      if (typeof v === 'number') return v;
-      // tolerate comma or space as thousand/decimal separators
-      v = (v || '').toString().trim().replace(/\s+/g,'').replace(',', '.');
-      if (!v) return NaN;
-      return Number(v);
-    }
-    function tidy(n){
-      // strip trailing zeros (e.g., 12.34000 -> 12.34)
-      const s = n.toFixed(10).replace(/\.?0+$/, '');
-      return s;
-    }
+      <div class="list-toolbar">
+        <span class="muted">Сортировка:</span>
+        <button class="btn" data-sort="createdAt">По дате добавления</button>
+        <button class="btn" data-sort="name">По имени</button>
+        <button class="btn" data-sort="value">По сумме сделки</button>
+      </div>
 
-    // ====== View templates for each mode ======
-    const modes = {
-      'of': {
-        title: 'Процент от числа',
-        fields: [
-          { id:'a', label:'Число', suffix:'' , placeholder:'например, 2500' },
-          { id:'b', label:'% (процентов)', suffix:'%' , placeholder:'например, 15' },
-        ],
-        unit: '',
-        calc: ({a,b}) => (a*b/100),
-        hint: 'Считает b% от числа a.'
-      },
-      'increase': {
-        title: 'Увеличить число на %',
-        fields: [
-          { id:'a', label:'Исходное число', suffix:'' , placeholder:'например, 1990' },
-          { id:'b', label:'Насколько увеличить (%)', suffix:'%' , placeholder:'например, 12' },
-        ],
-        unit: '',
-        calc: ({a,b}) => (a*(1+b/100)),
-        hint: 'Рассчитывает a, увеличенное на b%.'
-      },
-      'decrease': {
-        title: 'Уменьшить число на %',
-        fields: [
-          { id:'a', label:'Исходное число', suffix:'' , placeholder:'например, 1990' },
-          { id:'b', label:'Насколько уменьшить (%)', suffix:'%' , placeholder:'например, 12' },
-        ],
-        unit: '',
-        calc: ({a,b}) => (a*(1-b/100)),
-        hint: 'Рассчитывает a, уменьшенное на b%.'
-      },
-      'what': {
-        title: 'Какой это процент от',
-        fields: [
-          { id:'a', label:'Часть (a)', suffix:'' , placeholder:'например, 45' },
-          { id:'b', label:'Целое (b)', suffix:'' , placeholder:'например, 120' },
-        ],
-        unit: '%',
-        calc: ({a,b}) => (b === 0 ? NaN : (a/b*100)),
-        hint: 'Находит, какой процент составляет a от b.'
-      },
-      'find-whole': {
-        title: 'Найти число по его проценту',
-        fields: [
-          { id:'a', label:'Известное значение (это b% от целого)', suffix:'' , placeholder:'например, 30' },
-          { id:'b', label:'Сколько процентов (b)', suffix:'%' , placeholder:'например, 12' },
-        ],
-        unit: '',
-        calc: ({a,b}) => (b === 0 ? NaN : (a*100/b)),
-        hint: 'Если a — это b% от целого, находит целое.'
-      }
+      <div class="table-wrap">
+        <table>
+          <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Компания</th>
+            <th>Контакты</th>
+            <th>Сумма</th>
+            <th>Статус</th>
+            <th>Создан</th>
+            <th>Закрыт</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody id="clientBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>© Ваше мини-CRM. Данные хранятся локально в этом браузере.</footer>
+  </div>
+
+  <!-- MODAL -->
+  <dialog id="clientModal">
+    <form id="clientForm" method="dialog">
+      <div class="modal-head">
+        <h3 id="modalTitle" style="margin:0;font-size:18px;">Новый клиент</h3>
+        <div class="chip right" id="idChip">ID</div>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label>Имя *</label>
+          <input class="input" name="name" required placeholder="Иван Иванов"/>
+        </div>
+        <div>
+          <label>Компания</label>
+          <input class="input" name="company" placeholder="ООО Ромашка"/>
+        </div>
+        <div>
+          <label>Телефон</label>
+          <input class="input" name="phone" placeholder="+7 900 000-00-00"/>
+        </div>
+        <div>
+          <label>E-mail</label>
+          <input class="input" name="email" type="email" placeholder="name@company.ru"/>
+        </div>
+        <div>
+          <label>Сумма сделки (₽)</label>
+          <input class="input" name="dealValue" type="number" min="0" step="100" placeholder="100000"/>
+        </div>
+        <div>
+          <label>Статус</label>
+          <select name="status">
+            <option value="lead">Лид</option>
+            <option value="in_progress">В работе</option>
+            <option value="won">Закрыта (Won)</option>
+            <option value="lost">Проиграна (Lost)</option>
+          </select>
+        </div>
+        <div>
+          <label>Дата создания</label>
+          <input class="input" name="createdAt" type="date"/>
+        </div>
+        <div>
+          <label>Дата закрытия (если есть)</label>
+          <input class="input" name="closedAt" type="date"/>
+        </div>
+        <input type="hidden" name="id"/>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" value="cancel" type="button" id="cancelBtn">Отмена</button>
+        <button class="btn warn" type="button" id="deleteBtn">Удалить</button>
+        <button class="btn good" id="saveBtn">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+/* ===== Utilities ===== */
+const $ = (q, root=document) => root.querySelector(q);
+const $$ = (q, root=document) => Array.from(root.querySelectorAll(q));
+const fmtMoney = n => (Number(n||0)).toLocaleString('ru-RU') + ' ₽';
+const monthKey = (d) => {
+  const dt = (d ? new Date(d) : new Date());
+  return dt.toISOString().slice(0,7); // YYYY-MM
+};
+const toISODate = (d) => d ? new Date(d).toISOString().slice(0,10) : '';
+
+/* ===== Storage ===== */
+const store = {
+  readClients(){ try{ return JSON.parse(localStorage.getItem('crm_clients')||'[]'); }catch{ return []; } },
+  writeClients(list){ localStorage.setItem('crm_clients', JSON.stringify(list)); },
+  readPlanMap(){ try{ return JSON.parse(localStorage.getItem('crm_plan_by_month')||'{}'); }catch{ return {}; } },
+  writePlanMap(map){ localStorage.setItem('crm_plan_by_month', JSON.stringify(map)); },
+  export(){
+    const data = {
+      version:1,
+      exportedAt: new Date().toISOString(),
+      clients: this.readClients(),
+      plans: this.readPlanMap(),
     };
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `crm-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+  async import(file){
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || !Array.isArray(data.clients)) throw new Error('Неверный формат файла');
+    localStorage.setItem('crm_clients', JSON.stringify(data.clients));
+    localStorage.setItem('crm_plan_by_month', JSON.stringify(data.plans || {}));
+  }
+};
 
-    const fieldsEl = document.getElementById('fields');
-    const hintEl   = document.getElementById('hint');
-    const outEl    = document.getElementById('out');
-    const outUnit  = document.getElementById('outUnit');
-    const copyBtn  = document.getElementById('copyBtn');
-    const copyHint = document.getElementById('copyHint');
-    const calcBtn  = document.getElementById('calcBtn');
-    const clearBtn = document.getElementById('clearBtn');
+/* ===== State ===== */
+let clients = store.readClients();
+let plans = store.readPlanMap();
+let state = {
+  sortBy: 'createdAt', // name | value
+  month: monthKey(),
+  filter: 'all',
+  search: ''
+};
 
-    let currentMode = 'of';
+/* ===== UI: Plan & KPIs ===== */
+function setMonthInputs(){
+  const mp = $('#monthPicker');
+  mp.value = state.month;
+  $('#currentMonthLabel').textContent = new Date(state.month + '-01').toLocaleDateString('ru-RU', {month:'long', year:'numeric'});
+  $('#planInput').value = plans[state.month] || '';
+}
+function computeMetrics(){
+  const currentMonth = state.month;
+  const wonThisMonth = clients.filter(c => c.status==='won' && c.closedAt && monthKey(c.closedAt)===currentMonth);
+  const wonSum = wonThisMonth.reduce((s,c)=> s + Number(c.dealValue||0), 0);
+  const plan = Number(plans[currentMonth]||0);
+  const pct = plan>0 ? Math.min(100, Math.round(wonSum/plan*100)) : 0;
+  return {wonThisMonth, wonSum, plan, pct};
+}
+function drawRing(pct){
+  const r = 60, circ = 2*Math.PI*r;
+  const dash = (pct/100)*circ;
+  const rest = Math.max(0, circ - dash);
+  const el = $('#ringProgress');
+  el.setAttribute('stroke-dasharray', `${dash} ${rest}`);
+  $('#percent').textContent = `${pct}%`;
+}
+function refreshKPIs(){
+  const {wonThisMonth, wonSum, plan, pct} = computeMetrics();
+  $('#progressText').textContent = `${fmtMoney(wonSum)} / ${fmtMoney(plan)}`;
+  $('#kpiWonCount').textContent = wonThisMonth.length;
+  $('#kpiWonSum').textContent = fmtMoney(wonSum);
+  $('#kpiClients').textContent = clients.length;
+  drawRing(pct);
+}
 
-    function render(modeKey){
-      const m = modes[modeKey];
-      currentMode = modeKey;
+/* ===== UI: List ===== */
+function renderList(){
+  const body = $('#clientBody');
+  body.innerHTML = '';
+  const term = state.search.trim().toLowerCase();
 
-      // update segment states
-      document.querySelectorAll('.segment button').forEach(btn=>{
-        const active = btn.dataset.mode === modeKey;
-        btn.setAttribute('aria-pressed', active ? 'true':'false');
-        btn.setAttribute('aria-selected', active ? 'true':'false');
-      });
+  let filtered = clients.filter(c=>{
+    const inMonth = !c.closedAt || state.filter!=='won' && state.filter!=='lost'
+      ? true
+      : monthKey(c.closedAt)===state.month;
 
-      // build fields
-      fieldsEl.innerHTML = '';
-      m.fields.forEach(f=>{
-        const wrap = document.createElement('div');
-        wrap.className = 'field';
-        wrap.innerHTML = `
-          <div class="label">
-            <label for="${f.id}">${f.label}</label>
-            <span class="hint">${f.placeholder ? 'Например: ' + f.placeholder : ''}</span>
-          </div>
-          <div class="input">
-            ${f.prefix ? `<span class="prefix">${f.prefix}</span>` : ''}
-            <input id="${f.id}" inputmode="decimal" autocomplete="off" placeholder="${f.placeholder||''}" />
-            ${f.suffix ? `<span class="suffix">${f.suffix}</span>` : ''}
-          </div>
-          <div class="error" id="${f.id}-err" role="alert">Введите корректное число.</div>
-        `;
-        fieldsEl.appendChild(wrap);
-      });
+    const byStatus = state.filter==='all' ? true : (
+      state.filter==='in_progress' ? c.status==='in_progress' :
+      state.filter==='lead' ? c.status==='lead' :
+      state.filter==='won' ? c.status==='won' :
+      state.filter==='lost' ? c.status==='lost' : true
+    );
 
-      hintEl.textContent = m.hint;
-      outEl.textContent = '—';
-      outUnit.textContent = m.unit;
-      copyHint.textContent = '';
-      // auto-focus first field
-      const first = document.getElementById(m.fields[0].id);
-      if (first) first.focus();
+    const hay = `${c.name} ${c.company||''} ${c.phone||''} ${c.email||''}`.toLowerCase();
+    const bySearch = !term || hay.includes(term);
 
-      // live calculation
-      m.fields.forEach(f=>{
-        document.getElementById(f.id).addEventListener('input', autoCalc);
-      });
+    return byStatus && bySearch && inMonth;
+  });
+
+  filtered.sort((a,b)=>{
+    if(state.sortBy==='name') return (a.name||'').localeCompare(b.name||'');
+    if(state.sortBy==='value') return (Number(b.dealValue||0) - Number(a.dealValue||0));
+    return new Date(b.createdAt||0) - new Date(a.createdAt||0);
+  });
+
+  for(const c of filtered){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.company||'')}</td>
+      <td>
+        ${c.phone ? `<div>📞 ${escapeHtml(c.phone)}</div>`:''}
+        ${c.email ? `<div>✉️ ${escapeHtml(c.email)}</div>`:''}
+      </td>
+      <td>${c.dealValue? fmtMoney(c.dealValue): '—'}</td>
+      <td>${statusPill(c.status)}</td>
+      <td>${c.createdAt? new Date(c.createdAt).toLocaleDateString('ru-RU'): '—'}</td>
+      <td>${c.closedAt? new Date(c.closedAt).toLocaleDateString('ru-RU'): '—'}</td>
+      <td style="text-align:right; white-space:nowrap;">
+        <button class="btn" data-edit="${c.id}">✏️</button>
+        <button class="btn" data-win="${c.id}">✅</button>
+        <button class="btn" data-lose="${c.id}">❌</button>
+      </td>
+    `;
+    body.appendChild(tr);
+  }
+
+  // bind row buttons
+  $$('#clientBody [data-edit]').forEach(btn=>btn.addEventListener('click', e=>openModal(e.target.dataset.edit)));
+  $$('#clientBody [data-win]').forEach(btn=>btn.addEventListener('click', e=>quickClose(e.target.dataset.win, 'won')));
+  $$('#clientBody [data-lose]').forEach(btn=>btn.addEventListener('click', e=>quickClose(e.target.dataset.lose, 'lost')));
+}
+
+function statusPill(status){
+  const map = {
+    'lead':'s-lead', 'in_progress':'s-progress', 'won':'s-won', 'lost':'s-lost'
+  };
+  const label = {
+    'lead':'Лид', 'in_progress':'В работе', 'won':'Закрыта', 'lost':'Проиграна'
+  };
+  return `<span class="status ${map[status]||''}">${label[status]||status}</span>`;
+}
+
+function escapeHtml(s=''){
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ===== Modal add/edit ===== */
+const modal = $('#clientModal');
+const form  = $('#clientForm');
+
+function openModal(id=null){
+  $('#modalTitle').textContent = id ? 'Редактирование клиента' : 'Новый клиент';
+  $('#deleteBtn').style.display = id ? '' : 'none';
+  $('#idChip').textContent = id ? `ID ${id}` : 'Новый';
+  form.reset();
+  const todayISO = toISODate(new Date());
+  form.elements.createdAt.value = todayISO;
+
+  if(id){
+    const c = clients.find(x=>x.id===id);
+    if(!c) return;
+    for(const k of ['name','company','phone','email','dealValue','status','createdAt','closedAt','id']){
+      if(form.elements[k]) form.elements[k].value = c[k] ?? '';
     }
+  }else{
+    form.elements.status.value = 'lead';
+    form.elements.id.value = crypto.randomUUID();
+  }
+  modal.showModal();
+}
 
-    function getValues(){
-      const m = modes[currentMode];
-      const vals = {};
-      let ok = true;
-      m.fields.forEach(f=>{
-        const el = document.getElementById(f.id);
-        const err = document.getElementById(`${f.id}-err`);
-        const num = toNumber(el.value);
-        const valid = !Number.isNaN(num) && Number.isFinite(num);
-        err.style.display = valid || !el.value ? 'none' : 'block';
-        vals[f.id] = num;
-        if (!valid && el.value) ok = false;
-      });
-      return { ok, vals };
-    }
+function saveClient(){
+  const data = Object.fromEntries(new FormData(form).entries());
+  data.dealValue = Number(data.dealValue||0);
+  // normalize dates
+  if(!data.createdAt) data.createdAt = toISODate(new Date());
+  if(data.closedAt==='') data.closedAt = null;
 
-    function compute(){
-      const m = modes[currentMode];
-      const { ok, vals } = getValues();
-      if (!ok){ outEl.textContent = 'Ошибка'; outUnit.textContent=''; return; }
+  const idx = clients.findIndex(c=>c.id===data.id);
+  if(idx>=0){ clients[idx] = {...clients[idx], ...data}; }
+  else { clients.push({ ...data }); }
 
-      // if any field empty -> don't compute yet
-      const empty = m.fields.some(f => (document.getElementById(f.id).value.trim() === ''));
-      if (empty){ outEl.textContent = '—'; outUnit.textContent = m.unit; return; }
+  store.writeClients(clients);
+  modal.close();
+  redraw();
+}
 
-      let res = m.calc(vals);
-      if (Number.isNaN(res)){ outEl.textContent = 'Недопустимо'; outUnit.textContent=''; return; }
+function deleteClient(){
+  const id = form.elements.id.value;
+  clients = clients.filter(c=>c.id!==id);
+  store.writeClients(clients);
+  modal.close();
+  redraw();
+}
 
-      // numeric safety for very small numbers
-      if (Math.abs(res) < 1e-12) res = 0;
+function quickClose(id, status){ // win/lose with today date
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  c.status = status;
+  c.closedAt = toISODate(new Date());
+  if(!c.dealValue) c.dealValue = 0;
+  store.writeClients(clients);
+  redraw();
+}
 
-      // format
-      const pretty = fmt.format(Number(tidy(res)));
-      outEl.textContent = pretty;
-      outUnit.textContent = m.unit;
-    }
+/* ===== Events ===== */
+$('#addClientBtn').addEventListener('click', ()=>openModal());
+$('#saveBtn').addEventListener('click', e=>{ e.preventDefault(); saveClient(); });
+$('#deleteBtn').addEventListener('click', e=>{ e.preventDefault(); if(confirm('Удалить клиента?')) deleteClient(); });
+$('#cancelBtn').addEventListener('click', ()=>modal.close());
 
-    function autoCalc(){ compute(); }
+$('#planInput').addEventListener('change', e=>{
+  plans[state.month] = Math.max(0, Number(e.target.value||0));
+  store.writePlanMap(plans);
+  refreshKPIs();
+});
+$('#monthPicker').addEventListener('change', e=>{
+  state.month = e.target.value || monthKey();
+  setMonthInputs();
+  refreshKPIs();
+  renderList();
+});
+$('#statusFilter').addEventListener('change', e=>{
+  state.filter = e.target.value;
+  renderList();
+});
+$('#searchInput').addEventListener('input', e=>{
+  state.search = e.target.value;
+  renderList();
+});
+$$('.list-toolbar .btn').forEach(b=>b.addEventListener('click', ()=>{
+  state.sortBy = b.dataset.sort;
+  renderList();
+}));
 
-    // Actions
-    calcBtn.addEventListener('click', compute);
-    clearBtn.addEventListener('click', ()=>{
-      const m = modes[currentMode];
-      m.fields.forEach(f => document.getElementById(f.id).value = '');
-      document.querySelectorAll('.error').forEach(e=> e.style.display='none');
-      outEl.textContent = '—'; outUnit.textContent = m.unit; copyHint.textContent='';
-      (document.getElementById(m.fields[0].id) || {}).focus?.();
-    });
+$('#exportBtn').addEventListener('click', ()=>store.export());
+$('#importBtn').addEventListener('click', ()=>$('#importFile').click());
+$('#importFile').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    await store.import(file);
+    clients = store.readClients();
+    plans = store.readPlanMap();
+    redraw();
+    alert('Импорт завершён');
+  }catch(err){
+    alert('Ошибка импорта: ' + err.message);
+  }finally{
+    e.target.value = '';
+  }
+});
 
-    copyBtn.addEventListener('click', async ()=>{
-      const text = outUnit.textContent ? `${outEl.textContent} ${outUnit.textContent}` : outEl.textContent;
-      try{
-        await navigator.clipboard.writeText(text);
-        copyHint.textContent = 'Скопировано ✔︎';
-        copyHint.style.color = 'var(--success)';
-        setTimeout(()=> copyHint.textContent = '', 1800);
-      }catch{
-        copyHint.textContent = 'Не удалось скопировать';
-        copyHint.style.color = 'var(--danger)';
-      }
-    });
+/* ===== Initial seed (optional) ===== */
+function ensureSeed(){
+  if(clients.length===0){
+    const id1 = crypto.randomUUID(), id2 = crypto.randomUUID(), id3 = crypto.randomUUID();
+    const today = new Date();
+    const iso = toISODate(today);
+    const prev = new Date(today.getFullYear(), today.getMonth(), Math.max(1, today.getDate()-5));
+    clients = [
+      {id:id1, name:'Алексей Н.', company:'ООО Альфа', phone:'+7 912 111-22-33', email:'alex@alfa.ru', dealValue:150000, status:'in_progress', createdAt:iso, closedAt:null},
+      {id:id2, name:'Мария К.', company:'ИП Цветы', phone:'+7 995 333-22-11', email:'maria@flowers.ru', dealValue:90000, status:'won', createdAt:toISODate(prev), closedAt:iso},
+      {id:id3, name:'ООО Вектор', company:'', phone:'', email:'', dealValue:0, status:'lead', createdAt:iso, closedAt:null}
+    ];
+    store.writeClients(clients);
+    plans[monthKey()] = 300000;
+    store.writePlanMap(plans);
+  }
+}
 
-    document.querySelectorAll('.segment button').forEach(btn=>{
-      btn.addEventListener('click', ()=> render(btn.dataset.mode));
-      btn.addEventListener('keydown', (e)=>{
-        // roving focus with arrow keys
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
-          const buttons = Array.from(document.querySelectorAll('.segment button'));
-          const i = buttons.indexOf(e.currentTarget);
-          const dir = e.key === 'ArrowRight' ? 1 : -1;
-          const next = buttons[(i + dir + buttons.length) % buttons.length];
-          next.focus();
-          next.click();
-        }
-      });
-    });
+/* ===== Redraw ===== */
+function redraw(){
+  setMonthInputs();
+  refreshKPIs();
+  renderList();
+}
 
-    // Initialize
-    render(currentMode);
-
-    // Enter submits
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter'){
-        const active = document.activeElement;
-        if (active && active.tagName === 'INPUT'){
-          compute();
-        }
-      }
-    });
-  </script>
+/* ===== Boot ===== */
+(function boot(){
+  ensureSeed();
+  state.month = monthKey();
+  setMonthInputs();
+  redraw();
+})();
+</script>
 </body>
 </html>
