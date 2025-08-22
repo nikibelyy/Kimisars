@@ -2,99 +2,74 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>NNN — Демоверсия</title>
-  <style>
-    body { margin:0; font-family: sans-serif; background:#0f172a; color:#e5e7eb; }
-    .card { background:#111827; border:1px solid #1f2937; border-radius:10px; padding:16px; margin:20px auto; max-width:400px; }
-    input, button { width:100%; margin:8px 0; padding:10px; border-radius:8px; border:1px solid #374151; background:#0b1220; color:#e5e7eb; }
-    button { cursor:pointer; }
-    button:hover { background:#1e293b; }
-    h2 { text-align:center; }
-    .hidden { display:none; }
-    #balance { font-size:24px; margin:10px 0; text-align:center; }
-    .notice { font-size:14px; color:#9ca3af; text-align:center; }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Комиссар — дела</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- iOS PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Комиссар" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Styles & Scripts -->
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="idb.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
+  <header>
+    <h1>Комиссар — дела</h1>
+  </header>
 
-<div id="auth" class="card">
-  <h2>Вход / Регистрация</h2>
-  <input id="username" placeholder="Логин">
-  <input id="password" type="password" placeholder="Пароль">
-  <button onclick="register()">Регистрация</button>
-  <button onclick="login()">Войти</button>
-</div>
+  <main>
+    <section class="new-claim">
+      <h2>Новое дело</h2>
+      <label>Номер дела <input id="claimNumber" placeholder="№" /></label>
+      <label>Краткое описание <input id="description" /></label>
+      <label>Состояние <select id="status">
+        <option>Открыто</option>
+        <option>В работе</option>
+        <option>Закрыто</option>
+      </select></label>
 
-<div id="app" class="card hidden">
-  <h2>Личный кабинет</h2>
-  <div>Пользователь: <span id="currentUser"></span></div>
-  <div id="balance">Баланс: ₽ 0.00</div>
-  <input id="amount" type="number" min="0" placeholder="Сумма пополнения">
-  <button onclick="showSBP()">Пополнить через СБП</button>
-  <button onclick="logout()">Выйти</button>
-  <div id="sbp" class="hidden">
-    <p class="notice">Отправьте перевод по СБП:</p>
-    <p class="notice"><b>+7 (910) 040-11-16</b><br>ВалБИРИС банк</p>
-    <button onclick="confirmPayment()">✅ Я оплатил</button>
-  </div>
-</div>
+      <label>Фото (камера iPhone)
+        <input id="photoInput" type="file" accept="image/*" capture="environment" multiple />
+      </label>
 
-<script>
-  let users = JSON.parse(localStorage.getItem("users") || "{}");
-  let currentUser = localStorage.getItem("currentUser");
+      <button id="getGeo">Получить координаты</button>
+      <div id="geo"></div>
 
-  function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
-  function updateUI(){
-    if(currentUser){
-      document.getElementById("auth").classList.add("hidden");
-      document.getElementById("app").classList.remove("hidden");
-      document.getElementById("currentUser").textContent = currentUser;
-      document.getElementById("balance").textContent = "Баланс: ₽ " + (users[currentUser].balance || 0).toFixed(2);
-    } else {
-      document.getElementById("auth").classList.remove("hidden");
-      document.getElementById("app").classList.add("hidden");
-    }
-  }
+      <div>
+        <label>Подпись:</label>
+        <canvas id="sigCanvas" width="320" height="160"></canvas>
+        <div class="sigButtons">
+          <button id="clearSig">Очистить</button>
+        </div>
+      </div>
 
-  function register(){
-    const u = username.value.trim(), p = password.value;
-    if(!u || !p) return alert("Введите логин и пароль");
-    if(users[u]) return alert("Пользователь уже существует");
-    users[u] = {password:p, balance:0};
-    saveUsers();
-    alert("Регистрация успешна, войдите");
-  }
+      <button id="saveClaim">Сохранить дело</button>
+    </section>
 
-  function login(){
-    const u = username.value.trim(), p = password.value;
-    if(!users[u] || users[u].password !== p) return alert("Неверный логин или пароль");
-    currentUser = u;
-    localStorage.setItem("currentUser", u);
-    updateUI();
-  }
+    <section class="claim-list">
+      <h2>Сохранённые дела</h2>
+      <input id="search" placeholder="Поиск по номеру/описанию" />
+      <ul id="claims"></ul>
 
-  function logout(){
-    currentUser = null;
-    localStorage.removeItem("currentUser");
-    updateUI();
-  }
+      <div class="exports">
+        <button id="exportJSON">Экспорт JSON</button>
+        <button id="exportCSV">Экспорт CSV</button>
+        <input id="importFile" type="file" accept=".json" />
+      </div>
+    </section>
+  </main>
 
-  function showSBP(){
-    if(!amount.value || amount.value<=0) return alert("Введите сумму");
-    document.getElementById("sbp").classList.remove("hidden");
-  }
-
-  function confirmPayment(){
-    const sum = +amount.value;
-    users[currentUser].balance += sum;
-    saveUsers();
-    updateUI();
-    document.getElementById("sbp").classList.add("hidden");
-    amount.value = "";
-    alert("Баланс пополнен на ₽"+sum);
-  }
-
-  updateUI();
-</script>
+  <footer>
+    <small>Работает офлайн. Для установки на iPhone:  
+      <strong>Поделиться → На экран “Домой”</strong>
+    </small>
+  </footer>
 </body>
 </html>
