@@ -1,131 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CRM iOS</title>
-<style>
-:root {
-  --accent: #007aff;
-  --bg: #f2f2f7;
-  --card: #fff;
-  --radius: 14px;
-  --text: #000;
-  --muted: #8e8e93;
-}
-@media (prefers-color-scheme: dark){
-  :root {
-    --bg:#000;
-    --card:#1c1c1e;
-    --text:#fff;
-    --muted:#8e8e93;
-  }
-}
-html, body {
-  margin:0;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing: antialiased;
-}
-.safe {
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-header {
-  position:sticky; top:0;
-  background:var(--card);
-  padding:12px 16px calc(12px + env(safe-area-inset-top));
-  border-bottom:0.5px solid #ccc;
-  text-align:center;
-  font-weight:700;
-  font-size:18px;
-}
-.container { padding:12px; }
-
-.btn {
-  display:block; width:100%;
-  background:var(--accent); color:white;
-  border:none; border-radius:var(--radius);
-  padding:14px; font-size:16px; font-weight:600;
-  margin:8px 0; text-align:center;
-}
-.input {
-  width:100%; padding:12px;
-  border-radius:var(--radius);
-  border:none;
-  background:var(--card);
-  margin-bottom:10px;
-  font-size:16px;
-}
-.card {
-  background:var(--card);
-  border-radius:var(--radius);
-  margin:10px 0;
-  padding:14px;
-}
-.card strong { display:block; font-size:17px; margin-bottom:4px;}
-.card small { color:var(--muted); }
-.list { display:flex; flex-direction:column; gap:8px; }
-.list .card {padding:12px 14px;}
-.status {
-  font-size:13px; font-weight:600;
-  padding:2px 8px;
-  border-radius:999px;
-}
-.s-won{background:rgba(52,199,89,0.15);color:#34c759;}
-.s-lost{background:rgba(255,59,48,0.15);color:#ff3b30;}
-.s-progress{background:rgba(255,159,10,0.15);color:#ff9500;}
-.s-lead{background:rgba(0,122,255,0.15);color:#007aff;}
-</style>
+  <meta charset="utf-8" />
+  <title>NNN — Демоверсия</title>
+  <style>
+    body { margin:0; font-family: sans-serif; background:#0f172a; color:#e5e7eb; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:10px; padding:16px; margin:20px auto; max-width:400px; }
+    input, button { width:100%; margin:8px 0; padding:10px; border-radius:8px; border:1px solid #374151; background:#0b1220; color:#e5e7eb; }
+    button { cursor:pointer; }
+    button:hover { background:#1e293b; }
+    h2 { text-align:center; }
+    .hidden { display:none; }
+    #balance { font-size:24px; margin:10px 0; text-align:center; }
+    .notice { font-size:14px; color:#9ca3af; text-align:center; }
+  </style>
 </head>
 <body>
-<header class="safe">CRM iOS</header>
-<div class="container safe">
-  <input class="input" id="name" placeholder="Имя клиента">
-  <input class="input" id="company" placeholder="Компания">
-  <input class="input" id="phone" placeholder="Телефон">
-  <input class="input" id="value" placeholder="Сумма сделки (₽)" type="number">
-  <button class="btn" onclick="addClient()">Добавить клиента</button>
 
-  <h3>Клиенты</h3>
-  <div class="list" id="list"></div>
+<div id="auth" class="card">
+  <h2>Вход / Регистрация</h2>
+  <input id="username" placeholder="Логин">
+  <input id="password" type="password" placeholder="Пароль">
+  <button onclick="register()">Регистрация</button>
+  <button onclick="login()">Войти</button>
+</div>
+
+<div id="app" class="card hidden">
+  <h2>Личный кабинет</h2>
+  <div>Пользователь: <span id="currentUser"></span></div>
+  <div id="balance">Баланс: ₽ 0.00</div>
+  <input id="amount" type="number" min="0" placeholder="Сумма пополнения">
+  <button onclick="showSBP()">Пополнить через СБП</button>
+  <button onclick="logout()">Выйти</button>
+  <div id="sbp" class="hidden">
+    <p class="notice">Отправьте перевод по СБП:</p>
+    <p class="notice"><b>+7 (910) 040-11-16</b><br>ВалБИРИС банк</p>
+    <button onclick="confirmPayment()">✅ Я оплатил</button>
+  </div>
 </div>
 
 <script>
-let clients = JSON.parse(localStorage.getItem("ios_crm")||"[]");
-function save(){ localStorage.setItem("ios_crm", JSON.stringify(clients)); }
-function render(){
-  const list=document.getElementById("list");
-  list.innerHTML="";
-  for(const c of clients){
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`<strong>${c.name}</strong>
-                   <small>${c.company||""} ${c.phone||""}</small>
-                   <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
-                      <span>${c.value? c.value+" ₽":""}</span>
-                      <span class="status ${c.status}">${c.statusLabel}</span>
-                   </div>`;
-    list.appendChild(div);
+  let users = JSON.parse(localStorage.getItem("users") || "{}");
+  let currentUser = localStorage.getItem("currentUser");
+
+  function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
+  function updateUI(){
+    if(currentUser){
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      document.getElementById("currentUser").textContent = currentUser;
+      document.getElementById("balance").textContent = "Баланс: ₽ " + (users[currentUser].balance || 0).toFixed(2);
+    } else {
+      document.getElementById("auth").classList.remove("hidden");
+      document.getElementById("app").classList.add("hidden");
+    }
   }
-}
-function addClient(){
-  const name=document.getElementById("name").value;
-  const company=document.getElementById("company").value;
-  const phone=document.getElementById("phone").value;
-  const value=document.getElementById("value").value;
-  if(!name) return alert("Введите имя");
-  clients.push({name,company,phone,value,status:"s-progress",statusLabel:"В работе"});
-  save(); render();
-  document.getElementById("name").value="";
-  document.getElementById("company").value="";
-  document.getElementById("phone").value="";
-  document.getElementById("value").value="";
-}
-render();
+
+  function register(){
+    const u = username.value.trim(), p = password.value;
+    if(!u || !p) return alert("Введите логин и пароль");
+    if(users[u]) return alert("Пользователь уже существует");
+    users[u] = {password:p, balance:0};
+    saveUsers();
+    alert("Регистрация успешна, войдите");
+  }
+
+  function login(){
+    const u = username.value.trim(), p = password.value;
+    if(!users[u] || users[u].password !== p) return alert("Неверный логин или пароль");
+    currentUser = u;
+    localStorage.setItem("currentUser", u);
+    updateUI();
+  }
+
+  function logout(){
+    currentUser = null;
+    localStorage.removeItem("currentUser");
+    updateUI();
+  }
+
+  function showSBP(){
+    if(!amount.value || amount.value<=0) return alert("Введите сумму");
+    document.getElementById("sbp").classList.remove("hidden");
+  }
+
+  function confirmPayment(){
+    const sum = +amount.value;
+    users[currentUser].balance += sum;
+    saveUsers();
+    updateUI();
+    document.getElementById("sbp").classList.add("hidden");
+    amount.value = "";
+    alert("Баланс пополнен на ₽"+sum);
+  }
+
+  updateUI();
 </script>
 </body>
 </html>
