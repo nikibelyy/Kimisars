@@ -1,75 +1,159 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Комиссар — дела</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CRM Клиенты (PWA)</title>
 
-  <!-- PWA manifest -->
-  <link rel="manifest" href="manifest.json" />
+  <!-- iOS-like look & feel -->
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CRM">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  <!-- iOS PWA support -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Комиссар" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
 
-  <!-- Styles & Scripts -->
-  <link rel="stylesheet" href="styles.css" />
-  <script defer src="idb.js"></script>
-  <script defer src="app.js"></script>
+  <script>
+    // Регистрация service worker как можно раньше
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </head>
 <body>
-  <header>
-    <h1>Комиссар — дела</h1>
-  </header>
+  <div id="app">
+    <header class="nav">
+      <div class="nav-title">CRM</div>
+      <button class="nav-btn" id="installBtn" aria-label="Установить">Установить</button>
+    </header>
 
-  <main>
-    <section class="new-claim">
-      <h2>Новое дело</h2>
-      <label>Номер дела <input id="claimNumber" placeholder="№" /></label>
-      <label>Краткое описание <input id="description" /></label>
-      <label>Состояние <select id="status">
-        <option>Открыто</option>
-        <option>В работе</option>
-        <option>Закрыто</option>
-      </select></label>
+    <main class="content">
+      <!-- Карточка добавления клиента -->
+      <section class="card">
+        <h1>Добавить клиента</h1>
+        <form id="clientForm" autocomplete="on">
+          <div class="field">
+            <label for="name">Имя</label>
+            <input id="name" name="name" type="text" placeholder="Иван Иванов" required />
+          </div>
 
-      <label>Фото (камера iPhone)
-        <input id="photoInput" type="file" accept="image/*" capture="environment" multiple />
-      </label>
+          <div class="field">
+            <label for="carNumber">Номер машины</label>
+            <input id="carNumber" name="carNumber" type="text" inputmode="latin" placeholder="A123BC77" required />
+          </div>
 
-      <button id="getGeo">Получить координаты</button>
-      <div id="geo"></div>
+          <div class="field">
+            <label for="carMake">Марка машины</label>
+            <input id="carMake" name="carMake" type="text" placeholder="Toyota" required />
+          </div>
 
-      <div>
-        <label>Подпись:</label>
-        <canvas id="sigCanvas" width="320" height="160"></canvas>
-        <div class="sigButtons">
-          <button id="clearSig">Очистить</button>
+          <div class="field">
+            <label for="amount">Сумма расчёта</label>
+            <input id="amount" name="amount" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+
+          <div class="field">
+            <label>Тип сделки</label>
+            <div class="segment" role="tablist" aria-label="Тип сделки">
+              <input type="radio" name="dealType" id="deal30" value="30" checked>
+              <label for="deal30">30%</label>
+
+              <input type="radio" name="dealType" id="deal25" value="25">
+              <label for="deal25">25%</label>
+
+              <input type="radio" name="dealType" id="dealCes" value="cession">
+              <label for="dealCes">Цессия (15%)</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Моя зарплата</label>
+            <output id="salaryPreview">0</output>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary">Сохранить</button>
+            <button type="reset" class="btn-ghost">Очистить</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Поиск -->
+      <section class="card">
+        <div class="field">
+          <label for="search">Поиск</label>
+          <input id="search" type="search" placeholder="По имени, номеру, марке..." />
         </div>
-      </div>
+      </section>
 
-      <button id="saveClaim">Сохранить дело</button>
-    </section>
+      <!-- Список клиентов -->
+      <section class="card">
+        <h2>Клиенты</h2>
+        <ul id="clientList" class="list"></ul>
+        <p id="emptyState" class="muted" hidden>Список пуст. Добавьте первого клиента ↑</p>
+      </section>
+    </main>
 
-    <section class="claim-list">
-      <h2>Сохранённые дела</h2>
-      <input id="search" placeholder="Поиск по номеру/описанию" />
-      <ul id="claims"></ul>
+    <!-- iOS‑подобное модальное окно для редактирования -->
+    <dialog id="editDialog">
+      <form method="dialog" id="editForm">
+        <header class="sheet-handle"></header>
+        <h3>Редактирование</h3>
 
-      <div class="exports">
-        <button id="exportJSON">Экспорт JSON</button>
-        <button id="exportCSV">Экспорт CSV</button>
-        <input id="importFile" type="file" accept=".json" />
-      </div>
-    </section>
-  </main>
+        <input type="hidden" id="editId">
 
-  <footer>
-    <small>Работает офлайн. Для установки на iPhone:  
-      <strong>Поделиться → На экран “Домой”</strong>
-    </small>
-  </footer>
+        <div class="field">
+          <label for="editName">Имя</label>
+          <input id="editName" required>
+        </div>
+
+        <div class="field">
+          <label for="editCarNumber">Номер машины</label>
+          <input id="editCarNumber" required>
+        </div>
+
+        <div class="field">
+          <label for="editCarMake">Марка машины</label>
+          <input id="editCarMake" required>
+        </div>
+
+        <div class="field">
+          <label for="editAmount">Сумма расчёта</label>
+          <input id="editAmount" type="number" step="0.01" min="0" required>
+        </div>
+
+        <div class="field">
+          <label>Тип сделки</label>
+          <div class="segment">
+            <input type="radio" name="editDealType" id="editDeal30" value="30" checked>
+            <label for="editDeal30">30%</label>
+
+            <input type="radio" name="editDealType" id="editDeal25" value="25">
+            <label for="editDeal25">25%</label>
+
+            <input type="radio" name="editDealType" id="editDealCes" value="cession">
+            <label for="editDealCes">Цессия (15%)</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Моя зарплата</label>
+          <output id="editSalary">0</output>
+        </div>
+
+        <menu class="sheet-actions">
+          <button value="cancel" class="btn-ghost">Отмена</button>
+          <button id="deleteBtn" class="btn-danger" type="button">Удалить</button>
+          <button value="default" class="btn-primary">Сохранить</button>
+        </menu>
+      </form>
+    </dialog>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
