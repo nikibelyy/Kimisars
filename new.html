@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Новая заявка</title>
+  <script src="script.js"></script>
+</head>
+<body>
+  <h1>Новая заявка</h1>
+  <form onsubmit="create(); return false;">
+    Клиент: <input id="client"><br>
+    Описание: <textarea id="description"></textarea><br>
+    Цена: <input id="price"><br>
+    <button type="submit">Создать</button>
+  </form>
+
+  <div id="link"></div>
+
+  <script>
+    function create() {
+      let client = document.getElementById("client").value;
+      let desc = document.getElementById("description").value;
+      let price = document.getElementById("price").value;
+      let id = createRequest(client, desc, price);
+      document.getElementById("link").innerHTML = 
+        "Ссылка для клиента: <a href='request.html?id=" + id + "'>request.html?id=" + id + "</a>";
+    }
+  </script>
+</body>
+</html>

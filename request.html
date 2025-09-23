@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Заявка</title>
+  <script src="script.js"></script>
+</head>
+<body>
+  <div id="content"></div>
+
+  <script>
+    let params = new URLSearchParams(window.location.search);
+    let id = params.get("id");
+    let req = getRequest(id);
+
+    if (!req) {
+      document.getElementById("content").innerHTML = "Заявка не найдена!";
+    } else {
+      document.getElementById("content").innerHTML = `
+        <h1>Заявка для ${req.client}</h1>
+        <p>${req.description}</p>
+        <p>Цена: ${req.price}</p>
+        <p>Статус: ${req.status}</p>
+        ${req.status === "Ожидание" ? `
+          <button onclick="yes()">✅ Согласен</button>
+          <button onclick="no()">❌ Отказаться</button>
+        ` : ""}
+      `;
+    }
+
+    function yes() {
+      updateStatus(id, "Согласился");
+      location.reload();
+    }
+    function no() {
+      updateStatus(id, "Отказался");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
