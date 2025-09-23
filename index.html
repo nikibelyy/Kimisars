@@ -1,159 +1,519 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>CRM Клиенты (PWA)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>ID — Мобильное приложение (PWA)</title>
 
-  <!-- iOS-like look & feel -->
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="CRM">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#071026">
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css">
+<style>
+  /* Reset & fonts */
+  @font-face{
+    font-family: 'InterVar';
+    src: local('Inter'), local('Inter var');
+  }
+  :root{
+    --bg:#071026;
+    --card:#0b1224;
+    --muted:#9aa4b2;
+    --accent:#7c3aed;
+    --accent-2:#4f46e5;
+    --glass: rgba(255,255,255,0.02);
+    --surface:#0f1724;
+    --text:#e6eef8;
+    --success:#16a34a;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: InterVar, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#041022 0%, #071026 100%);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;align-items:stretch;justify-content:center;padding:12px;
+  }
 
-  <script>
-    // Регистрация service worker как можно раньше
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js');
-      });
-    }
-  </script>
+  /* App shell */
+  .app {
+    width:100%;
+    max-width:480px;
+    height:100vh;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(2,6,23,0.6);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    display:flex;flex-direction:column;
+    border:1px solid rgba(255,255,255,0.03);
+    position:relative;
+  }
+  .topbar{
+    height:72px;display:flex;align-items:center;gap:12px;padding:12px 16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.012), transparent);
+    border-bottom:1px solid rgba(255,255,255,0.02);
+  }
+  .logo{
+    width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:white;box-shadow:0 8px 28px rgba(79,70,229,0.18);
+  }
+  .app-title{flex:1}
+  .app-title h1{margin:0;font-size:16px}
+  .app-title p{margin:0;color:var(--muted);font-size:12px}
+
+  /* Content area with swipe-like sections */
+  .content{
+    flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Cards */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+  }
+  .card .section-title{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .card h2{margin:0;font-size:13px}
+  .field{
+    display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:10px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    margin-bottom:10px;border:1px solid rgba(255,255,255,0.02);
+  }
+  .field .emoji{font-size:20px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);border-radius:10px}
+  .field .content{flex:1}
+  .field .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .field .value{font-size:15px;word-break:break-word}
+  .controls{display:flex;gap:10px;align-items:center}
+
+  /* Bottom navigation */
+  .bottom-nav{
+    height:74px;padding:8px 12px;background:linear-gradient(180deg, rgba(255,255,255,0.008), transparent);
+    border-top:1px solid rgba(255,255,255,0.02);display:flex;gap:8px;align-items:center;justify-content:space-between;
+  }
+  .nav-btn{
+    flex:1;background:transparent;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border-radius:12px;font-size:12px;cursor:pointer;
+  }
+  .nav-btn.active{color:white;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:0 8px 20px rgba(79,70,229,0.14)}
+  .nav-btn .ico{font-size:20px;margin-bottom:4px}
+
+  /* Photo area */
+  .photo-drop{
+    height:180px;border-radius:12px;border:1px dashed rgba(255,255,255,0.04);
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;color:var(--muted);
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  }
+  .preview-grid{display:flex;flex-wrap:nowrap;gap:8px;overflow:auto;padding:8px 4px}
+  .preview-grid img{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+
+  /* Big actions */
+  .actions-row{display:flex;gap:8px}
+  .btn{
+    flex:1;padding:12px;border-radius:12px;border:none;font-weight:700;cursor:pointer;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:white;box-shadow:0 10px 30px rgba(79,70,229,0.12);
+  }
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);box-shadow:none}
+
+  /* Modal editor */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(2,6,23,0.6);display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:1200;
+    opacity:0;pointer-events:none;transition:all 220ms ease;
+  }
+  .modal-backdrop.show{opacity:1;pointer-events:auto}
+  .modal{
+    width:100%;max-width:480px;background:linear-gradient(180deg,#0b1020,#071026);border-radius:14px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+    transform:translateY(20px);transition:transform 220ms ease;
+  }
+  .modal-backdrop.show .modal{transform:translateY(0)}
+  .modal h3{margin:0 0 8px 0}
+  .modal textarea, .modal input{
+    width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);
+  }
+
+  /* Small helpers */
+  .kicker{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .muted{color:var(--muted)}
+  .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:12px;color:var(--muted)}
+
+  /* Responsive adjustments */
+  @media (max-width:420px){
+    .preview-grid img{width:86px;height:86px}
+  }
+
+  /* subtle animations */
+  .field, .card {transition:transform 160ms ease, box-shadow 160ms ease}
+  .field:active {transform:translateY(1px)}
+</style>
 </head>
 <body>
-  <div id="app">
-    <header class="nav">
-      <div class="nav-title">CRM</div>
-      <button class="nav-btn" id="installBtn" aria-label="Установить">Установить</button>
-    </header>
+  <div class="app" role="application" aria-label="ID приложение">
+    <div class="topbar">
+      <div class="logo">ID</div>
+      <div class="app-title">
+        <h1>Карточка личности</h1>
+        <p class="muted">Мобильный интерфейс — всё локально. Нет распознавания лиц.</p>
+      </div>
+      <button id="installBtn" title="Установить" style="background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer">⬇️</button>
+    </div>
 
-    <main class="content">
-      <!-- Карточка добавления клиента -->
-      <section class="card">
-        <h1>Добавить клиента</h1>
-        <form id="clientForm" autocomplete="on">
-          <div class="field">
-            <label for="name">Имя</label>
-            <input id="name" name="name" type="text" placeholder="Иван Иванов" required />
+    <div class="content" id="viewCard">
+
+      <!-- MAIN: Card content -->
+      <div class="card" id="mainCard">
+        <div class="section-title"><h2>🕵️ Личность</h2></div>
+
+        <div class="field" id="personField">
+          <div class="emoji">🧾</div>
+          <div class="content">
+            <div class="label">ФИО / Дата рождения</div>
+            <div class="value" id="personValue">Навальный Алексей Анатольевич — 04.06.1976</div>
           </div>
-
-          <div class="field">
-            <label for="carNumber">Номер машины</label>
-            <input id="carNumber" name="carNumber" type="text" inputmode="latin" placeholder="A123BC77" required />
+          <div class="controls">
+            <button class="nav-btn" onclick="openEdit('personValue','ФИО и дата рождения')">✏️</button>
+            <button class="nav-btn" onclick="copyText('#personValue')">📋</button>
           </div>
+        </div>
 
-          <div class="field">
-            <label for="carMake">Марка машины</label>
-            <input id="carMake" name="carMake" type="text" placeholder="Toyota" required />
+        <div class="section-title"><h2>📲 Контакты</h2></div>
+        <div class="field">
+          <div class="emoji">📞</div>
+          <div class="content">
+            <div class="label">Телефон</div>
+            <div class="value" id="phoneValue">+7 963 782-90-51</div>
           </div>
-
-          <div class="field">
-            <label for="amount">Сумма расчёта</label>
-            <input id="amount" name="amount" type="number" step="0.01" min="0" placeholder="0.00" required />
+          <div class="controls">
+            <button class="nav-btn" onclick="openEdit('phoneValue','Телефон')">✏️</button>
+            <button class="nav-btn" onclick="copyText('#phoneValue')">📋</button>
           </div>
+        </div>
 
-          <div class="field">
-            <label>Тип сделки</label>
-            <div class="segment" role="tablist" aria-label="Тип сделки">
-              <input type="radio" name="dealType" id="deal30" value="30" checked>
-              <label for="deal30">30%</label>
+        <div class="field">
+          <div class="emoji">✉️</div>
+          <div class="content">
+            <div class="label">Email</div>
+            <div class="value" id="emailValue">ceo@vkontakte.ru</div>
+          </div>
+          <div class="controls">
+            <button class="nav-btn" onclick="openEdit('emailValue','Email')">✏️</button>
+            <button class="nav-btn" onclick="copyText('#emailValue')">📋</button>
+          </div>
+        </div>
 
-              <input type="radio" name="dealType" id="deal25" value="25">
-              <label for="deal25">25%</label>
+        <div class="section-title"><h2>🚘 Транспорт</h2></div>
+        <div class="field">
+          <div class="emoji">🚗</div>
+          <div class="content">
+            <div class="label">Номер автомобиля</div>
+            <div class="value" id="carValue">В395ОК199</div>
+          </div>
+          <div class="controls"><button class="nav-btn" onclick="openEdit('carValue','Номер авто')">✏️</button></div>
+        </div>
 
-              <input type="radio" name="dealType" id="dealCes" value="cession">
-              <label for="dealCes">Цессия (15%)</label>
+        <div class="field">
+          <div class="emoji">🔎</div>
+          <div class="content">
+            <div class="label">VIN</div>
+            <div class="value" id="vinValue">XTA211440C5106924</div>
+          </div>
+          <div class="controls"><button class="nav-btn" onclick="openEdit('vinValue','VIN')">✏️</button></div>
+        </div>
+
+        <div class="section-title"><h2>💬 Соц. сети</h2></div>
+        <div class="field">
+          <div class="emoji">🌐</div>
+          <div class="content">
+            <div class="label">Ссылки</div>
+            <div class="value" id="socialsValue">
+              vk.com/sherlock<br>tiktok.com/@sherlock<br>instagram.com/sherlock<br>ok.ru/profile/58460
             </div>
           </div>
-
-          <div class="field">
-            <label>Моя зарплата</label>
-            <output id="salaryPreview">0</output>
-          </div>
-
-          <div class="actions">
-            <button type="submit" class="btn-primary">Сохранить</button>
-            <button type="reset" class="btn-ghost">Очистить</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Поиск -->
-      <section class="card">
-        <div class="field">
-          <label for="search">Поиск</label>
-          <input id="search" type="search" placeholder="По имени, номеру, марке..." />
-        </div>
-      </section>
-
-      <!-- Список клиентов -->
-      <section class="card">
-        <h2>Клиенты</h2>
-        <ul id="clientList" class="list"></ul>
-        <p id="emptyState" class="muted" hidden>Список пуст. Добавьте первого клиента ↑</p>
-      </section>
-    </main>
-
-    <!-- iOS‑подобное модальное окно для редактирования -->
-    <dialog id="editDialog">
-      <form method="dialog" id="editForm">
-        <header class="sheet-handle"></header>
-        <h3>Редактирование</h3>
-
-        <input type="hidden" id="editId">
-
-        <div class="field">
-          <label for="editName">Имя</label>
-          <input id="editName" required>
+          <div class="controls"><button class="nav-btn" onclick="openEdit('socialsValue','Социальные сети')">✏️</button></div>
         </div>
 
-        <div class="field">
-          <label for="editCarNumber">Номер машины</label>
-          <input id="editCarNumber" required>
+        <div style="height:10px"></div>
+
+        <div style="display:flex;gap:10px">
+          <div class="chip">Маркер: частная информация</div>
+          <div class="chip">Локально</div>
         </div>
+      </div>
 
-        <div class="field">
-          <label for="editCarMake">Марка машины</label>
-          <input id="editCarMake" required>
-        </div>
-
-        <div class="field">
-          <label for="editAmount">Сумма расчёта</label>
-          <input id="editAmount" type="number" step="0.01" min="0" required>
-        </div>
-
-        <div class="field">
-          <label>Тип сделки</label>
-          <div class="segment">
-            <input type="radio" name="editDealType" id="editDeal30" value="30" checked>
-            <label for="editDeal30">30%</label>
-
-            <input type="radio" name="editDealType" id="editDeal25" value="25">
-            <label for="editDeal25">25%</label>
-
-            <input type="radio" name="editDealType" id="editDealCes" value="cession">
-            <label for="editDealCes">Цессия (15%)</label>
+      <!-- Photos card (shown also in tab) -->
+      <div class="card" id="photosCard" style="display:none">
+        <div class="section-title"><h2>📸 Фото (локально)</h2></div>
+        <div class="photo-drop" id="dropZone" tabindex="0">
+          <div>
+            <div style="font-weight:700;margin-bottom:6px">Перетащите фото или нажмите «Добавить»</div>
+            <div class="muted" style="font-size:13px">Превью только локально. Распознавание лиц НЕ выполняется.</div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <label class="btn ghost" style="padding:8px 10px;display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+                ➕ Добавить
+                <input id="fileInput" type="file" accept="image/*" multiple style="display:none">
+              </label>
+              <button class="btn ghost" id="clearPhotos">Удалить все</button>
+            </div>
           </div>
         </div>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
 
-        <div class="field">
-          <label>Моя зарплата</label>
-          <output id="editSalary">0</output>
+      <!-- Actions card -->
+      <div class="card" id="actionsCard" style="display:none">
+        <div class="section-title"><h2>Действия</h2></div>
+        <div class="kicker">Быстрые операции</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="actions-row">
+            <button class="btn" onclick="exportJSON()">Экспорт JSON</button>
+            <button class="btn ghost" onclick="importJSON()">Импорт</button>
+          </div>
+          <div class="actions-row">
+            <button class="btn" onclick="printCard()">Печать</button>
+            <button class="btn ghost" onclick="clearAll()">Очистить</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="kicker">JSON – превью</div>
+            <pre id="jsonOut" style="background:#081224;padding:10px;border-radius:8px;max-height:220px;overflow:auto;color:#bfe7ff">{ }</pre>
+          </div>
+
+          <div style="margin-top:6px;color:var(--muted);font-size:12px">
+            Внимание: фото и данные хранятся в браузере. Для полноценной установки приложения используйте кнопку «Установить».
+          </div>
         </div>
+      </div>
 
-        <menu class="sheet-actions">
-          <button value="cancel" class="btn-ghost">Отмена</button>
-          <button id="deleteBtn" class="btn-danger" type="button">Удалить</button>
-          <button value="default" class="btn-primary">Сохранить</button>
-        </menu>
-      </form>
-    </dialog>
+    </div>
+
+    <div class="bottom-nav" role="tablist" aria-label="Навигация">
+      <button class="nav-btn active" id="tabCard" onclick="showTab('card')"><span class="ico">🗂️</span>Карточка</button>
+      <button class="nav-btn" id="tabPhoto" onclick="showTab('photo')"><span class="ico">📷</span>Фото</button>
+      <button class="nav-btn" id="tabActions" onclick="showTab('actions')"><span class="ico">⚙️</span>Действия</button>
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- Modal editor -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Редактировать</h3>
+      <div style="margin-bottom:8px" class="muted" id="modalSubtitle"></div>
+      <textarea id="modalInput" rows="4" placeholder="Внесите данные..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" id="saveModal">Сохранить</button>
+        <button class="btn ghost" id="cancelModal">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ========= App logic ========= */
+let currentTab = 'card';
+const tabBtns = {card: document.getElementById('tabCard'), photo: document.getElementById('tabPhoto'), actions: document.getElementById('tabActions')};
+
+function showTab(name){
+  currentTab = name;
+  // update active button
+  Object.keys(tabBtns).forEach(k => tabBtns[k].classList.toggle('active', k===name));
+  // show/hide cards
+  document.getElementById('mainCard').style.display = (name==='card') ? 'block' : 'none';
+  document.getElementById('photosCard').style.display = (name==='photo') ? 'block' : 'none';
+  document.getElementById('actionsCard').style.display = (name==='actions') ? 'block' : 'none';
+}
+
+/* Copy helper */
+function copyText(selector){
+  const el = document.querySelector(selector);
+  if(!el) return toast('Нечего копировать');
+  const txt = el.innerText.trim();
+  navigator.clipboard?.writeText(txt).then(()=> toast('Скопировано')).catch(()=> toast('Ошибка копирования'));
+}
+
+/* Toast */
+function toast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style,{position:'fixed',left:'50%',bottom:'90px',transform:'translateX(-50%)',background:'rgba(0,0,0,0.7)',color:'#fff',padding:'10px 14px',borderRadius:'10px',zIndex:9999});
+  document.body.appendChild(t);
+  setTimeout(()=> t.style.opacity='0',1300);
+  setTimeout(()=> t.remove(),2000);
+}
+
+/* Modal editor */
+const modal = document.getElementById('modalBackdrop');
+const modalInput = document.getElementById('modalInput');
+let modalTargetId = null;
+
+function openEdit(targetId, subtitle){
+  modalTargetId = targetId;
+  const valEl = document.getElementById(targetId);
+  const cur = valEl ? valEl.innerText.replaceAll('↵','\n') : '';
+  document.getElementById('modalTitle').innerText = 'Редактирование';
+  document.getElementById('modalSubtitle').innerText = subtitle || '';
+  modalInput.value = cur;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  modalInput.focus();
+}
+
+document.getElementById('saveModal').addEventListener('click', ()=>{
+  if(!modalTargetId) return closeModal();
+  const text = modalInput.value;
+  const el = document.getElementById(modalTargetId);
+  if(el){
+    // preserve simple line breaks
+    el.innerHTML = text.split('\\n').map(s => escapeHtml(s)).join('<br>');
+  }
+  updateJsonPreview();
+  closeModal();
+});
+document.getElementById('cancelModal').addEventListener('click', closeModal);
+document.getElementById('modalBackdrop').addEventListener('click', (e)=> { if(e.target === modal) closeModal();});
+function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); modalTargetId = null; }
+
+/* Escape HTML */
+function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+
+/* Photos: local preview only */
+const fileInput = document.getElementById('fileInput');
+const previewGrid = document.getElementById('previewGrid');
+const dropZone = document.getElementById('dropZone');
+const clearPhotosBtn = document.getElementById('clearPhotos');
+let currentFiles = [];
+
+fileInput.addEventListener('change', e => {
+  handleFiles([...e.target.files]);
+  fileInput.value = '';
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor='rgba(255,255,255,0.08)'; });
+dropZone.addEventListener('dragleave', e => { dropZone.style.borderColor='transparent'; });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.style.borderColor='transparent';
+  const files = [...(e.dataTransfer?.files || [])];
+  handleFiles(files);
+});
+dropZone.addEventListener('click', ()=> fileInput.click());
+
+function handleFiles(files){
+  const imgs = files.filter(f => f.type && f.type.startsWith('image/'));
+  imgs.slice(0,20).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.createElement('img');
+      img.src = ev.target.result;
+      img.alt = file.name;
+      previewGrid.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+    currentFiles.push(file);
+  });
+  if(imgs.length) toast('Фото добавлены (локально)');
+  updateJsonPreview();
+}
+clearPhotosBtn.addEventListener('click', ()=> { previewGrid.innerHTML=''; currentFiles = []; updateJsonPreview(); toast('Фото удалены'); });
+
+/* Export / Import JSON */
+function collectData(){
+  return {
+    person: document.getElementById('personValue').innerText.trim(),
+    phone: document.getElementById('phoneValue').innerText.trim(),
+    email: document.getElementById('emailValue').innerText.trim(),
+    car: document.getElementById('carValue').innerText.trim(),
+    vin: document.getElementById('vinValue').innerText.trim(),
+    socials: document.getElementById('socialsValue').innerText.trim().split('\\n'),
+    photos_local_count: currentFiles.length,
+    note: "Фото и данные находятся в браузере; распознавание лиц отключено."
+  };
+}
+
+function exportJSON(){
+  const data = collectData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'card.json'; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('JSON экспортирован');
+}
+
+function importJSON(){
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='application/json';
+  inp.onchange = e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const obj = JSON.parse(ev.target.result);
+        if(obj.person) document.getElementById('personValue').innerText = obj.person;
+        if(obj.phone) document.getElementById('phoneValue').innerText = obj.phone;
+        if(obj.email) document.getElementById('emailValue').innerText = obj.email;
+        if(obj.car) document.getElementById('carValue').innerText = obj.car;
+        if(obj.vin) document.getElementById('vinValue').innerText = obj.vin;
+        if(obj.socials) document.getElementById('socialsValue').innerHTML = (Array.isArray(obj.socials)?obj.socials.join('<br>'):obj.socials);
+        toast('JSON импортирован');
+        updateJsonPreview();
+      }catch(err){
+        alert('Неверный JSON');
+      }
+    };
+    reader.readAsText(f);
+  };
+  inp.click();
+}
+
+function printCard(){ window.print(); }
+
+function clearAll(){
+  if(!confirm('Очистить все поля и превью фото?')) return;
+  document.getElementById('personValue').innerText='';
+  document.getElementById('phoneValue').innerText='';
+  document.getElementById('emailValue').innerText='';
+  document.getElementById('carValue').innerText='';
+  document.getElementById('vinValue').innerText='';
+  document.getElementById('socialsValue').innerHTML='';
+  previewGrid.innerHTML=''; currentFiles = [];
+  updateJsonPreview();
+}
+
+/* JSON preview */
+const jsonOut = document.getElementById('jsonOut');
+function updateJsonPreview(){ jsonOut.textContent = JSON.stringify(collectData(), null, 2); }
+updateJsonPreview();
+
+/* editable double-click — quick edit */
+['personValue','phoneValue','emailValue','carValue','vinValue','socialsValue'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('dblclick', ()=> openEdit(id,'Быстрое редактирование (двойной клик)'));
+});
+
+/* Installation prompt for PWA */
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.opacity = 1;
+  installBtn.onclick = async () => {
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if(choice.outcome === 'accepted') toast('Установка начата');
+    deferredPrompt = null;
+  };
+});
+
+/* Register service worker */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(()=> console.log('SW registered')).catch(()=> console.warn('SW reg failed'));
+}
+
+/* Initial UI */
+showTab('card');
+
+</script>
 </body>
 </html>
