@@ -3,214 +3,177 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>CRM — Клиенты Из Будущего</title>
+<title>CRM — Клиенты Из Будущего (Cyberpunk)</title>
+
+<!-- iOS web app meta -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <style>
   :root{
-    --accent: #8B5CF6;
-    --bg:#06040a;
-    --card-bg: rgba(255,255,255,0.03);
-    --glass: rgba(255,255,255,0.04);
-    --muted: rgba(255,255,255,0.6);
-    --glass-border: rgba(255,255,255,0.06);
-    --neon: rgba(139,92,246,0.18);
+    --accent:#8B5CF6;            /* main accent (user provided) */
+    --accent-2:#ff2d95;         /* neon secondary */
+    --bg:#04030a;               /* dark base */
+    --card: rgba(255,255,255,0.02);
+    --glass: rgba(255,255,255,0.03);
+    --muted: rgba(255,255,255,0.55);
+    --neon-glow: 0 12px 40px rgba(139,92,246,0.18), 0 2px 10px rgba(255,45,149,0.06);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
   }
   html,body{height:100%;margin:0;background:
-    radial-gradient(1200px 400px at 10% 10%, rgba(139,92,246,0.06), transparent 6%),
-    radial-gradient(1000px 400px at 90% 90%, rgba(0,0,0,0.2), transparent 10%),
-    var(--bg);
-    color:#e9e6ee;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
+    radial-gradient(800px 240px at 10% 10%, rgba(139,92,246,0.06), transparent 6%),
+    linear-gradient(180deg, rgba(2,0,12,0.6), rgba(0,0,0,0.85)), var(--bg);
+    color:#e9e6ee;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
   }
 
-  /* LAYOUT */
-  .wrap{
-    max-width:980px;
-    margin:20px auto;
-    padding:22px;
-    position:relative;
+  .app{
+    max-width:980px;margin:18px auto;padding:18px;position:relative;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  header{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:18px;
-  }
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
   .logo{
-    display:flex;
-    gap:12px;
-    align-items:center;
+    display:flex;gap:12px;align-items:center;
   }
   .logo-badge{
-    width:56px;height:56px;border-radius:12px;
-    background:linear-gradient(135deg,var(--accent),#5b21b6);
-    box-shadow:0 6px 30px rgba(139,92,246,0.25), inset 0 -6px 18px rgba(255,255,255,0.02);
-    display:flex;align-items:center;justify-content:center;font-weight:700;
-    color:white;font-size:18px;
+    width:54px;height:54px;border-radius:12px;background:
+    linear-gradient(135deg,var(--accent), #5b21b6);display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-family:var(--mono);font-size:18px;box-shadow:var(--neon-glow);
+    border:1px solid rgba(255,255,255,0.04);
   }
-  .site-title{font-weight:700;font-size:18px;letter-spacing:0.6px;color:#fff;opacity:0.95}
-  .top-actions{display:flex;gap:10px;align-items:center}
+  .site-title{font-weight:800;letter-spacing:0.6px;color:#fff;font-size:18px}
 
-  /* GRID cards */
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(2,1fr);
-    gap:14px;
-    margin-bottom:24px;
+  /* main stage with 3D rects */
+  #stage{
+    height:300px;border-radius:14px;position:relative;overflow:hidden;margin-bottom:18px;
+    background:
+      linear-gradient(120deg, rgba(139,92,246,0.06), rgba(255,45,149,0.02)),
+      linear-gradient(180deg, rgba(0,0,0,0.4), rgba(2,2,6,0.6));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 30px 70px rgba(2,2,6,0.7), inset 0 2px 20px rgba(139,92,246,0.02);
+    perspective:1200px;
   }
+
+  .floating-objects{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+  .rect{
+    width:210px;height:110px;border-radius:12px;position:absolute;left:50%;top:50%;
+    transform-origin:center;display:flex;align-items:center;justify-content:center;font-weight:900;
+    color:rgba(255,255,255,0.95);backdrop-filter: blur(6px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.04);
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow: 0 24px 80px rgba(4,3,10,0.7), 0 0 40px rgba(139,92,246,0.07);
+    font-family:var(--mono);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    pointer-events:none;
+  }
+  .rect.small{width:150px;height:74px;border-radius:10px;font-size:13px}
+  .rect .label{font-size:16px;color:rgba(255,255,255,0.9);text-shadow:0 2px 10px rgba(139,92,246,0.25)}
+
+  /* cyber-grid overlay */
+  #stage::after{
+    content:'';position:absolute;inset:0;background-image:
+    linear-gradient(transparent 60%, rgba(139,92,246,0.02) 60%),
+    linear-gradient(90deg, transparent 60%, rgba(255,45,149,0.01) 60%);
+    mix-blend-mode:overlay;pointer-events:none;
+  }
+
+  /* panels */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   .card{
-    border-radius:14px;
-    padding:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid var(--glass-border);
-    backdrop-filter: blur(8px) saturate(140%);
-    box-shadow: 0 10px 30px rgba(2,2,4,0.6), 0 1px 0 rgba(255,255,255,0.02) inset;
-    position:relative;
-    overflow:hidden;
+    border-radius:14px;padding:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(8px) saturate(140%);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
   }
-  .card .label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
-  .card .value{font-size:26px;font-weight:800;margin-top:8px;color:var(--accent)}
+  .card .label{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .card .value{font-size:24px;font-weight:900;color:var(--accent)}
 
-  .big-card{grid-column:1/-1;padding:26px;display:flex;flex-direction:column;gap:18px}
-  .controls-row{display:flex;gap:12px;align-items:center}
+  .big-card{grid-column:1/-1;padding:20px;border-radius:16px;position:relative}
 
-  /* FORM */
-  form{
-    border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.03);
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  }
+  /* form */
+  form{display:block}
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
   input[type="text"], input[type="number"], select{
-    width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-    background:rgba(0,0,0,0.25);color:#fff;font-size:15px;outline:none;
-    box-shadow:0 6px 14px rgba(0,0,0,0.5) inset;
-    margin-bottom:14px;
+    width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
+    background:rgba(8,6,12,0.55);color:#fff;font-size:15px;outline:none;margin-bottom:12px;
+    box-shadow: inset 0 -6px 18px rgba(0,0,0,0.6);
   }
   .row{display:flex;gap:12px}
   .row .col{flex:1}
+
   .btn{
     background: linear-gradient(90deg,var(--accent), #5b21b6);
-    border:none;color:white;padding:12px 16px;border-radius:12px;font-weight:700;
-    cursor:pointer;box-shadow:0 8px 30px rgba(139,92,246,0.28);
+    border:none;color:white;padding:12px 14px;border-radius:10px;font-weight:800;cursor:pointer;
+    box-shadow: 0 10px 40px rgba(139,92,246,0.26);
   }
-  .muted-small{font-size:12px;color:#bdb7d6}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent)}
 
-  /* CLIENTS LIST */
   .clients-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
   .client-row{
     display:flex;justify-content:space-between;gap:8px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-    align-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));align-items:center;
+    transition:transform .25s ease, box-shadow .25s ease;
   }
-  .client-info{display:flex;gap:12px;align-items:center}
-  .client-avatar{
-    width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent), #4c1d95);
-    display:flex;align-items:center;justify-content:center;font-weight:800;color:white;
-    box-shadow:0 8px 30px rgba(139,92,246,0.12);
-  }
+  .client-row:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(139,92,246,0.12)}
+  .client-avatar{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-family:var(--mono)}
   .client-meta{display:flex;flex-direction:column}
-  .client-meta .name{font-weight:700}
-  .small-muted{font-size:13px;color:var(--muted)}
+  .client-meta .name{font-weight:800}
 
-  /* 3D abstract field */
-  #stage{
-    height:300px;border-radius:18px;margin-bottom:18px;overflow:hidden;
-    position:relative;background:
-    linear-gradient(180deg, rgba(139,92,246,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.03);
-    box-shadow: 0 20px 60px rgba(2,2,4,0.6);
-    perspective:1200px;
-  }
-  .floating-objects{
-    position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none;
-  }
-  .rect{
-    width:200px;height:110px;border-radius:14px;position:absolute;left:50%;top:50%;
-    transform-origin:center;
-    background:linear-gradient(135deg, rgba(139,92,246,0.14), rgba(91,33,182,0.06));
-    border:1px solid rgba(255,255,255,0.03);
-    box-shadow:0 8px 40px rgba(8,6,12,0.8);
-    display:flex;align-items:center;justify-content:center;font-weight:800;color:rgba(255,255,255,0.95);
-    backdrop-filter: blur(6px);
-  }
-  .rect.small{width:140px;height:70px;border-radius:10px}
-  .rect .label{font-size:18px}
+  /* subtle neon accents for numbers */
+  .num-neon{color:var(--accent);font-weight:900;text-shadow:0 6px 26px rgba(139,92,246,0.18)}
 
-  /* floating neon orbs */
-  .orb{
-    position:absolute;width:24px;height:24px;border-radius:50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(139,92,246,0.95));
-    box-shadow:0 0 30px rgba(139,92,246,0.8);
-    filter:blur(0.6px);
-    pointer-events:none;
-  }
-
-  /* "КЛИЕНТЫ" big outlined text canvas */
-  .title-wrap{
-    height:120px;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:12px;
-  }
-  canvas#titleCanvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 30px rgba(139,92,246,0.25));}
-
-  /* small responsive tweaks */
+  /* small screens */
   @media (max-width:720px){
     .grid{grid-template-columns:1fr}
     #stage{height:220px}
-    .wrap{padding:14px}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app" id="app">
   <header>
     <div class="logo">
-      <div class="logo-badge">CI</div>
+      <div class="logo-badge">CP</div>
       <div>
-        <div class="site-title">CRM — Клиенты Из Будущего</div>
-        <div class="muted-small">Тёмный стиль · 3D параллакс · стекломорфизм</div>
+        <div class="site-title">CRM — Cyberpunk 777</div>
       </div>
     </div>
-    <div class="top-actions">
-      <div class="muted-small">Сохранено локально</div>
+    <div style="display:flex;gap:10px">
       <button class="btn" id="exportBtn">Экспорт JSON</button>
     </div>
   </header>
 
+  <!-- main visual (no big textual title) -->
   <div id="stage" aria-hidden="true">
     <div class="floating-objects" id="floatingObjects"></div>
-    <canvas id="bgCanvas" width="1200" height="600" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
-    <div style="position:absolute;inset:0;pointer-events:none">
-      <!-- title effect area -->
-      <div class="title-wrap"><canvas id="titleCanvas" width="1200" height="120"></canvas></div>
-    </div>
+    <canvas id="bgCanvas" width="1200" height="600" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
   </div>
 
   <div class="grid">
     <div class="card">
       <div class="label">Всего клиентов</div>
-      <div class="value" id="totalClients">0</div>
+      <div class="value num-neon" id="totalClients">0</div>
     </div>
+
     <div class="card">
       <div class="label">Общая сумма</div>
-      <div class="value" id="totalAmount">₽0</div>
+      <div class="value num-neon" id="totalAmount">₽0</div>
     </div>
 
     <div class="card">
       <div class="label">Общая зарплата</div>
-      <div class="value" id="totalSalary">₽0</div>
+      <div class="value num-neon" id="totalSalary">₽0</div>
     </div>
 
     <div class="card">
       <div class="label">Средний процент</div>
-      <div class="value" id="avgPercent">0.0%</div>
+      <div class="value num-neon" id="avgPercent">0.0%</div>
     </div>
 
-    <div class="card big-card">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="font-weight:800;font-size:18px">Добавить клиента</div>
-        <div class="muted-small">Заполните данные, зарплата считается автоматически</div>
+    <div class="big-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:900">Добавить клиента</div>
       </div>
 
       <form id="clientForm" onsubmit="return false;">
@@ -248,22 +211,21 @@
         </div>
 
         <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
-          <button class="btn" id="addBtn">Добавить клиента</button>
-          <button class="btn" id="clearBtn" style="background:transparent;border:1px solid var(--glass-border);color:var(--accent)">Очистить всё</button>
+          <button class="btn" id="addBtn">Добавить</button>
+          <button class="btn ghost" id="clearBtn">Очистить всё</button>
         </div>
       </form>
 
       <div class="clients-list" id="clientsList" style="margin-top:10px"></div>
-
     </div>
   </div>
 </div>
 
 <script>
 /* ---------------------------
-   Data & UI logic (CRM)
+   CRM logic (localStorage)
    --------------------------- */
-const clientsKey = 'crm_clients_v1';
+const clientsKey = 'crm_clients_v1_cyber';
 let clients = JSON.parse(localStorage.getItem(clientsKey) || '[]');
 
 const $ = id => document.getElementById(id);
@@ -279,6 +241,8 @@ function calcSalary(amount, percent){
   percent = Number(percent)||0;
   return +(amount * percent/100).toFixed(2);
 }
+function num(n){ return (Number(n)||0).toLocaleString('ru-RU'); }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function renderClients(){
   clientsList.innerHTML = '';
@@ -290,18 +254,18 @@ function renderClients(){
     const row = document.createElement('div');
     row.className = 'client-row';
     row.innerHTML = `
-      <div class="client-info">
+      <div style="display:flex;gap:12px;align-items:center">
         <div class="client-avatar">${(c.name||'')[0] || 'C'}</div>
-        <div class="client-meta">
-          <div class="name">${escapeHtml(c.name||'—')}</div>
-          <div class="small-muted">${escapeHtml(c.brand||'—')} · ${escapeHtml(c.plate||'—')}</div>
+        <div style="display:flex;flex-direction:column">
+          <div style="font-weight:900">${escapeHtml(c.name||'—')}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:13px">${escapeHtml(c.brand||'—')} · ${escapeHtml(c.plate||'—')}</div>
         </div>
       </div>
       <div style="text-align:right">
-        <div style="font-weight:800">₽${num(c.amount)}</div>
-        <div class="small-muted">Зарплата: ₽${num(c.salary)} · ${c.percent}%</div>
-        <div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">
-          <button data-i="${i}" class="btn small remove" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;font-weight:700;color:var(--accent)">Удалить</button>
+        <div style="font-weight:900;color:var(--accent)">${'₽' + num(c.amount)}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.6)">Зарплата: ₽${num(c.salary)} · ${c.percent}%</div>
+        <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
+          <button data-i="${i}" class="btn ghost remove" style="padding:6px 8px">Удалить</button>
         </div>
       </div>
     `;
@@ -312,26 +276,19 @@ function renderClients(){
   totalSalary.textContent = '₽' + num(sumSalary);
   avgPercent.textContent = (clients.length? (sumPercent/clients.length).toFixed(1) : '0.0') + '%';
   document.querySelectorAll('.remove').forEach(b => {
-    b.onclick = (e)=>{
+    b.onclick = ()=>{
       const idx = +b.dataset.i;
-      clients.splice(idx,1); persist(); renderClients();
-      triggerTitleFloat(); // visual feedback
+      clients.splice(idx,1); persist(); renderClients(); feedbackPulse();
     };
   });
 }
 
-function persist(){
-  localStorage.setItem(clientsKey, JSON.stringify(clients));
-}
-
-function num(n){ return (Number(n)||0).toLocaleString('ru-RU'); }
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function persist(){ localStorage.setItem(clientsKey, JSON.stringify(clients)); }
 
 amountI.oninput = percentI.oninput = function(){
-  const s = calcSalary(amountI.value, percentI.value);
-  salaryI.value = s;
+  salaryI.value = calcSalary(amountI.value, percentI.value);
 };
-document.getElementById('addBtn').onclick = ()=>{
+$('addBtn').onclick = ()=>{
   const name = nameI.value.trim();
   if(!name){ nameI.focus(); return; }
   const item = {
@@ -342,11 +299,10 @@ document.getElementById('addBtn').onclick = ()=>{
     created: Date.now()
   };
   clients.unshift(item);
-  persist();
-  renderClients();
-  // clear form
-  nameI.value=''; brandI.value=''; plateI.value=''; amountI.value=''; salaryI.value=''; 
-  triggerTitleAssemble(); // little celebration
+  persist(); renderClients();
+  // clear minimal fields
+  nameI.value=''; brandI.value=''; plateI.value=''; amountI.value=''; salaryI.value='';
+  celebrateNeon();
 };
 
 exportBtn.onclick = ()=>{
@@ -363,314 +319,196 @@ clearBtn.onclick = ()=>{
 
 renderClients();
 
-/* ---------------------------
-   Title shards animation
-   --------------------------- */
-const titleCanvas = document.getElementById('titleCanvas');
-const tctx = titleCanvas.getContext('2d');
-let shards = [], assembling=false, floating=false;
-
-// draw big outline text to offscreen to create shards
-function initTitleShards(){
-  const W = titleCanvas.width = titleCanvas.clientWidth* (window.devicePixelRatio || 1);
-  const H = titleCanvas.height = titleCanvas.clientHeight* (window.devicePixelRatio || 1);
-  tctx.clearRect(0,0,W,H);
-
-  // text settings
-  const text = 'КЛИЕНТЫ';
-  const fontSize = Math.floor(H * 0.7);
-  tctx.fillStyle = '#FFF';
-  tctx.font = `700 ${fontSize}px Inter, sans-serif`;
-  tctx.textAlign = 'center';
-  tctx.textBaseline = 'middle';
-  // draw outline stroke
-  tctx.lineWidth = Math.max(6, Math.floor(fontSize/18));
-  tctx.strokeStyle = 'rgba(139,92,246,0.95)';
-  tctx.strokeText(text, W/2, H/2);
-  // draw filled for particle mask
-  tctx.fillStyle = 'white';
-  tctx.fillText(text, W/2, H/2);
-
-  // sample pixels to create shards
-  const imgd = tctx.getImageData(0,0,W,H);
-  const data = imgd.data;
-  const points = [];
-  // sample grid
-  const step = Math.max(5, Math.floor(fontSize/18));
-  for(let y=0;y<H;y+=step){
-    for(let x=0;x<W;x+=step){
-      const idx = (y*W + x)*4;
-      if(data[idx+3] > 120){ // opaque
-        points.push({x,y});
-      }
-    }
-  }
-  // build shards by grouping nearby points
-  shards = [];
-  const used = new Uint8Array(points.length);
-  for(let i=0;i<points.length;i++){
-    if(used[i]) continue;
-    const p = points[i];
-    const shardPts = [p];
-    used[i]=1;
-    // find some nearby neighbors up to N
-    for(let j=i+1;j<points.length && shardPts.length<10;j++){
-      if(used[j]) continue;
-      const q = points[j];
-      const dx = p.x - q.x, dy = p.y - q.y;
-      if(dx*dx+dy*dy < (step*step*20)){
-        shardPts.push(q); used[j]=1;
-      }
-    }
-    // compute centroid & create a polygon bounding rect
-    const cx = shardPts.reduce((s,o)=>s+o.x,0)/shardPts.length;
-    const cy = shardPts.reduce((s,o)=>s+o.y,0)/shardPts.length;
-    // sample color from canvas (purple glow will be applied)
-    const px = Math.round(cx), py = Math.round(cy), idx2=(py*W+px)*4;
-    const color = `rgba(${data[idx2]},${data[idx2+1]},${data[idx2+2]},${data[idx2+3]/255})`;
-    shards.push({
-      cx, cy,
-      x: Math.random()*W, y: Math.random()*(H*3)+H, // start scattered below
-      vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*8, rot: (Math.random()-0.5)*0.6,
-      targetX: cx, targetY: cy,
-      w: step* (0.9 + Math.random()*1.4),
-      h: step* (0.7 + Math.random()*1.2),
-      color
-    });
-  }
-  // clear draw (we will animate shards)
-  tctx.clearRect(0,0,W,H);
+/* small visual feedback */
+function celebrateNeon(){
+  const b = document.querySelector('.logo-badge');
+  b.style.transition = 'transform 360ms cubic-bezier(.2,.9,.2,1), box-shadow 360ms';
+  b.style.transform = 'scale(1.06) rotate(-6deg)';
+  b.style.boxShadow = '0 20px 80px rgba(139,92,246,0.35), 0 0 60px rgba(255,45,149,0.15)';
+  setTimeout(()=>{ b.style.transform=''; b.style.boxShadow='var(--neon-glow)'; }, 420);
 }
-
-// animate assemble
-let lastTime = 0;
-function drawTitle(now){
-  requestAnimationFrame(drawTitle);
-  if(!shards.length) return;
-  const W = titleCanvas.width, H = titleCanvas.height;
-  const dt = Math.min(32, now - lastTime); lastTime = now;
-  tctx.clearRect(0,0,W,H);
-
-  // soft glow background stroke of outline
-  tctx.save();
-  tctx.globalCompositeOperation = 'lighter';
-  tctx.fillStyle = 'rgba(139,92,246,0.02)';
-  tctx.fillRect(0,0,W,H);
-  tctx.restore();
-
-  for(let s of shards){
-    // move towards target when assembling
-    if(assembling){
-      const dx = s.targetX - s.x, dy = s.targetY - s.y;
-      s.vx += dx*0.002 * (dt/16);
-      s.vy += dy*0.002 * (dt/16);
-      s.vx *= 0.92; s.vy *= 0.92;
-      s.x += s.vx * (dt/16);
-      s.y += s.vy * (dt/16);
-      s.rot *= 0.98;
-      // if close, nudge into final place
-      if(Math.hypot(dx,dy) < 2){
-        s.x = s.targetX; s.y = s.targetY;
-      }
-    } else if(floating){
-      // gentle floating around final position
-      s.x += Math.sin((now/1000) + s.cx)*0.12;
-      s.y += Math.cos((now/1300)+s.cy)*0.08;
-      s.rot *= 0.995;
-    } else {
-      // idle scattered
-      s.x += s.vx*0.06;
-      s.y += s.vy*0.06;
-      s.vy += 0.02;
-    }
-
-    tctx.save();
-    tctx.translate(s.x, s.y);
-    tctx.rotate(s.rot);
-    // draw small rounded rectangle representing shard
-    const grad = tctx.createLinearGradient(-s.w/2, -s.h/2, s.w/2, s.h/2);
-    grad.addColorStop(0, 'rgba(255,255,255,0.06)');
-    grad.addColorStop(0.5, 'rgba(139,92,246,0.9)');
-    grad.addColorStop(1, 'rgba(75,16,140,0.6)');
-    tctx.fillStyle = grad;
-    roundRect(tctx, -s.w/2, -s.h/2, s.w, s.h, Math.max(2, s.w*0.12));
-    tctx.fill();
-    tctx.restore();
-  }
-
-  // overlay outline glow
-  tctx.save();
-  tctx.globalCompositeOperation = 'screen';
-  tctx.strokeStyle = 'rgba(139,92,246,0.9)';
-  tctx.lineWidth = Math.max(6, Math.floor((H*0.7)/18));
-  tctx.strokeText('КЛИЕНТЫ', W/2, H/2);
-  tctx.restore();
+function feedbackPulse(){
+  const s = document.getElementById('stage');
+  s.style.transition = 'box-shadow 260ms'; s.style.boxShadow = '0 40px 120px rgba(139,92,246,0.18)';
+  setTimeout(()=> s.style.boxShadow = '0 30px 70px rgba(2,2,6,0.7), inset 0 2px 20px rgba(139,92,246,0.02)', 360);
 }
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function triggerTitleAssemble(){
-  assembling = true;
-  floating = false;
-  // after 1.8s switch to floating
-  setTimeout(()=>{ assembling=false; floating=true; }, 1800);
-}
-function triggerTitleFloat(){
-  // small subtle float feedback
-  floating = true;
-  setTimeout(()=>floating=true, 800);
-}
-
-// init
-initTitleShards();
-triggerTitleAssemble();
-requestAnimationFrame(drawTitle);
-window.addEventListener('resize', ()=>{
-  // debounce-ish
-  setTimeout(()=>{ initTitleShards(); }, 120);
-});
 
 /* ---------------------------
-   Floating abstract rectangles
+   background orbs + rects (cyberpunk 3D)
    --------------------------- */
-const floatingObjects = document.getElementById('floatingObjects');
-const rects = [];
-
-function createRects(){
-  floatingObjects.innerHTML = '';
-  rects.length=0;
-  const count = 6;
-  for(let i=0;i<count;i++){
-    const d = document.createElement('div');
-    d.className = 'rect' + (i%2? ' small':'');
-    const s = 0.7 + Math.random()*1.6;
-    d.style.transform = `translate3d(${(20+i*12)}%,${30 + i*6}%,0) rotateX(${10+i*2}deg) rotateY(${(i*12)}deg)`;
-    d.style.left = (10 + Math.random()*80) + '%';
-    d.style.top = (10 + Math.random()*75) + '%';
-    d.style.opacity = 0.85 - Math.random()*0.35;
-    d.style.zIndex = 10+i;
-    d.innerHTML = `<div class="label">${['CRM','VIP','КЛИЕНТ','ЗАКАЗ','СДЕЛКА','ПРОФИТ'][i%6]}</div>`;
-    floatingObjects.appendChild(d);
-    rects.push({el:d,x:parseFloat(d.style.left),y:parseFloat(d.style.top),rotX:10+i*2,rotY:i*14,scale:s});
-  }
-}
-createRects();
-
-let mouseX=0, mouseY=0;
-window.addEventListener('mousemove', (e)=>{
-  const r = document.querySelector('#stage').getBoundingClientRect();
-  mouseX = (e.clientX - (r.left + r.width/2)) / r.width;
-  mouseY = (e.clientY - (r.top + r.height/2)) / r.height;
-  updateRects();
-});
-window.addEventListener('touchmove', (e)=>{
-  if(!e.touches || !e.touches[0]) return;
-  const r = document.querySelector('#stage').getBoundingClientRect();
-  mouseX = (e.touches[0].clientX - (r.left + r.width/2)) / r.width;
-  mouseY = (e.touches[0].clientY - (r.top + r.height/2)) / r.height;
-  updateRects();
-},{passive:true});
-
-function updateRects(){
-  rects.forEach((r,i)=>{
-    const rx = r.rotX + mouseY* -60 - i*3;
-    const ry = r.rotY + mouseX* 90 + i*8;
-    const tx = r.x + mouseX* (8 + i*2);
-    const ty = r.y + mouseY* (12 - i);
-    r.el.style.left = tx + '%';
-    r.el.style.top = ty + '%';
-    r.el.style.transform = `translate3d(-50%,-50%,0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${r.scale})`;
-    r.el.style.boxShadow = `0 20px 60px rgba(8,6,12,0.6), 0 0 ${40 + i*6}px rgba(139,92,246,${0.12 + i*0.05})`;
-  });
-}
-
-/* flip on scroll */
-let flipped=false;
-window.addEventListener('wheel', (e)=>{
-  // detect direction
-  flipped = !flipped;
-  rects.forEach((r,i)=>{
-    if(flipped) r.el.style.transform += ' rotateY(180deg) ';
-    else r.el.style.transform = r.el.style.transform.replace(' rotateY(180deg) ','');
-  });
-});
-
-/* background canvas subtle gradient & moving orbs */
-const bgCanvas = document.getElementById('bgCanvas');
+const bgCanvas = $('bgCanvas');
 const bgCtx = bgCanvas.getContext('2d');
-let orbs = [];
+let orbs = [], rects = [];
+
 function initBg(){
   bgCanvas.width = bgCanvas.clientWidth * (window.devicePixelRatio || 1);
   bgCanvas.height = bgCanvas.clientHeight * (window.devicePixelRatio || 1);
+  // orbs
   orbs = [];
-  for(let i=0;i<8;i++){
+  for(let i=0;i<6;i++){
     orbs.push({
       x: Math.random()*bgCanvas.width,
       y: Math.random()*bgCanvas.height,
-      r: 20 + Math.random()*80,
-      vx: (Math.random()-0.5)*0.3,
-      vy: (Math.random()-0.5)*0.3,
-      alpha: 0.06 + Math.random()*0.2
+      r: 40 + Math.random()*120,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2,
+      alpha: 0.06 + Math.random()*0.22
     });
   }
+  // create rect placeholders in DOM
+  createRects();
 }
 function drawBg(){
   requestAnimationFrame(drawBg);
   const W = bgCanvas.width, H = bgCanvas.height;
   bgCtx.clearRect(0,0,W,H);
-
-  // layered background gradient
+  // base
   const g = bgCtx.createLinearGradient(0,0,W,H);
-  g.addColorStop(0, 'rgba(9,7,14,0.85)');
-  g.addColorStop(1, 'rgba(4,2,8,0.95)');
-  bgCtx.fillStyle = g;
-  bgCtx.fillRect(0,0,W,H);
-
+  g.addColorStop(0,'rgba(6,4,12,0.9)');
+  g.addColorStop(1,'rgba(3,2,8,0.95)');
+  bgCtx.fillStyle = g; bgCtx.fillRect(0,0,W,H);
   // orbs
   for(let o of orbs){
-    o.x += o.vx;
-    o.y += o.vy;
-    if(o.x < -o.r) o.x = W + o.r;
-    if(o.y < -o.r) o.y = H + o.r;
+    o.x += o.vx; o.y += o.vy;
+    if(o.x < -o.r) o.x = W+o.r;
     if(o.x > W+o.r) o.x = -o.r;
+    if(o.y < -o.r) o.y = H+o.r;
     if(o.y > H+o.r) o.y = -o.r;
-    const rg = bgCtx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+    const rg = bgCtx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
     rg.addColorStop(0, `rgba(139,92,246,${0.12 + o.alpha*0.6})`);
-    rg.addColorStop(0.6, `rgba(139,92,246,${0.02 + o.alpha*0.15})`);
-    rg.addColorStop(1, `rgba(139,92,246,0)`);
-    bgCtx.fillStyle = rg;
-    bgCtx.fillRect(o.x - o.r, o.y - o.r, o.r*2, o.r*2);
+    rg.addColorStop(0.6, `rgba(255,45,149,${0.02 + o.alpha*0.1})`);
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    bgCtx.fillStyle = rg; bgCtx.fillRect(o.x-o.r,o.y-o.r,o.r*2,o.r*2);
   }
 }
-initBg();
-drawBg();
-window.addEventListener('resize', ()=>{ setTimeout(()=>{ initBg(); },120); });
+initBg(); drawBg();
+window.addEventListener('resize',()=> setTimeout(initBg,120));
 
-/* subtle initial animations */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // small entrance for rects
-  floatingObjects.style.opacity = 0;
-  setTimeout(()=>{ floatingObjects.style.transition = 'opacity 800ms ease'; floatingObjects.style.opacity = 1; },120);
-});
-
-/* little helpers to trigger slice assemble when new client added */
-function triggerTitleAssemble(){
-  assembling = true;
-  floating = false;
-  setTimeout(()=>{ assembling=false; floating=true; }, 1600);
+/* rects (DOM) */
+function createRects(){
+  const container = $('floatingObjects');
+  container.innerHTML = ''; rects = [];
+  const labels = ['NEON','VIP','ORDER','CHAIN','CORE','NODE'];
+  for(let i=0;i<6;i++){
+    const d = document.createElement('div'); d.className='rect' + (i%2? ' small':'');
+    d.style.left = (8 + Math.random()*84) + '%';
+    d.style.top = (12 + Math.random()*72) + '%';
+    d.style.opacity = 0.9 - Math.random()*0.3;
+    d.style.transform = `translate3d(-50%,-50%,0) rotateX(${8+i*3}deg) rotateY(${i*15}deg)`;
+    d.innerHTML = `<div class="label">${labels[i%labels.length]}</div>`;
+    container.appendChild(d);
+    rects.push({el:d, baseX:parseFloat(d.style.left), baseY:parseFloat(d.style.top), rx:8+i*3, ry:i*15, s:0.8 + Math.random()*1.2});
+  }
 }
 
-/* persist on unload */
-window.addEventListener('beforeunload', persist);
+/* parallax by mouse / touch */
+let mouseX=0, mouseY=0;
+const stageRect = ()=> document.getElementById('stage').getBoundingClientRect();
+window.addEventListener('mousemove', (e)=>{
+  const r = stageRect();
+  mouseX = (e.clientX - (r.left + r.width/2)) / r.width;
+  mouseY = (e.clientY - (r.top + r.height/2)) / r.height;
+  updateRects();
+});
+window.addEventListener('touchmove', (e)=>{
+  if(!e.touches||!e.touches[0]) return;
+  const r = stageRect();
+  mouseX = (e.touches[0].clientX - (r.left + r.width/2)) / r.width;
+  mouseY = (e.touches[0].clientY - (r.top + r.height/2)) / r.height;
+  updateRects();
+},{passive:true});
+function updateRects(){
+  rects.forEach((r,i)=>{
+    const tx = r.baseX + mouseX*(8 + i*2);
+    const ty = r.baseY + mouseY*(10 - i);
+    const rx = r.rx + mouseY * -60;
+    const ry = r.ry + mouseX * 120;
+    r.el.style.left = tx + '%'; r.el.style.top = ty + '%';
+    r.el.style.transform = `translate3d(-50%,-50%,0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${r.s})`;
+    r.el.style.boxShadow = `0 30px 80px rgba(4,3,10,0.7), 0 0 ${40 + i*8}px rgba(139,92,246,${0.08 + i*0.06})`;
+  });
+}
 
-/* small polyfills for keyboard mobile */
+/* flip effect on scroll */
+let flipped=false;
+window.addEventListener('wheel', (e)=>{
+  flipped = !flipped;
+  rects.forEach((r,i)=>{
+    if(flipped) r.el.style.transform += ' rotateY(180deg)';
+    else r.el.style.transform = r.el.style.transform.replace(' rotateY(180deg)','');
+  });
+});
+
+/* ---------------------------
+   PWA: manifest + service worker (created dynamically so single-file)
+   --------------------------- */
+function createManifestAndSW(){
+  // create a tiny SVG icon as data URL
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><rect width='100%' height='100%' rx='24' fill='#0b0611'/><g fill='none' stroke='%238B5CF6' stroke-width='6'><rect x='20' y='20' width='152' height='152' rx='18'/></g><text x='96' y='118' font-family='monospace' font-size='64' fill='%23fff' text-anchor='middle'>CP</text></svg>`;
+  const svgData = 'data:image/svg+xml;base64,' + btoa(svg);
+
+  const manifest = {
+    "name":"CRM — Cyberpunk 777",
+    "short_name":"CRM-CP",
+    "start_url":".",
+    "display":"standalone",
+    "background_color":"#04030a",
+    "theme_color":"#8B5CF6",
+    "icons":[
+      {"src":svgData,"sizes":"192x192","type":"image/svg+xml"},
+      {"src":svgData,"sizes":"512x512","type":"image/svg+xml"}
+    ]
+  };
+  // add manifest link dynamically
+  const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const mURL = URL.createObjectURL(mBlob);
+  let l = document.querySelector('link[rel="manifest"]');
+  if(!l){ l = document.createElement('link'); l.rel='manifest'; document.head.appendChild(l); }
+  l.href = mURL;
+
+  // add apple touch icon
+  let aLink = document.querySelector('link[rel="apple-touch-icon"]');
+  if(!aLink){ aLink = document.createElement('link'); aLink.rel='apple-touch-icon'; document.head.appendChild(aLink); }
+  aLink.href = svgData;
+
+  // create service worker blob
+  const swCode = `
+    const CACHE = 'crm-cyber-cache-v1';
+    const toCache = ['.'];
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(toCache)).catch(()=>{}));
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(clients.claim());
+    });
+    self.addEventListener('fetch', e => {
+      if(e.request.method !== 'GET') return;
+      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+        try{
+          if(res && res.type === 'basic'){
+            const copy = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, copy));
+          }
+        }catch(err){}
+        return res;
+      }).catch(()=>caches.match('.'))));
+    });
+  `;
+  const swBlob = new Blob([swCode], {type:'application/javascript'});
+  const swURL = URL.createObjectURL(swBlob);
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register(swURL).then(reg=>{
+      console.log('SW registered', reg);
+    }).catch(err=>{
+      console.warn('SW failed', err);
+    });
+  }
+}
+// create on load
+window.addEventListener('load', createManifestAndSW);
+
+/* small: avoid passive touch highlight on mobile */
 document.addEventListener('touchstart', ()=>{}, {passive:true});
 </script>
 </body>
