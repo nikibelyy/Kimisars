@@ -1,40 +1,644 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>Админ-панель</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Клиенты — CRM (Demo)</title>
+<style>
+  :root{
+    --main:#8B5CF6;
+    --bg1:#0b0c0f;
+    --bg2:#07070a;
+    --glass: rgba(255,255,255,0.04);
+    --glass-2: rgba(255,255,255,0.02);
+    --card-bg: rgba(255,255,255,0.03);
+    --accent: var(--main);
+    --muted: rgba(255,255,255,0.25);
+    --glass-border: rgba(255,255,255,0.06);
+    --shadow: 0 10px 30px rgba(11,10,15,0.6);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(139,92,246,0.08), transparent),
+                radial-gradient(900px 450px at 90% 90%, rgba(55,65,255,0.03), transparent),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow:auto;
+  }
+
+  /* layout */
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    gap:24px;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+    box-sizing:border-box;
+    position:relative;
+    perspective:1000px;
+  }
+
+  /* background 3D rectangles (абстракции) */
+  .space {
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .rect {
+    position:absolute;
+    width:160px;
+    height:90px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(139,92,246,0.06));
+    border-radius:12px;
+    box-shadow: 0 10px 30px rgba(139,92,246,0.08), inset 0 -2px 8px rgba(255,255,255,0.02);
+    transform-style:preserve-3d;
+    transition:transform 0.2s ease-out, box-shadow 0.3s;
+    will-change:transform;
+    backdrop-filter: blur(6px) saturate(120%);
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  .rect::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+    mix-blend-mode:overlay;
+  }
+  .rect.flip {
+    transform: rotateY(180deg) scale(1);
+  }
+
+  /* Main panel */
+  .panel{
+    z-index:2;
+    width:min(1100px,95%);
+    max-width:1200px;
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:980px){
+    .panel{ grid-template-columns: 1fr; padding-top:200px; }
+    .controls { order: 2; }
+  }
+
+  /* big title with shards */
+  .hero {
+    position:relative;
+    min-height:420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+    overflow:visible;
+    padding:40px;
+    isolation:isolate;
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+
+  /* container that will be masked by SVG text */
+  .title-mask {
+    position:relative;
+    width:100%;
+    height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+  }
+
+  /* shards inside mask */
+  .shard {
+    position:absolute;
+    width:18px;
+    height:10px;
+    border-radius:2px;
+    background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(139,92,246,0.35));
+    transform-origin:center;
+    transform: translate3d(0,0,0) rotate(0deg);
+    opacity:0.95;
+    box-shadow: 0 6px 20px rgba(139,92,246,0.08);
+  }
+
+  /* after assembled, small floating */
+  .assembled .shard {
+    animation: floatShards 6s ease-in-out infinite;
+  }
+  @keyframes floatShards{
+    0%{ transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--r)); }
+    50%{ transform: translate3d(calc(var(--tx) + 6px), calc(var(--ty) - 8px), 0) rotate(calc(var(--r) + 6deg)); }
+    100%{ transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--r)); }
+  }
+
+  /* outline "КЛИЕНТЫ" text behind */
+  .title-outline {
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+  .title-outline svg text{
+    font-size:120px;
+    font-weight:700;
+    letter-spacing:10px;
+    fill:none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width:1.5;
+    paint-order:stroke;
+  }
+  @media (max-width:600px){
+    .title-outline svg text{ font-size:72px; letter-spacing:6px; }
+    .title-mask{height:160px;}
+  }
+
+  /* Controls card */
+  .controls {
+    align-self:start;
+    z-index:3;
+  }
+  .card{
+    border-radius:14px;
+    padding:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid var(--glass-border);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    backdrop-filter: blur(8px) saturate(120%);
+  }
+  .card h3{ margin:0 0 12px 0; font-size:18px; color:var(--muted); }
+  .form-row{ display:flex; gap:8px; margin-bottom:10px; }
+  .form-row .col{ flex:1; }
+  label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  input[type="text"], input[type="number"]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    background: rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.03);
+    color:#fff;
+    font-size:14px;
+    outline:none;
+  }
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:10px;
+    border: none;
+    background: linear-gradient(90deg, var(--main), #5b3ce6 80%);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    box-shadow: 0 6px 18px rgba(139,92,246,0.2);
+  }
+  .btn.secondary{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.04);
+    color:var(--muted);
+    box-shadow:none;
+  }
+
+  /* list */
+  .list{
+    margin-top:16px;
+    max-height:380px;
+    overflow:auto;
+    padding-right:8px;
+  }
+  table{ width:100%; border-collapse:collapse; font-size:13px; color:rgba(255,255,255,0.9); }
+  th,td{ padding:10px 8px; text-align:left; border-bottom:1px dashed rgba(255,255,255,0.03); }
+  th{ font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; }
+  .salary { color: var(--main); font-weight:700; }
+
+  /* small helper */
+  .muted { color:var(--muted); font-size:13px; }
+
+  /* small iOS-style app hint */
+  .hint {
+    position:fixed;
+    left:18px;
+    bottom:18px;
+    z-index:9;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:13px;
+    color:var(--muted);
+    backdrop-filter: blur(6px);
+  }
+
+  /* subtle glow */
+  .glow {
+    position:absolute;
+    width:380px;
+    height:380px;
+    border-radius:50%;
+    filter: blur(80px);
+    opacity:0.55;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode: screen;
+    background: radial-gradient(circle at 30% 30%, rgba(139,92,246,0.6), rgba(139,92,246,0.05));
+    transform: translate3d(-40%, -10%, 0);
+  }
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="my-3">📋 Админ-панель</h1>
-    <a href="new.html" class="btn btn-primary mb-3">➕ Создать новую</a>
-    <div id="list"></div>
-  </div>
+<div class="space" id="space"></div>
 
-  <script>
-    let data = getData();
-    let list = document.getElementById("list");
-    if (data.length === 0) {
-      list.innerHTML = "<p>Заявок пока нет</p>";
-    } else {
-      data.forEach(r => {
-        list.innerHTML += `
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">${r.client}</h5>
-              <p class="card-text">${r.description}</p>
-              <span class="badge bg-${r.status==='Согласился'?'success':r.status==='Отказался'?'danger':'secondary'}">
-                ${r.status}
-              </span>
+<div class="wrap">
+  <div class="panel">
+
+    <section class="hero card">
+      <!-- glow -->
+      <div class="glow" aria-hidden="true"></div>
+
+      <!-- Mask container: we'll define SVG mask below -->
+      <div id="titleArea" class="title-mask" aria-hidden="true">
+        <!-- shards will be injected here -->
+      </div>
+
+      <!-- outline text behind -->
+      <div class="title-outline" aria-hidden="true">
+        <!-- Inline SVG used both for outline and mask reference -->
+        <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;">
+          <defs>
+            <mask id="text-mask" maskUnits="userSpaceOnUse">
+              <rect x="0" y="0" width="1200" height="300" fill="black"/>
+              <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle"
+                    font-family="Inter, Arial" font-weight="800" font-size="160" fill="white" letter-spacing="8">
+                КЛИЕНТЫ
+              </text>
+            </mask>
+          </defs>
+
+          <!-- outline -->
+          <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle"
+                font-family="Inter, Arial" font-weight="800" font-size="160" letter-spacing="8">
+            КЛИЕНТЫ
+          </text>
+
+        </svg>
+      </div>
+
+    </section>
+
+    <aside class="controls">
+      <div class="card">
+        <h3>Добавить клиента</h3>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="muted">Автомат. расчёт зарплаты: <strong id="calcPreview" style="color:var(--main)">0</strong></div>
+          <button class="btn secondary" id="resetBtn">Очистить</button>
+        </div>
+
+        <form id="clientForm" autocomplete="off" onsubmit="return false;">
+          <div class="form-row">
+            <div class="col">
+              <label>Имя клиента</label>
+              <input id="name" type="text" placeholder="Иван Иванов" required>
+            </div>
+            <div class="col">
+              <label>Марка авто</label>
+              <input id="brand" type="text" placeholder="Toyota">
             </div>
           </div>
-        `;
-      });
-    }
-  </script>
+
+          <div class="form-row">
+            <div class="col">
+              <label>Гос. номер</label>
+              <input id="plate" type="text" placeholder="A111AA">
+            </div>
+            <div class="col">
+              <label>Сумма сделки, ₽</label>
+              <input id="amount" type="number" min="0" step="0.01" value="100000">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col">
+              <label>Процент, %</label>
+              <input id="percent" type="number" min="0" max="100" step="0.1" value="7">
+            </div>
+            <div style="display:flex;align-items:end;">
+              <button id="addBtn" class="btn" type="submit">Добавить</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="list" id="listWrap">
+          <table id="clientsTable" aria-live="polite">
+            <thead><tr><th>Имя</th><th>Авто</th><th>Гос. №</th><th>Сумма</th><th>Зарплата</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<div class="hint">Поделитесь экраном iPhone — интерфейс адаптирован для мобильного просмотра</div>
+
+<script>
+/* -------------------------
+   Utilities and initial data
+   ------------------------- */
+const mainColor = '#8B5CF6';
+const space = document.getElementById('space');
+const titleArea = document.getElementById('titleArea');
+const listBody = document.querySelector('#clientsTable tbody');
+const calcPreview = document.getElementById('calcPreview');
+
+let clients = [];
+
+/* -------------------------
+   Create background rectangles (абстракции)
+   ------------------------- */
+const rectCount = 10;
+const rects = [];
+function rand(min,max){ return Math.random()*(max-min)+min; }
+
+for(let i=0;i<rectCount;i++){
+  const el = document.createElement('div');
+  el.className='rect';
+  el.style.left = rand(5,80)+'%';
+  el.style.top = rand(5,85)+'%';
+  const w = rand(80,220); const h = rand(50,160);
+  el.style.width = w+'px';
+  el.style.height = h+'px';
+  el.style.transform = `translate3d(0,0,${rand(-200,200)}px) rotate(${rand(-20,20)}deg)`;
+  el.dataset.baseX = parseFloat(el.style.left);
+  el.dataset.baseY = parseFloat(el.style.top);
+  el.dataset.z = rand(-300,300);
+  space.appendChild(el);
+  rects.push(el);
+}
+
+/* Flip on scroll: toggle 'flip' class based on scroll */
+let flipped=false;
+window.addEventListener('scroll', ()=>{
+  const threshold = window.innerHeight*0.25;
+  const should = window.scrollY>threshold;
+  if(should !== flipped){
+    flipped = should;
+    rects.forEach((r,idx)=>{
+      if(should) r.classList.add('flip'); else r.classList.remove('flip');
+      // small variation of flip timing
+      r.style.transitionDelay = (idx*30)+'ms';
+    });
+  }
+});
+
+/* Mouse & touch movement -> 3D parallax for rects */
+let pointerX = 0.5, pointerY = 0.5;
+function handlePointerMove(x,y){
+  pointerX = x; pointerY = y;
+  rects.forEach((r,idx)=>{
+    const depth = r.dataset.z/800;
+    const rx = (pointerX-0.5)*40*(1+depth);
+    const ry = (pointerY-0.5)*-40*(1+depth);
+    const rot = (pointerX-0.5)*12*(1+depth);
+    r.style.transform = `translate3d(${rx}px,${ry}px,${r.dataset.z}px) rotate(${rot}deg)`;
+    r.style.boxShadow = `${-rx}px ${Math.abs(ry)*0.3+8}px 30px rgba(139,92,246,0.07)`;
+  });
+}
+window.addEventListener('mousemove', (e)=>{
+  handlePointerMove(e.clientX/window.innerWidth, e.clientY/window.innerHeight);
+});
+window.addEventListener('touchmove', (e)=>{
+  if(e.touches && e.touches[0]) {
+    handlePointerMove(e.touches[0].clientX/window.innerWidth, e.touches[0].clientY/window.innerHeight);
+  }
+});
+
+/* Device orientation for mobile tilt */
+if(window.DeviceOrientationEvent){
+  window.addEventListener('deviceorientation', (ev)=>{
+    const gamma = ev.gamma || 0; // left-right tilt
+    const beta = ev.beta || 0;   // front-back
+    const x = Math.min(Math.max(0.5 + gamma/60, 0),1);
+    const y = Math.min(Math.max(0.5 + beta/60, 0),1);
+    handlePointerMove(x,y);
+  }, true);
+}
+
+/* -------------------------
+   Shards assembling into "КЛИЕНТЫ"
+   ------------------------- */
+/* We'll use an inline SVG mask (already in DOM) applied to titleArea via CSS mask.
+   Create many small shard divs, scatter them, then animate them inside the masked box.
+*/
+const SHARD_COUNT = 420;
+const shards = [];
+function createShards(){
+  // apply mask from inline SVG: use url(#text-mask) via style
+  titleArea.style.mask = 'url(#text-mask)';
+  titleArea.style.webkitMask = 'url(#text-mask)';
+  titleArea.style.width = '100%';
+  titleArea.style.maxWidth = '100%';
+  titleArea.style.height = '100%';
+  titleArea.style.display = 'block';
+  titleArea.style.position = 'relative';
+
+  const rect = titleArea.getBoundingClientRect();
+  for(let i=0;i<SHARD_COUNT;i++){
+    const s = document.createElement('div');
+    s.className='shard';
+    // random size
+    const w = Math.round(rand(8,28));
+    const h = Math.round(rand(6,16));
+    s.style.width = w+'px';
+    s.style.height = h+'px';
+    // initial scattered position outside (random edge)
+    const side = Math.floor(rand(0,4));
+    let x,y;
+    if(side===0){ x = rand(-300, -40); y = rand(-300, rect.height+300); }
+    else if(side===1){ x = rand(rect.width+40, rect.width+300); y = rand(-300, rect.height+300); }
+    else if(side===2){ x = rand(-200, rect.width+200); y = rand(-300,-40); }
+    else { x = rand(-200, rect.width+200); y = rand(rect.height+40, rect.height+300); }
+
+    s.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rand(-220,220)}deg) scale(${rand(0.6,1.1)})`;
+    s.dataset.tx = (Math.round(rand(0, rect.width-20))) + 'px';
+    s.dataset.ty = (Math.round(rand(0, rect.height-6))) + 'px';
+    // custom CSS vars for float anim target
+    s.style.setProperty('--tx', s.dataset.tx);
+    s.style.setProperty('--ty', s.dataset.ty);
+    s.style.setProperty('--r', rand(-20,20)+'deg');
+
+    titleArea.appendChild(s);
+    shards.push(s);
+  }
+}
+createShards();
+
+/* Animate shards to converge inside mask */
+function assembleShards(){
+  const rect = titleArea.getBoundingClientRect();
+  // Slight staggered animation
+  shards.forEach((s,i)=>{
+    setTimeout(()=>{
+      // move to target (translated to the masked box internal coordinates)
+      const tx = parseFloat(s.dataset.tx);
+      const ty = parseFloat(s.dataset.ty);
+      s.style.transition = `transform ${rand(700,1400)}ms cubic-bezier(.2,.9,.2,1)`;
+      s.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rand(-20,20)}deg)`;
+      // set CSS var for float
+      s.style.setProperty('--tx', tx+'px');
+      s.style.setProperty('--ty', ty+'px');
+      s.style.setProperty('--r', rand(-12,12)+'deg');
+    }, i * 6);
+  });
+
+  // after assembly, add class to enable floating
+  setTimeout(()=> titleArea.classList.add('assembled'), 1800);
+}
+/* Trigger assemble after small delay to let layout settle */
+window.addEventListener('load', ()=> setTimeout(assembleShards, 360));
+
+/* -------------------------
+   Clients list + calculation
+   ------------------------- */
+const nameInp = document.getElementById('name');
+const brandInp = document.getElementById('brand');
+const plateInp = document.getElementById('plate');
+const amountInp = document.getElementById('amount');
+const percentInp = document.getElementById('percent');
+const addBtn = document.getElementById('addBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+function formatMoney(v){
+  return Number(v).toLocaleString('ru-RU', {style:'currency', currency:'RUB', maximumFractionDigits:0});
+}
+
+function recalcPreview(){
+  const a = parseFloat(amountInp.value||0);
+  const p = parseFloat(percentInp.value||0);
+  const sal = Math.round((a * p)/100);
+  calcPreview.textContent = formatMoney(sal);
+}
+amountInp.addEventListener('input', recalcPreview);
+percentInp.addEventListener('input', recalcPreview);
+window.addEventListener('load', recalcPreview);
+
+addBtn.addEventListener('click', ()=>{
+  const name = nameInp.value.trim();
+  const brand = brandInp.value.trim();
+  const plate = plateInp.value.trim();
+  const amount = parseFloat(amountInp.value||0);
+  const percent = parseFloat(percentInp.value||0);
+
+  if(!name || isNaN(amount)) {
+    alert('Введите имя и сумму сделки.');
+    return;
+  }
+  const salary = Math.round((amount * percent)/100);
+  const client = {name,brand,plate,amount,salary,percent, id: Date.now()+Math.floor(Math.random()*999)};
+  clients.unshift(client);
+  renderClients();
+  // clear some fields for quick add
+  nameInp.value=''; brandInp.value=''; plateInp.value='';
+  amountInp.value = Math.max(0, amount);
+  recalcPreview();
+});
+
+resetBtn.addEventListener('click', ()=>{
+  if(confirm('Очистить список клиентов?')) {
+    clients = [];
+    renderClients();
+  }
+});
+
+function renderClients(){
+  listBody.innerHTML='';
+  clients.forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(c.name)}</td>
+                    <td>${escapeHtml(c.brand)}</td>
+                    <td>${escapeHtml(c.plate)}</td>
+                    <td>${formatMoney(c.amount)}</td>
+                    <td class="salary">${formatMoney(c.salary)} <span style="color:var(--muted);font-weight:600">(${c.percent}%)</span></td>`;
+    listBody.appendChild(tr);
+  });
+}
+
+/* small helper to avoid XSS when injecting names */
+function escapeHtml(unsafe) {
+    return unsafe
+         .replaceAll('&','&amp;')
+         .replaceAll('<','&lt;')
+         .replaceAll('>','&gt;')
+         .replaceAll('"','&quot;')
+         .replaceAll("'", '&#039;');
+}
+
+/* keyboard: Enter to add */
+document.getElementById('clientForm').addEventListener('submit', (e)=>{ e.preventDefault(); addBtn.click(); });
+
+/* nice little enter animation for new rows (optional) */
+const obs = new MutationObserver(()=>{/* could animate */});
+obs.observe(listBody, {childList:true});
+
+/* -------------------------
+   Bonus: make the headline title respond to pointer (tilt)
+   ------------------------- */
+let hero = document.querySelector('.hero');
+function heroTilt(x,y){
+  const rx = (y-0.5)*6;
+  const ry = (x-0.5)*-10;
+  hero.style.transform = `translateZ(0) rotateX(${rx}deg) rotateY(${ry}deg)`;
+}
+window.addEventListener('mousemove', e=>{
+  heroTilt(e.clientX/window.innerWidth, e.clientY/window.innerHeight);
+});
+window.addEventListener('touchmove', e=>{
+  if(e.touches && e.touches[0]) heroTilt(e.touches[0].clientX/window.innerWidth, e.touches[0].clientY/window.innerHeight);
+});
+
+/* Ensure responsiveness on resize: recalc shard targets a bit */
+let resizeTO;
+window.addEventListener('resize', ()=>{
+  clearTimeout(resizeTO);
+  resizeTO = setTimeout(()=>{
+    // reposition shard targets inside updated box bounds
+    const rect = titleArea.getBoundingClientRect();
+    shards.forEach(s=>{
+      const tx = Math.round(rand(0, rect.width-20));
+      const ty = Math.round(rand(0, rect.height-6));
+      s.dataset.tx = tx; s.dataset.ty = ty;
+      s.style.setProperty('--tx', tx+'px');
+      s.style.setProperty('--ty', ty+'px');
+      if(titleArea.classList.contains('assembled')) {
+        s.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rand(-20,20)}deg)`;
+      }
+    });
+  },150);
+});
+
+/* Initial tiny demo data */
+clients = [
+  {name:'Анна Смирнова', brand:'Mercedes', plate:'A777AA', amount:2500000, salary: Math.round(2500000*7/100), percent:7, id:1},
+  {name:'ООО ТехАвто', brand:'Lexus', plate:'B123BM', amount:980000, salary: Math.round(980000*6.5/100), percent:6.5, id:2},
+];
+renderClients();
+
+</script>
 </body>
 </html>
