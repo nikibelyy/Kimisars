@@ -2,643 +2,676 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Клиенты — CRM (Demo)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>CRM — Клиенты Из Будущего</title>
 <style>
   :root{
-    --main:#8B5CF6;
-    --bg1:#0b0c0f;
-    --bg2:#07070a;
-    --glass: rgba(255,255,255,0.04);
-    --glass-2: rgba(255,255,255,0.02);
+    --accent: #8B5CF6;
+    --bg:#06040a;
     --card-bg: rgba(255,255,255,0.03);
-    --accent: var(--main);
-    --muted: rgba(255,255,255,0.25);
+    --glass: rgba(255,255,255,0.04);
+    --muted: rgba(255,255,255,0.6);
     --glass-border: rgba(255,255,255,0.06);
-    --shadow: 0 10px 30px rgba(11,10,15,0.6);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    --neon: rgba(139,92,246,0.18);
   }
-  html,body{
-    height:100%;
-    margin:0;
-    background: radial-gradient(1200px 600px at 10% 10%, rgba(139,92,246,0.08), transparent),
-                radial-gradient(900px 450px at 90% 90%, rgba(55,65,255,0.03), transparent),
-                linear-gradient(180deg,var(--bg1),var(--bg2));
-    color:#fff;
+  html,body{height:100%;margin:0;background:
+    radial-gradient(1200px 400px at 10% 10%, rgba(139,92,246,0.06), transparent 6%),
+    radial-gradient(1000px 400px at 90% 90%, rgba(0,0,0,0.2), transparent 10%),
+    var(--bg);
+    color:#e9e6ee;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    overflow:auto;
   }
 
-  /* layout */
+  /* LAYOUT */
   .wrap{
-    min-height:100vh;
-    display:flex;
-    gap:24px;
-    align-items:center;
-    justify-content:center;
-    padding:40px;
-    box-sizing:border-box;
+    max-width:980px;
+    margin:20px auto;
+    padding:22px;
     position:relative;
-    perspective:1000px;
   }
 
-  /* background 3D rectangles (абстракции) */
-  .space {
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:0;
+  header{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
   }
-  .rect {
-    position:absolute;
-    width:160px;
-    height:90px;
-    background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(139,92,246,0.06));
-    border-radius:12px;
-    box-shadow: 0 10px 30px rgba(139,92,246,0.08), inset 0 -2px 8px rgba(255,255,255,0.02);
-    transform-style:preserve-3d;
-    transition:transform 0.2s ease-out, box-shadow 0.3s;
-    will-change:transform;
-    backdrop-filter: blur(6px) saturate(120%);
-    border: 1px solid rgba(255,255,255,0.03);
+  .logo{
+    display:flex;
+    gap:12px;
+    align-items:center;
   }
-  .rect::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    border-radius:12px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
-    mix-blend-mode:overlay;
+  .logo-badge{
+    width:56px;height:56px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),#5b21b6);
+    box-shadow:0 6px 30px rgba(139,92,246,0.25), inset 0 -6px 18px rgba(255,255,255,0.02);
+    display:flex;align-items:center;justify-content:center;font-weight:700;
+    color:white;font-size:18px;
   }
-  .rect.flip {
-    transform: rotateY(180deg) scale(1);
-  }
+  .site-title{font-weight:700;font-size:18px;letter-spacing:0.6px;color:#fff;opacity:0.95}
+  .top-actions{display:flex;gap:10px;align-items:center}
 
-  /* Main panel */
-  .panel{
-    z-index:2;
-    width:min(1100px,95%);
-    max-width:1200px;
+  /* GRID cards */
+  .grid{
     display:grid;
-    grid-template-columns: 1fr 420px;
-    gap:24px;
-    align-items:start;
-  }
-  @media (max-width:980px){
-    .panel{ grid-template-columns: 1fr; padding-top:200px; }
-    .controls { order: 2; }
-  }
-
-  /* big title with shards */
-  .hero {
-    position:relative;
-    min-height:420px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
-    box-shadow: var(--shadow);
-    border: 1px solid var(--glass-border);
-    overflow:visible;
-    padding:40px;
-    isolation:isolate;
-    backdrop-filter: blur(6px) saturate(120%);
-  }
-
-  /* container that will be masked by SVG text */
-  .title-mask {
-    position:relative;
-    width:100%;
-    height:220px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    pointer-events:none;
-  }
-
-  /* shards inside mask */
-  .shard {
-    position:absolute;
-    width:18px;
-    height:10px;
-    border-radius:2px;
-    background: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(139,92,246,0.35));
-    transform-origin:center;
-    transform: translate3d(0,0,0) rotate(0deg);
-    opacity:0.95;
-    box-shadow: 0 6px 20px rgba(139,92,246,0.08);
-  }
-
-  /* after assembled, small floating */
-  .assembled .shard {
-    animation: floatShards 6s ease-in-out infinite;
-  }
-  @keyframes floatShards{
-    0%{ transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--r)); }
-    50%{ transform: translate3d(calc(var(--tx) + 6px), calc(var(--ty) - 8px), 0) rotate(calc(var(--r) + 6deg)); }
-    100%{ transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--r)); }
-  }
-
-  /* outline "КЛИЕНТЫ" text behind */
-  .title-outline {
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    pointer-events:none;
-    mix-blend-mode:screen;
-  }
-  .title-outline svg text{
-    font-size:120px;
-    font-weight:700;
-    letter-spacing:10px;
-    fill:none;
-    stroke: rgba(255,255,255,0.08);
-    stroke-width:1.5;
-    paint-order:stroke;
-  }
-  @media (max-width:600px){
-    .title-outline svg text{ font-size:72px; letter-spacing:6px; }
-    .title-mask{height:160px;}
-  }
-
-  /* Controls card */
-  .controls {
-    align-self:start;
-    z-index:3;
+    grid-template-columns: repeat(2,1fr);
+    gap:14px;
+    margin-bottom:24px;
   }
   .card{
     border-radius:14px;
     padding:18px;
     background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border:1px solid var(--glass-border);
-    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-    backdrop-filter: blur(8px) saturate(120%);
+    backdrop-filter: blur(8px) saturate(140%);
+    box-shadow: 0 10px 30px rgba(2,2,4,0.6), 0 1px 0 rgba(255,255,255,0.02) inset;
+    position:relative;
+    overflow:hidden;
   }
-  .card h3{ margin:0 0 12px 0; font-size:18px; color:var(--muted); }
-  .form-row{ display:flex; gap:8px; margin-bottom:10px; }
-  .form-row .col{ flex:1; }
-  label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-  input[type="text"], input[type="number"]{
-    width:100%;
-    padding:10px 12px;
-    border-radius:10px;
-    background: rgba(255,255,255,0.02);
-    border:1px solid rgba(255,255,255,0.03);
-    color:#fff;
-    font-size:14px;
-    outline:none;
+  .card .label{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .card .value{font-size:26px;font-weight:800;margin-top:8px;color:var(--accent)}
+
+  .big-card{grid-column:1/-1;padding:26px;display:flex;flex-direction:column;gap:18px}
+  .controls-row{display:flex;gap:12px;align-items:center}
+
+  /* FORM */
+  form{
+    border-radius:18px;padding:22px;border:1px solid rgba(255,255,255,0.03);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   }
-  .btn {
-    display:inline-flex;
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+  input[type="text"], input[type="number"], select{
+    width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    background:rgba(0,0,0,0.25);color:#fff;font-size:15px;outline:none;
+    box-shadow:0 6px 14px rgba(0,0,0,0.5) inset;
+    margin-bottom:14px;
+  }
+  .row{display:flex;gap:12px}
+  .row .col{flex:1}
+  .btn{
+    background: linear-gradient(90deg,var(--accent), #5b21b6);
+    border:none;color:white;padding:12px 16px;border-radius:12px;font-weight:700;
+    cursor:pointer;box-shadow:0 8px 30px rgba(139,92,246,0.28);
+  }
+  .muted-small{font-size:12px;color:#bdb7d6}
+
+  /* CLIENTS LIST */
+  .clients-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+  .client-row{
+    display:flex;justify-content:space-between;gap:8px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
     align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    border-radius:10px;
-    border: none;
-    background: linear-gradient(90deg, var(--main), #5b3ce6 80%);
-    color:white;
-    cursor:pointer;
-    font-weight:600;
-    box-shadow: 0 6px 18px rgba(139,92,246,0.2);
   }
-  .btn.secondary{
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.04);
-    color:var(--muted);
-    box-shadow:none;
+  .client-info{display:flex;gap:12px;align-items:center}
+  .client-avatar{
+    width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent), #4c1d95);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:white;
+    box-shadow:0 8px 30px rgba(139,92,246,0.12);
   }
+  .client-meta{display:flex;flex-direction:column}
+  .client-meta .name{font-weight:700}
+  .small-muted{font-size:13px;color:var(--muted)}
 
-  /* list */
-  .list{
-    margin-top:16px;
-    max-height:380px;
-    overflow:auto;
-    padding-right:8px;
+  /* 3D abstract field */
+  #stage{
+    height:300px;border-radius:18px;margin-bottom:18px;overflow:hidden;
+    position:relative;background:
+    linear-gradient(180deg, rgba(139,92,246,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 20px 60px rgba(2,2,4,0.6);
+    perspective:1200px;
   }
-  table{ width:100%; border-collapse:collapse; font-size:13px; color:rgba(255,255,255,0.9); }
-  th,td{ padding:10px 8px; text-align:left; border-bottom:1px dashed rgba(255,255,255,0.03); }
-  th{ font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; }
-  .salary { color: var(--main); font-weight:700; }
-
-  /* small helper */
-  .muted { color:var(--muted); font-size:13px; }
-
-  /* small iOS-style app hint */
-  .hint {
-    position:fixed;
-    left:18px;
-    bottom:18px;
-    z-index:9;
-    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.04);
-    padding:10px 12px;
-    border-radius:10px;
-    font-size:13px;
-    color:var(--muted);
+  .floating-objects{
+    position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none;
+  }
+  .rect{
+    width:200px;height:110px;border-radius:14px;position:absolute;left:50%;top:50%;
+    transform-origin:center;
+    background:linear-gradient(135deg, rgba(139,92,246,0.14), rgba(91,33,182,0.06));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 8px 40px rgba(8,6,12,0.8);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:rgba(255,255,255,0.95);
     backdrop-filter: blur(6px);
   }
+  .rect.small{width:140px;height:70px;border-radius:10px}
+  .rect .label{font-size:18px}
 
-  /* subtle glow */
-  .glow {
-    position:absolute;
-    width:380px;
-    height:380px;
-    border-radius:50%;
-    filter: blur(80px);
-    opacity:0.55;
-    z-index:0;
+  /* floating neon orbs */
+  .orb{
+    position:absolute;width:24px;height:24px;border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(139,92,246,0.95));
+    box-shadow:0 0 30px rgba(139,92,246,0.8);
+    filter:blur(0.6px);
     pointer-events:none;
-    mix-blend-mode: screen;
-    background: radial-gradient(circle at 30% 30%, rgba(139,92,246,0.6), rgba(139,92,246,0.05));
-    transform: translate3d(-40%, -10%, 0);
   }
 
+  /* "КЛИЕНТЫ" big outlined text canvas */
+  .title-wrap{
+    height:120px;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:12px;
+  }
+  canvas#titleCanvas{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 30px rgba(139,92,246,0.25));}
+
+  /* small responsive tweaks */
+  @media (max-width:720px){
+    .grid{grid-template-columns:1fr}
+    #stage{height:220px}
+    .wrap{padding:14px}
+  }
 </style>
 </head>
 <body>
-<div class="space" id="space"></div>
-
 <div class="wrap">
-  <div class="panel">
+  <header>
+    <div class="logo">
+      <div class="logo-badge">CI</div>
+      <div>
+        <div class="site-title">CRM — Клиенты Из Будущего</div>
+        <div class="muted-small">Тёмный стиль · 3D параллакс · стекломорфизм</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="muted-small">Сохранено локально</div>
+      <button class="btn" id="exportBtn">Экспорт JSON</button>
+    </div>
+  </header>
 
-    <section class="hero card">
-      <!-- glow -->
-      <div class="glow" aria-hidden="true"></div>
+  <div id="stage" aria-hidden="true">
+    <div class="floating-objects" id="floatingObjects"></div>
+    <canvas id="bgCanvas" width="1200" height="600" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+    <div style="position:absolute;inset:0;pointer-events:none">
+      <!-- title effect area -->
+      <div class="title-wrap"><canvas id="titleCanvas" width="1200" height="120"></canvas></div>
+    </div>
+  </div>
 
-      <!-- Mask container: we'll define SVG mask below -->
-      <div id="titleArea" class="title-mask" aria-hidden="true">
-        <!-- shards will be injected here -->
+  <div class="grid">
+    <div class="card">
+      <div class="label">Всего клиентов</div>
+      <div class="value" id="totalClients">0</div>
+    </div>
+    <div class="card">
+      <div class="label">Общая сумма</div>
+      <div class="value" id="totalAmount">₽0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Общая зарплата</div>
+      <div class="value" id="totalSalary">₽0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Средний процент</div>
+      <div class="value" id="avgPercent">0.0%</div>
+    </div>
+
+    <div class="card big-card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-weight:800;font-size:18px">Добавить клиента</div>
+        <div class="muted-small">Заполните данные, зарплата считается автоматически</div>
       </div>
 
-      <!-- outline text behind -->
-      <div class="title-outline" aria-hidden="true">
-        <!-- Inline SVG used both for outline and mask reference -->
-        <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;">
-          <defs>
-            <mask id="text-mask" maskUnits="userSpaceOnUse">
-              <rect x="0" y="0" width="1200" height="300" fill="black"/>
-              <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle"
-                    font-family="Inter, Arial" font-weight="800" font-size="160" fill="white" letter-spacing="8">
-                КЛИЕНТЫ
-              </text>
-            </mask>
-          </defs>
-
-          <!-- outline -->
-          <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle"
-                font-family="Inter, Arial" font-weight="800" font-size="160" letter-spacing="8">
-            КЛИЕНТЫ
-          </text>
-
-        </svg>
-      </div>
-
-    </section>
-
-    <aside class="controls">
-      <div class="card">
-        <h3>Добавить клиента</h3>
-        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div class="muted">Автомат. расчёт зарплаты: <strong id="calcPreview" style="color:var(--main)">0</strong></div>
-          <button class="btn secondary" id="resetBtn">Очистить</button>
+      <form id="clientForm" onsubmit="return false;">
+        <div class="row">
+          <div class="col">
+            <label>Имя клиента</label>
+            <input id="name" type="text" placeholder="Иван Иванов" required />
+          </div>
+          <div class="col">
+            <label>Марка авто</label>
+            <input id="brand" type="text" placeholder="Toyota Camry" />
+          </div>
         </div>
 
-        <form id="clientForm" autocomplete="off" onsubmit="return false;">
-          <div class="form-row">
-            <div class="col">
-              <label>Имя клиента</label>
-              <input id="name" type="text" placeholder="Иван Иванов" required>
-            </div>
-            <div class="col">
-              <label>Марка авто</label>
-              <input id="brand" type="text" placeholder="Toyota">
-            </div>
+        <div class="row">
+          <div class="col">
+            <label>Гос. номер</label>
+            <input id="plate" type="text" placeholder="A123БВ777" />
           </div>
-
-          <div class="form-row">
-            <div class="col">
-              <label>Гос. номер</label>
-              <input id="plate" type="text" placeholder="A111AA">
-            </div>
-            <div class="col">
-              <label>Сумма сделки, ₽</label>
-              <input id="amount" type="number" min="0" step="0.01" value="100000">
-            </div>
+          <div class="col">
+            <label>Сумма (₽)</label>
+            <input id="amount" type="number" placeholder="10000" min="0" />
           </div>
-
-          <div class="form-row">
-            <div class="col">
-              <label>Процент, %</label>
-              <input id="percent" type="number" min="0" max="100" step="0.1" value="7">
-            </div>
-            <div style="display:flex;align-items:end;">
-              <button id="addBtn" class="btn" type="submit">Добавить</button>
-            </div>
-          </div>
-        </form>
-
-        <div class="list" id="listWrap">
-          <table id="clientsTable" aria-live="polite">
-            <thead><tr><th>Имя</th><th>Авто</th><th>Гос. №</th><th>Сумма</th><th>Зарплата</th></tr></thead>
-            <tbody></tbody>
-          </table>
         </div>
 
-      </div>
-    </aside>
+        <div class="row">
+          <div class="col">
+            <label>Процент (%)</label>
+            <input id="percent" type="number" placeholder="10" min="0" step="0.1" value="10" />
+          </div>
+          <div class="col">
+            <label>Вычисленная зарплата (₽)</label>
+            <input id="salary" type="number" placeholder="0" readonly />
+          </div>
+        </div>
 
+        <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+          <button class="btn" id="addBtn">Добавить клиента</button>
+          <button class="btn" id="clearBtn" style="background:transparent;border:1px solid var(--glass-border);color:var(--accent)">Очистить всё</button>
+        </div>
+      </form>
+
+      <div class="clients-list" id="clientsList" style="margin-top:10px"></div>
+
+    </div>
   </div>
 </div>
 
-<div class="hint">Поделитесь экраном iPhone — интерфейс адаптирован для мобильного просмотра</div>
-
 <script>
-/* -------------------------
-   Utilities and initial data
-   ------------------------- */
-const mainColor = '#8B5CF6';
-const space = document.getElementById('space');
-const titleArea = document.getElementById('titleArea');
-const listBody = document.querySelector('#clientsTable tbody');
-const calcPreview = document.getElementById('calcPreview');
+/* ---------------------------
+   Data & UI logic (CRM)
+   --------------------------- */
+const clientsKey = 'crm_clients_v1';
+let clients = JSON.parse(localStorage.getItem(clientsKey) || '[]');
 
-let clients = [];
+const $ = id => document.getElementById(id);
+const nameI = $('name'), brandI = $('brand'), plateI = $('plate'),
+      amountI = $('amount'), percentI = $('percent'), salaryI = $('salary'),
+      clientsList = $('clientsList'),
+      totalClients = $('totalClients'), totalAmount = $('totalAmount'),
+      totalSalary = $('totalSalary'), avgPercent = $('avgPercent'),
+      exportBtn = $('exportBtn'), clearBtn = $('clearBtn');
 
-/* -------------------------
-   Create background rectangles (абстракции)
-   ------------------------- */
-const rectCount = 10;
-const rects = [];
-function rand(min,max){ return Math.random()*(max-min)+min; }
-
-for(let i=0;i<rectCount;i++){
-  const el = document.createElement('div');
-  el.className='rect';
-  el.style.left = rand(5,80)+'%';
-  el.style.top = rand(5,85)+'%';
-  const w = rand(80,220); const h = rand(50,160);
-  el.style.width = w+'px';
-  el.style.height = h+'px';
-  el.style.transform = `translate3d(0,0,${rand(-200,200)}px) rotate(${rand(-20,20)}deg)`;
-  el.dataset.baseX = parseFloat(el.style.left);
-  el.dataset.baseY = parseFloat(el.style.top);
-  el.dataset.z = rand(-300,300);
-  space.appendChild(el);
-  rects.push(el);
+function calcSalary(amount, percent){
+  amount = Number(amount)||0;
+  percent = Number(percent)||0;
+  return +(amount * percent/100).toFixed(2);
 }
-
-/* Flip on scroll: toggle 'flip' class based on scroll */
-let flipped=false;
-window.addEventListener('scroll', ()=>{
-  const threshold = window.innerHeight*0.25;
-  const should = window.scrollY>threshold;
-  if(should !== flipped){
-    flipped = should;
-    rects.forEach((r,idx)=>{
-      if(should) r.classList.add('flip'); else r.classList.remove('flip');
-      // small variation of flip timing
-      r.style.transitionDelay = (idx*30)+'ms';
-    });
-  }
-});
-
-/* Mouse & touch movement -> 3D parallax for rects */
-let pointerX = 0.5, pointerY = 0.5;
-function handlePointerMove(x,y){
-  pointerX = x; pointerY = y;
-  rects.forEach((r,idx)=>{
-    const depth = r.dataset.z/800;
-    const rx = (pointerX-0.5)*40*(1+depth);
-    const ry = (pointerY-0.5)*-40*(1+depth);
-    const rot = (pointerX-0.5)*12*(1+depth);
-    r.style.transform = `translate3d(${rx}px,${ry}px,${r.dataset.z}px) rotate(${rot}deg)`;
-    r.style.boxShadow = `${-rx}px ${Math.abs(ry)*0.3+8}px 30px rgba(139,92,246,0.07)`;
-  });
-}
-window.addEventListener('mousemove', (e)=>{
-  handlePointerMove(e.clientX/window.innerWidth, e.clientY/window.innerHeight);
-});
-window.addEventListener('touchmove', (e)=>{
-  if(e.touches && e.touches[0]) {
-    handlePointerMove(e.touches[0].clientX/window.innerWidth, e.touches[0].clientY/window.innerHeight);
-  }
-});
-
-/* Device orientation for mobile tilt */
-if(window.DeviceOrientationEvent){
-  window.addEventListener('deviceorientation', (ev)=>{
-    const gamma = ev.gamma || 0; // left-right tilt
-    const beta = ev.beta || 0;   // front-back
-    const x = Math.min(Math.max(0.5 + gamma/60, 0),1);
-    const y = Math.min(Math.max(0.5 + beta/60, 0),1);
-    handlePointerMove(x,y);
-  }, true);
-}
-
-/* -------------------------
-   Shards assembling into "КЛИЕНТЫ"
-   ------------------------- */
-/* We'll use an inline SVG mask (already in DOM) applied to titleArea via CSS mask.
-   Create many small shard divs, scatter them, then animate them inside the masked box.
-*/
-const SHARD_COUNT = 420;
-const shards = [];
-function createShards(){
-  // apply mask from inline SVG: use url(#text-mask) via style
-  titleArea.style.mask = 'url(#text-mask)';
-  titleArea.style.webkitMask = 'url(#text-mask)';
-  titleArea.style.width = '100%';
-  titleArea.style.maxWidth = '100%';
-  titleArea.style.height = '100%';
-  titleArea.style.display = 'block';
-  titleArea.style.position = 'relative';
-
-  const rect = titleArea.getBoundingClientRect();
-  for(let i=0;i<SHARD_COUNT;i++){
-    const s = document.createElement('div');
-    s.className='shard';
-    // random size
-    const w = Math.round(rand(8,28));
-    const h = Math.round(rand(6,16));
-    s.style.width = w+'px';
-    s.style.height = h+'px';
-    // initial scattered position outside (random edge)
-    const side = Math.floor(rand(0,4));
-    let x,y;
-    if(side===0){ x = rand(-300, -40); y = rand(-300, rect.height+300); }
-    else if(side===1){ x = rand(rect.width+40, rect.width+300); y = rand(-300, rect.height+300); }
-    else if(side===2){ x = rand(-200, rect.width+200); y = rand(-300,-40); }
-    else { x = rand(-200, rect.width+200); y = rand(rect.height+40, rect.height+300); }
-
-    s.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rand(-220,220)}deg) scale(${rand(0.6,1.1)})`;
-    s.dataset.tx = (Math.round(rand(0, rect.width-20))) + 'px';
-    s.dataset.ty = (Math.round(rand(0, rect.height-6))) + 'px';
-    // custom CSS vars for float anim target
-    s.style.setProperty('--tx', s.dataset.tx);
-    s.style.setProperty('--ty', s.dataset.ty);
-    s.style.setProperty('--r', rand(-20,20)+'deg');
-
-    titleArea.appendChild(s);
-    shards.push(s);
-  }
-}
-createShards();
-
-/* Animate shards to converge inside mask */
-function assembleShards(){
-  const rect = titleArea.getBoundingClientRect();
-  // Slight staggered animation
-  shards.forEach((s,i)=>{
-    setTimeout(()=>{
-      // move to target (translated to the masked box internal coordinates)
-      const tx = parseFloat(s.dataset.tx);
-      const ty = parseFloat(s.dataset.ty);
-      s.style.transition = `transform ${rand(700,1400)}ms cubic-bezier(.2,.9,.2,1)`;
-      s.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rand(-20,20)}deg)`;
-      // set CSS var for float
-      s.style.setProperty('--tx', tx+'px');
-      s.style.setProperty('--ty', ty+'px');
-      s.style.setProperty('--r', rand(-12,12)+'deg');
-    }, i * 6);
-  });
-
-  // after assembly, add class to enable floating
-  setTimeout(()=> titleArea.classList.add('assembled'), 1800);
-}
-/* Trigger assemble after small delay to let layout settle */
-window.addEventListener('load', ()=> setTimeout(assembleShards, 360));
-
-/* -------------------------
-   Clients list + calculation
-   ------------------------- */
-const nameInp = document.getElementById('name');
-const brandInp = document.getElementById('brand');
-const plateInp = document.getElementById('plate');
-const amountInp = document.getElementById('amount');
-const percentInp = document.getElementById('percent');
-const addBtn = document.getElementById('addBtn');
-const resetBtn = document.getElementById('resetBtn');
-
-function formatMoney(v){
-  return Number(v).toLocaleString('ru-RU', {style:'currency', currency:'RUB', maximumFractionDigits:0});
-}
-
-function recalcPreview(){
-  const a = parseFloat(amountInp.value||0);
-  const p = parseFloat(percentInp.value||0);
-  const sal = Math.round((a * p)/100);
-  calcPreview.textContent = formatMoney(sal);
-}
-amountInp.addEventListener('input', recalcPreview);
-percentInp.addEventListener('input', recalcPreview);
-window.addEventListener('load', recalcPreview);
-
-addBtn.addEventListener('click', ()=>{
-  const name = nameInp.value.trim();
-  const brand = brandInp.value.trim();
-  const plate = plateInp.value.trim();
-  const amount = parseFloat(amountInp.value||0);
-  const percent = parseFloat(percentInp.value||0);
-
-  if(!name || isNaN(amount)) {
-    alert('Введите имя и сумму сделки.');
-    return;
-  }
-  const salary = Math.round((amount * percent)/100);
-  const client = {name,brand,plate,amount,salary,percent, id: Date.now()+Math.floor(Math.random()*999)};
-  clients.unshift(client);
-  renderClients();
-  // clear some fields for quick add
-  nameInp.value=''; brandInp.value=''; plateInp.value='';
-  amountInp.value = Math.max(0, amount);
-  recalcPreview();
-});
-
-resetBtn.addEventListener('click', ()=>{
-  if(confirm('Очистить список клиентов?')) {
-    clients = [];
-    renderClients();
-  }
-});
 
 function renderClients(){
-  listBody.innerHTML='';
-  clients.forEach(c=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${escapeHtml(c.name)}</td>
-                    <td>${escapeHtml(c.brand)}</td>
-                    <td>${escapeHtml(c.plate)}</td>
-                    <td>${formatMoney(c.amount)}</td>
-                    <td class="salary">${formatMoney(c.salary)} <span style="color:var(--muted);font-weight:600">(${c.percent}%)</span></td>`;
-    listBody.appendChild(tr);
+  clientsList.innerHTML = '';
+  let sumAmt = 0, sumSalary = 0, sumPercent = 0;
+  clients.forEach((c, i) => {
+    sumAmt += Number(c.amount||0);
+    sumSalary += Number(c.salary||0);
+    sumPercent += Number(c.percent||0);
+    const row = document.createElement('div');
+    row.className = 'client-row';
+    row.innerHTML = `
+      <div class="client-info">
+        <div class="client-avatar">${(c.name||'')[0] || 'C'}</div>
+        <div class="client-meta">
+          <div class="name">${escapeHtml(c.name||'—')}</div>
+          <div class="small-muted">${escapeHtml(c.brand||'—')} · ${escapeHtml(c.plate||'—')}</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:800">₽${num(c.amount)}</div>
+        <div class="small-muted">Зарплата: ₽${num(c.salary)} · ${c.percent}%</div>
+        <div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">
+          <button data-i="${i}" class="btn small remove" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;font-weight:700;color:var(--accent)">Удалить</button>
+        </div>
+      </div>
+    `;
+    clientsList.appendChild(row);
+  });
+  totalClients.textContent = clients.length;
+  totalAmount.textContent = '₽' + num(sumAmt);
+  totalSalary.textContent = '₽' + num(sumSalary);
+  avgPercent.textContent = (clients.length? (sumPercent/clients.length).toFixed(1) : '0.0') + '%';
+  document.querySelectorAll('.remove').forEach(b => {
+    b.onclick = (e)=>{
+      const idx = +b.dataset.i;
+      clients.splice(idx,1); persist(); renderClients();
+      triggerTitleFloat(); // visual feedback
+    };
   });
 }
 
-/* small helper to avoid XSS when injecting names */
-function escapeHtml(unsafe) {
-    return unsafe
-         .replaceAll('&','&amp;')
-         .replaceAll('<','&lt;')
-         .replaceAll('>','&gt;')
-         .replaceAll('"','&quot;')
-         .replaceAll("'", '&#039;');
+function persist(){
+  localStorage.setItem(clientsKey, JSON.stringify(clients));
 }
 
-/* keyboard: Enter to add */
-document.getElementById('clientForm').addEventListener('submit', (e)=>{ e.preventDefault(); addBtn.click(); });
+function num(n){ return (Number(n)||0).toLocaleString('ru-RU'); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* nice little enter animation for new rows (optional) */
-const obs = new MutationObserver(()=>{/* could animate */});
-obs.observe(listBody, {childList:true});
+amountI.oninput = percentI.oninput = function(){
+  const s = calcSalary(amountI.value, percentI.value);
+  salaryI.value = s;
+};
+document.getElementById('addBtn').onclick = ()=>{
+  const name = nameI.value.trim();
+  if(!name){ nameI.focus(); return; }
+  const item = {
+    name, brand: brandI.value.trim(), plate: plateI.value.trim(),
+    amount: Number(amountI.value) || 0,
+    percent: Number(percentI.value) || 0,
+    salary: calcSalary(amountI.value, percentI.value),
+    created: Date.now()
+  };
+  clients.unshift(item);
+  persist();
+  renderClients();
+  // clear form
+  nameI.value=''; brandI.value=''; plateI.value=''; amountI.value=''; salaryI.value=''; 
+  triggerTitleAssemble(); // little celebration
+};
 
-/* -------------------------
-   Bonus: make the headline title respond to pointer (tilt)
-   ------------------------- */
-let hero = document.querySelector('.hero');
-function heroTilt(x,y){
-  const rx = (y-0.5)*6;
-  const ry = (x-0.5)*-10;
-  hero.style.transform = `translateZ(0) rotateX(${rx}deg) rotateY(${ry}deg)`;
-}
-window.addEventListener('mousemove', e=>{
-  heroTilt(e.clientX/window.innerWidth, e.clientY/window.innerHeight);
-});
-window.addEventListener('touchmove', e=>{
-  if(e.touches && e.touches[0]) heroTilt(e.touches[0].clientX/window.innerWidth, e.touches[0].clientY/window.innerHeight);
-});
+exportBtn.onclick = ()=>{
+  const blob = new Blob([JSON.stringify(clients,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'clients.json'; a.click();
+  URL.revokeObjectURL(url);
+};
 
-/* Ensure responsiveness on resize: recalc shard targets a bit */
-let resizeTO;
-window.addEventListener('resize', ()=>{
-  clearTimeout(resizeTO);
-  resizeTO = setTimeout(()=>{
-    // reposition shard targets inside updated box bounds
-    const rect = titleArea.getBoundingClientRect();
-    shards.forEach(s=>{
-      const tx = Math.round(rand(0, rect.width-20));
-      const ty = Math.round(rand(0, rect.height-6));
-      s.dataset.tx = tx; s.dataset.ty = ty;
-      s.style.setProperty('--tx', tx+'px');
-      s.style.setProperty('--ty', ty+'px');
-      if(titleArea.classList.contains('assembled')) {
-        s.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rand(-20,20)}deg)`;
-      }
-    });
-  },150);
-});
+clearBtn.onclick = ()=>{
+  if(!confirm('Очистить всех клиентов?')) return;
+  clients = []; persist(); renderClients();
+};
 
-/* Initial tiny demo data */
-clients = [
-  {name:'Анна Смирнова', brand:'Mercedes', plate:'A777AA', amount:2500000, salary: Math.round(2500000*7/100), percent:7, id:1},
-  {name:'ООО ТехАвто', brand:'Lexus', plate:'B123BM', amount:980000, salary: Math.round(980000*6.5/100), percent:6.5, id:2},
-];
 renderClients();
 
+/* ---------------------------
+   Title shards animation
+   --------------------------- */
+const titleCanvas = document.getElementById('titleCanvas');
+const tctx = titleCanvas.getContext('2d');
+let shards = [], assembling=false, floating=false;
+
+// draw big outline text to offscreen to create shards
+function initTitleShards(){
+  const W = titleCanvas.width = titleCanvas.clientWidth* (window.devicePixelRatio || 1);
+  const H = titleCanvas.height = titleCanvas.clientHeight* (window.devicePixelRatio || 1);
+  tctx.clearRect(0,0,W,H);
+
+  // text settings
+  const text = 'КЛИЕНТЫ';
+  const fontSize = Math.floor(H * 0.7);
+  tctx.fillStyle = '#FFF';
+  tctx.font = `700 ${fontSize}px Inter, sans-serif`;
+  tctx.textAlign = 'center';
+  tctx.textBaseline = 'middle';
+  // draw outline stroke
+  tctx.lineWidth = Math.max(6, Math.floor(fontSize/18));
+  tctx.strokeStyle = 'rgba(139,92,246,0.95)';
+  tctx.strokeText(text, W/2, H/2);
+  // draw filled for particle mask
+  tctx.fillStyle = 'white';
+  tctx.fillText(text, W/2, H/2);
+
+  // sample pixels to create shards
+  const imgd = tctx.getImageData(0,0,W,H);
+  const data = imgd.data;
+  const points = [];
+  // sample grid
+  const step = Math.max(5, Math.floor(fontSize/18));
+  for(let y=0;y<H;y+=step){
+    for(let x=0;x<W;x+=step){
+      const idx = (y*W + x)*4;
+      if(data[idx+3] > 120){ // opaque
+        points.push({x,y});
+      }
+    }
+  }
+  // build shards by grouping nearby points
+  shards = [];
+  const used = new Uint8Array(points.length);
+  for(let i=0;i<points.length;i++){
+    if(used[i]) continue;
+    const p = points[i];
+    const shardPts = [p];
+    used[i]=1;
+    // find some nearby neighbors up to N
+    for(let j=i+1;j<points.length && shardPts.length<10;j++){
+      if(used[j]) continue;
+      const q = points[j];
+      const dx = p.x - q.x, dy = p.y - q.y;
+      if(dx*dx+dy*dy < (step*step*20)){
+        shardPts.push(q); used[j]=1;
+      }
+    }
+    // compute centroid & create a polygon bounding rect
+    const cx = shardPts.reduce((s,o)=>s+o.x,0)/shardPts.length;
+    const cy = shardPts.reduce((s,o)=>s+o.y,0)/shardPts.length;
+    // sample color from canvas (purple glow will be applied)
+    const px = Math.round(cx), py = Math.round(cy), idx2=(py*W+px)*4;
+    const color = `rgba(${data[idx2]},${data[idx2+1]},${data[idx2+2]},${data[idx2+3]/255})`;
+    shards.push({
+      cx, cy,
+      x: Math.random()*W, y: Math.random()*(H*3)+H, // start scattered below
+      vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*8, rot: (Math.random()-0.5)*0.6,
+      targetX: cx, targetY: cy,
+      w: step* (0.9 + Math.random()*1.4),
+      h: step* (0.7 + Math.random()*1.2),
+      color
+    });
+  }
+  // clear draw (we will animate shards)
+  tctx.clearRect(0,0,W,H);
+}
+
+// animate assemble
+let lastTime = 0;
+function drawTitle(now){
+  requestAnimationFrame(drawTitle);
+  if(!shards.length) return;
+  const W = titleCanvas.width, H = titleCanvas.height;
+  const dt = Math.min(32, now - lastTime); lastTime = now;
+  tctx.clearRect(0,0,W,H);
+
+  // soft glow background stroke of outline
+  tctx.save();
+  tctx.globalCompositeOperation = 'lighter';
+  tctx.fillStyle = 'rgba(139,92,246,0.02)';
+  tctx.fillRect(0,0,W,H);
+  tctx.restore();
+
+  for(let s of shards){
+    // move towards target when assembling
+    if(assembling){
+      const dx = s.targetX - s.x, dy = s.targetY - s.y;
+      s.vx += dx*0.002 * (dt/16);
+      s.vy += dy*0.002 * (dt/16);
+      s.vx *= 0.92; s.vy *= 0.92;
+      s.x += s.vx * (dt/16);
+      s.y += s.vy * (dt/16);
+      s.rot *= 0.98;
+      // if close, nudge into final place
+      if(Math.hypot(dx,dy) < 2){
+        s.x = s.targetX; s.y = s.targetY;
+      }
+    } else if(floating){
+      // gentle floating around final position
+      s.x += Math.sin((now/1000) + s.cx)*0.12;
+      s.y += Math.cos((now/1300)+s.cy)*0.08;
+      s.rot *= 0.995;
+    } else {
+      // idle scattered
+      s.x += s.vx*0.06;
+      s.y += s.vy*0.06;
+      s.vy += 0.02;
+    }
+
+    tctx.save();
+    tctx.translate(s.x, s.y);
+    tctx.rotate(s.rot);
+    // draw small rounded rectangle representing shard
+    const grad = tctx.createLinearGradient(-s.w/2, -s.h/2, s.w/2, s.h/2);
+    grad.addColorStop(0, 'rgba(255,255,255,0.06)');
+    grad.addColorStop(0.5, 'rgba(139,92,246,0.9)');
+    grad.addColorStop(1, 'rgba(75,16,140,0.6)');
+    tctx.fillStyle = grad;
+    roundRect(tctx, -s.w/2, -s.h/2, s.w, s.h, Math.max(2, s.w*0.12));
+    tctx.fill();
+    tctx.restore();
+  }
+
+  // overlay outline glow
+  tctx.save();
+  tctx.globalCompositeOperation = 'screen';
+  tctx.strokeStyle = 'rgba(139,92,246,0.9)';
+  tctx.lineWidth = Math.max(6, Math.floor((H*0.7)/18));
+  tctx.strokeText('КЛИЕНТЫ', W/2, H/2);
+  tctx.restore();
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function triggerTitleAssemble(){
+  assembling = true;
+  floating = false;
+  // after 1.8s switch to floating
+  setTimeout(()=>{ assembling=false; floating=true; }, 1800);
+}
+function triggerTitleFloat(){
+  // small subtle float feedback
+  floating = true;
+  setTimeout(()=>floating=true, 800);
+}
+
+// init
+initTitleShards();
+triggerTitleAssemble();
+requestAnimationFrame(drawTitle);
+window.addEventListener('resize', ()=>{
+  // debounce-ish
+  setTimeout(()=>{ initTitleShards(); }, 120);
+});
+
+/* ---------------------------
+   Floating abstract rectangles
+   --------------------------- */
+const floatingObjects = document.getElementById('floatingObjects');
+const rects = [];
+
+function createRects(){
+  floatingObjects.innerHTML = '';
+  rects.length=0;
+  const count = 6;
+  for(let i=0;i<count;i++){
+    const d = document.createElement('div');
+    d.className = 'rect' + (i%2? ' small':'');
+    const s = 0.7 + Math.random()*1.6;
+    d.style.transform = `translate3d(${(20+i*12)}%,${30 + i*6}%,0) rotateX(${10+i*2}deg) rotateY(${(i*12)}deg)`;
+    d.style.left = (10 + Math.random()*80) + '%';
+    d.style.top = (10 + Math.random()*75) + '%';
+    d.style.opacity = 0.85 - Math.random()*0.35;
+    d.style.zIndex = 10+i;
+    d.innerHTML = `<div class="label">${['CRM','VIP','КЛИЕНТ','ЗАКАЗ','СДЕЛКА','ПРОФИТ'][i%6]}</div>`;
+    floatingObjects.appendChild(d);
+    rects.push({el:d,x:parseFloat(d.style.left),y:parseFloat(d.style.top),rotX:10+i*2,rotY:i*14,scale:s});
+  }
+}
+createRects();
+
+let mouseX=0, mouseY=0;
+window.addEventListener('mousemove', (e)=>{
+  const r = document.querySelector('#stage').getBoundingClientRect();
+  mouseX = (e.clientX - (r.left + r.width/2)) / r.width;
+  mouseY = (e.clientY - (r.top + r.height/2)) / r.height;
+  updateRects();
+});
+window.addEventListener('touchmove', (e)=>{
+  if(!e.touches || !e.touches[0]) return;
+  const r = document.querySelector('#stage').getBoundingClientRect();
+  mouseX = (e.touches[0].clientX - (r.left + r.width/2)) / r.width;
+  mouseY = (e.touches[0].clientY - (r.top + r.height/2)) / r.height;
+  updateRects();
+},{passive:true});
+
+function updateRects(){
+  rects.forEach((r,i)=>{
+    const rx = r.rotX + mouseY* -60 - i*3;
+    const ry = r.rotY + mouseX* 90 + i*8;
+    const tx = r.x + mouseX* (8 + i*2);
+    const ty = r.y + mouseY* (12 - i);
+    r.el.style.left = tx + '%';
+    r.el.style.top = ty + '%';
+    r.el.style.transform = `translate3d(-50%,-50%,0) rotateX(${rx}deg) rotateY(${ry}deg) scale(${r.scale})`;
+    r.el.style.boxShadow = `0 20px 60px rgba(8,6,12,0.6), 0 0 ${40 + i*6}px rgba(139,92,246,${0.12 + i*0.05})`;
+  });
+}
+
+/* flip on scroll */
+let flipped=false;
+window.addEventListener('wheel', (e)=>{
+  // detect direction
+  flipped = !flipped;
+  rects.forEach((r,i)=>{
+    if(flipped) r.el.style.transform += ' rotateY(180deg) ';
+    else r.el.style.transform = r.el.style.transform.replace(' rotateY(180deg) ','');
+  });
+});
+
+/* background canvas subtle gradient & moving orbs */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let orbs = [];
+function initBg(){
+  bgCanvas.width = bgCanvas.clientWidth * (window.devicePixelRatio || 1);
+  bgCanvas.height = bgCanvas.clientHeight * (window.devicePixelRatio || 1);
+  orbs = [];
+  for(let i=0;i<8;i++){
+    orbs.push({
+      x: Math.random()*bgCanvas.width,
+      y: Math.random()*bgCanvas.height,
+      r: 20 + Math.random()*80,
+      vx: (Math.random()-0.5)*0.3,
+      vy: (Math.random()-0.5)*0.3,
+      alpha: 0.06 + Math.random()*0.2
+    });
+  }
+}
+function drawBg(){
+  requestAnimationFrame(drawBg);
+  const W = bgCanvas.width, H = bgCanvas.height;
+  bgCtx.clearRect(0,0,W,H);
+
+  // layered background gradient
+  const g = bgCtx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0, 'rgba(9,7,14,0.85)');
+  g.addColorStop(1, 'rgba(4,2,8,0.95)');
+  bgCtx.fillStyle = g;
+  bgCtx.fillRect(0,0,W,H);
+
+  // orbs
+  for(let o of orbs){
+    o.x += o.vx;
+    o.y += o.vy;
+    if(o.x < -o.r) o.x = W + o.r;
+    if(o.y < -o.r) o.y = H + o.r;
+    if(o.x > W+o.r) o.x = -o.r;
+    if(o.y > H+o.r) o.y = -o.r;
+    const rg = bgCtx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+    rg.addColorStop(0, `rgba(139,92,246,${0.12 + o.alpha*0.6})`);
+    rg.addColorStop(0.6, `rgba(139,92,246,${0.02 + o.alpha*0.15})`);
+    rg.addColorStop(1, `rgba(139,92,246,0)`);
+    bgCtx.fillStyle = rg;
+    bgCtx.fillRect(o.x - o.r, o.y - o.r, o.r*2, o.r*2);
+  }
+}
+initBg();
+drawBg();
+window.addEventListener('resize', ()=>{ setTimeout(()=>{ initBg(); },120); });
+
+/* subtle initial animations */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // small entrance for rects
+  floatingObjects.style.opacity = 0;
+  setTimeout(()=>{ floatingObjects.style.transition = 'opacity 800ms ease'; floatingObjects.style.opacity = 1; },120);
+});
+
+/* little helpers to trigger slice assemble when new client added */
+function triggerTitleAssemble(){
+  assembling = true;
+  floating = false;
+  setTimeout(()=>{ assembling=false; floating=true; }, 1600);
+}
+
+/* persist on unload */
+window.addEventListener('beforeunload', persist);
+
+/* small polyfills for keyboard mobile */
+document.addEventListener('touchstart', ()=>{}, {passive:true});
 </script>
 </body>
 </html>
