@@ -2,7 +2,7 @@ ymaps.ready(init);
 
 function init() {
     var myMap = new ymaps.Map("map", {
-        center: [56.136, 40.39],
+        center: [51.6608, 39.2003], // Воронеж
         zoom: 10,
         controls: [],
     });
