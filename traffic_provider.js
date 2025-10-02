@@ -1,13 +1,13 @@
 ymaps.ready(init);
 
 function init() {
-    // Создаем карту без центра и зума, с тёмной темой
+    // Создаем карту с тёмной темой
     var myMap = new ymaps.Map("map", {
         controls: [],
-        type: "yandex#darkMap", // тёмная тема карты
+        type: "yandex#darkMap" // тёмная тема карты
     });
 
-    // Получаем границы города Воронеж через геокодер
+    // Геокодируем Воронеж, чтобы получить его границы
     ymaps.geocode("Воронеж", { results: 1 }).then(function (res) {
         var city = res.geoObjects.get(0);
         var bounds = city.properties.get('boundedBy');
@@ -20,7 +20,7 @@ function init() {
             [bounds[1][0] + latDiff, bounds[1][1] + lonDiff]
         ];
 
-        // Устанавливаем расширенные границы карты
+        // Устанавливаем расширенные границы на карту
         myMap.setBounds(extendedBounds, { checkZoomRange: true, zoomMargin: 20 });
 
         // Добавляем слой пробок с дорожными событиями
@@ -28,5 +28,10 @@ function init() {
             infoLayerShown: true
         });
         myMap.layers.add(trafficLayer);
+
+        // Автообновление пробок каждые 2 минуты
+        setInterval(function () {
+            trafficLayer.reload();
+        }, 120000); // 120000 мс = 2 минуты
     });
 }
