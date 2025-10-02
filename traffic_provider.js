@@ -1,21 +1,21 @@
 ymaps.ready(init);
 
 function init() {
-    // Создаем карту с резервным центром и тёмной темой
+    // Создаем карту со светлой темой
     var myMap = new ymaps.Map("map", {
         center: [51.6608, 39.2003], // Воронеж
         zoom: 11,
         controls: [],
-        type: "yandex#darkMap"
+        type: "yandex#map" // светлая карта
     });
 
     // Добавляем слой пробок с дорожными событиями (ДТП, ремонт и др.)
     var trafficLayer = new ymaps.traffic.layer.Actual({
-        infoLayerShown: true // включает дорожные события
+        infoLayerShown: true
     });
     myMap.layers.add(trafficLayer);
 
-    // Автообновление пробок каждые 1 минуту для актуальности
+    // Автообновление пробок каждые 1 минуту
     setInterval(function() {
         trafficLayer.reload();
     }, 60000);
@@ -26,7 +26,7 @@ function init() {
         if (city) {
             var bounds = city.properties.get('boundedBy');
 
-            // Расширяем границы на 40% для показа окрестностей и трасс
+            // Расширяем границы на 40% для окрестностей и трасс
             var latDiff = (bounds[1][0] - bounds[0][0]) * 0.4;
             var lonDiff = (bounds[1][1] - bounds[0][1]) * 0.4;
             var extendedBounds = [
