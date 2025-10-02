@@ -1,10 +1,10 @@
 ymaps.ready(init);
 
 function init() {
-    // Создаем карту без центра и зума, с минималистичной тёмной темой
+    // Создаем карту без центра и зума, с тёмной темой
     var myMap = new ymaps.Map("map", {
         controls: [],
-        type: "yandex#map", // базовая карта
+        type: "yandex#darkMap", // тёмная тема карты
     });
 
     // Получаем границы города Воронеж через геокодер
@@ -22,9 +22,6 @@ function init() {
 
         // Устанавливаем расширенные границы карты
         myMap.setBounds(extendedBounds, { checkZoomRange: true, zoomMargin: 20 });
-
-        // Включаем тёмную тему
-        myMap.options.set('preset', 'islands#night');
 
         // Добавляем слой пробок с дорожными событиями
         var trafficLayer = new ymaps.traffic.layer.Actual({
