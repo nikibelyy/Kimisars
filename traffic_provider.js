@@ -3,7 +3,7 @@ ymaps.ready(init);
 function init() {
     var myMap = new ymaps.Map("map", {
         center: [51.6608, 39.2003], // Воронеж
-        zoom: 10,
+        zoom: 13, // Увеличение на сам город
         controls: [],
     });
 
@@ -14,15 +14,15 @@ function init() {
     );
     actualProvider.setMap(myMap);
 
-    // Добавим метку "Воронеж" в центр карты
+    // Добавим метку "Воронеж"
     var myPlacemark = new ymaps.Placemark(
         [51.6608, 39.2003],
         {
-            balloonContent: "Воронеж", // текст в balloon (по клику)
-            hintContent: "Воронеж"     // текст при наведении
+            balloonContent: "Воронеж",
+            hintContent: "Воронеж"
         },
         {
-            preset: "islands#redIcon"  // стиль метки
+            preset: "islands#redIcon"
         }
     );
 
