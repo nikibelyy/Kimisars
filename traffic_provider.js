@@ -1,22 +1,26 @@
 ymaps.ready(init);
 
 function init() {
-    // Создаем пустую карту
-    var myMap = new ymaps.Map("map", {
-        controls: [], // без кнопок
+    // Создаем карту, центрируем на Воронеж
+    var map = new ymaps.Map("map", {
+        center: [51.660781, 39.200296], // координаты центра Воронежа
+        zoom: 12,
+        controls: ['zoomControl', 'trafficControl', 'typeSelector', 'fullscreenControl']
     });
 
-    // Создаем провайдер пробок "Сейчас" с включенным слоем инфоточек (дорожные события)
-    var actualProvider = new ymaps.traffic.provider.Actual(
-        {},
-        { infoLayerShown: true } // включаем дорожные события
-    );
-    actualProvider.setMap(myMap);
-
-    // Получаем границы города Воронеж через геокодер и устанавливаем их на карту
-    ymaps.geocode("Воронеж", { results: 1 }).then(function (res) {
-        var city = res.geoObjects.get(0);
-        var bounds = city.properties.get('boundedBy'); // границы города
-        myMap.setBounds(bounds, { checkZoomRange: true, zoomMargin: 20 });
+    // Добавляем слой пробок + событий ДТП
+    var trafficControl = new ymaps.control.TrafficControl({
+        state: {
+            // Показывать пробки
+            trafficShown: true,
+            // Показывать дорожные события (ДТП, ремонт и пр.)
+            infoLayerShown: true
+        }
     });
+
+    map.controls.add(trafficControl);
+
+    // Включаем слой пробок на карте сразу
+    var trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+    trafficProvider.setMap(map);
 }
