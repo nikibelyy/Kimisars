@@ -12,9 +12,19 @@ function init() {
         {},
         { infoLayerShown: true }
     );
-    // И затем добавим его на карту.
     actualProvider.setMap(myMap);
 
-    // Удаление провайдера с карты также производится через метод setMap.
-    // actualProvider.setMap(null);
+    // Добавим метку "Воронеж" в центр карты
+    var myPlacemark = new ymaps.Placemark(
+        [51.6608, 39.2003],
+        {
+            balloonContent: "Воронеж", // текст в balloon (по клику)
+            hintContent: "Воронеж"     // текст при наведении
+        },
+        {
+            preset: "islands#redIcon"  // стиль метки
+        }
+    );
+
+    myMap.geoObjects.add(myPlacemark);
 }
