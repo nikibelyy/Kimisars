@@ -1,4 +1,3 @@
-Сделай чтобы видно было только правый берег 
 ymaps.ready(init);
 
 function init() {
