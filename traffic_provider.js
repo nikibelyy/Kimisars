@@ -8,14 +8,19 @@ function init() {
         controls: []
     });
 
-    // Создаем провайдер Actual, но НЕ добавляем его на карту
-    var actualProvider = new ymaps.traffic.provider.Actual();
+    // Создаем провайдер пробок с включенными дорожными событиями
+    var actualProvider = new ymaps.traffic.provider.Actual(
+        {},
+        { infoLayerShown: true } // дорожные события
+    );
 
-    // Слой инфоточек для дорожных событий
+    // Добавляем провайдер на карту
+    actualProvider.setMap(myMap);
+
+    // Слой инфоточек для событий на дорогах
     var infoLayer = new ymaps.traffic.InfoLayer(myMap, {
         provider: actualProvider
     });
 
-    // Отображаем только дорожные события
     infoLayer.setMap(myMap);
 }
