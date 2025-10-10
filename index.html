@@ -18,5 +18,37 @@
 </head>
 <body>
     <div id="map"></div>
+<script>
+ymaps.ready(() => {
+  const map = new ymaps.Map("map", { center: [51.7039, 39.1812], zoom: 13 });
+  const traffic = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+  traffic.setMap(map);
+
+  // проверяем события каждые 30 сек
+  setInterval(() => {
+    const provider = traffic;
+    const state = provider.state;
+    if (!state) return;
+
+    // если в объекте state есть события
+    const events = state.get('events');
+    if (!events || !events.length) return;
+
+    events.forEach(e => {
+      if (e.type === 'ДТП') {
+        fetch('https://80.93.61.59/incident', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            location: e.address || 'Неизвестный адрес',
+            type: e.type,
+            mapLink: `https://yandex.ru/maps/probki/?ll=${e.point[1]},${e.point[0]}&z=16&l=trf%2Ctrfe&trf=info`
+          })
+        }).catch(err => console.error('Ошибка POST:', err));
+      }
+    });
+  }, 30000);
+});
+</script>
 </body>
 </html>
