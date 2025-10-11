@@ -7,6 +7,9 @@ function init() {
         zoom: 13,                    // подходящий масштаб для города
         controls: []
     });
+   
+window.__MY_MAP = map; // сохраняем карту глобально
+window.__MY_MARKERS = markersArray; // если есть массив маркеров
 
     // Создаем провайдер пробок с включенными дорожными событиями
     var actualProvider = new ymaps.traffic.provider.Actual(
@@ -24,5 +27,3 @@ function init() {
 
     infoLayer.setMap(myMap);
 }
-// после создания карты
-window.__MY_MAP = map; // <- это ключевая строчка
