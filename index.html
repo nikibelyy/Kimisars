@@ -39,17 +39,12 @@
                 controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
             });
 
-            // Включаем слой пробок
+            // Добавляем слой пробок (всегда включён)
             var trafficLayer = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
-            map.controls.add('trafficControl');
-            map.geoObjects.add(trafficLayer);
-
-            // Включаем слой дорожных событий
-            var eventsLayer = new ymaps.traffic.provider.Events();
-            map.geoObjects.add(eventsLayer);
-
-            // Отображаем информацию по пробкам
             trafficLayer.setMap(map);
+
+            // Добавляем слой дорожных событий (аварии, перекрытия и т.п.)
+            var eventsLayer = new ymaps.traffic.provider.Events();
             eventsLayer.setMap(map);
         }
     </script>
