@@ -24,3 +24,5 @@ function init() {
 
     infoLayer.setMap(myMap);
 }
+// после создания карты
+window.__MY_MAP = map; // <- это ключевая строчка
