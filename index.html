@@ -1,64 +1,71 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <title>Воронеж — Пробки и дорожные события</title>
-  <style>
-    html, body, #map {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <title>Яндекс ДТП Мониторинг</title>
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
 
-    /* Скрываем всё лишнее */
-    .ymaps-2-1-79-controls__control,
-    .ymaps-2-1-79-controls__toolbar,
-    .ymaps-2-1-79-copyrights-pane,
-    .ymaps-2-1-79-map-copyrights-promo,
-    .ymaps-2-1-79-scaleline,
-    .ymaps-2-1-79-float-button,
-    .ymaps-2-1-79-zoom {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
-    }
-  </style>
+        /* Только маленькая метка в углу */
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 999;
+        }
 
-  <!-- ВСТАВЬ СВОЙ API-ключ в параметр apikey= -->
-  <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_API_КЛЮЧ&lang=ru_RU"></script>
+        /* Прячем все панели и логотипы */
+        .ymaps-2-1-79-controls__control,
+        .ymaps-2-1-79-controls__toolbar,
+        .ymaps-2-1-79-copyrights-pane,
+        .ymaps-2-1-79-map-copyrights-promo,
+        .ymaps-2-1-79-scaleline,
+        .ymaps-2-1-79-float-button,
+        .ymaps-2-1-79-zoom {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+    </style>
+
+    <!-- Подключение API Яндекс.Карт (впиши свой ключ при необходимости) -->
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317" type="text/javascript"></script>
 </head>
 <body>
-  <div id="map"></div>
+    <div id="map"></div>
+    <div id="info">🚗 <b>Мониторинг ДТП</b></div>
 
-  <script>
-    ymaps.ready(function () {
-      const voronezhCenter = [51.673, 39.210];
+    <script>
+        ymaps.ready(function () {
+            const voronezhCenter = [51.673, 39.210];
 
-      // Создаём карту Воронежа без элементов управления
-      const map = new ymaps.Map("map", {
-        center: voronezhCenter,
-        zoom: 14,
-        controls: []
-      });
+            // Создаём карту Воронежа без элементов управления
+            const map = new ymaps.Map("map", {
+                center: voronezhCenter,
+                zoom: 14,
+                controls: []
+            });
 
-      // Подключаем слой пробок
-      const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
-      map.geoObjects.add(trafficProvider);
+            // Включаем актуальный слой пробок
+            const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+            map.geoObjects.add(trafficProvider);
 
-      // Активируем отображение пробок и дорожных событий
-      trafficProvider.state.set('trafficShown', true);
-      trafficProvider.state.set('infoLayerShown', true);
-
-      // Ограничиваем область видимости только Воронежем
-      const bounds = [
-        [51.55, 39.00], // юго-западная граница
-        [51.80, 39.40]  // северо-восточная граница
-      ];
-      map.setBounds(bounds, { checkZoomRange: true });
-      map.options.set('restrictMapArea', bounds);
-    });
-  </script>
+            // Активируем пробки и дорожные события
+            trafficProvider.state.set('trafficShown', true);
+            trafficProvider.state.set('infoLayerShown', true);
+        });
+    </script>
 </body>
 </html>
