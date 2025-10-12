@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>Карта Воронежа — Пробки и дорожные события</title>
+  <title>Воронеж — Пробки и дорожные события</title>
   <style>
     html, body, #map {
       width: 100%;
@@ -12,38 +12,42 @@
       overflow: hidden;
     }
 
-    /* Полностью скрываем интерфейс Яндекс.Карт */
+    /* Скрываем абсолютно всё, кроме карты */
     .ymaps-2-1-79-controls__control,
     .ymaps-2-1-79-controls__toolbar,
     .ymaps-2-1-79-copyrights-pane,
     .ymaps-2-1-79-map-copyrights-promo,
-    .ymaps-2-1-79-scaleline {
+    .ymaps-2-1-79-scaleline,
+    .ymaps-2-1-79-float-button,
+    .ymaps-2-1-79-zoom {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
     }
   </style>
-  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
 </head>
 <body>
   <div id="map"></div>
 
   <script>
     ymaps.ready(function () {
+      // Центр Воронежа
       const voronezhCenter = [51.673, 39.210];
 
-      // Создаём карту без видимых контролов
+      // Создаём карту без элементов управления
       const map = new ymaps.Map("map", {
         center: voronezhCenter,
         zoom: 14,
         controls: []
       });
 
-      // Подключаем слой пробок
-      const trafficProvider = ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+      // Включаем слой пробок (актуальный)
+      const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
       map.geoObjects.add(trafficProvider);
 
-      // Включаем отображение пробок и дорожных событий
+      // Активируем отображение пробок и дорожных событий
       trafficProvider.state.set('trafficShown', true);
       trafficProvider.state.set('infoLayerShown', true);
     });
