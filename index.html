@@ -1,71 +1,72 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Яндекс ДТП Мониторинг</title>
-    <style>
-        html, body, #map {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <title>Мониторинг ДТП — Воронеж</title>
+  <style>
+    html, body, #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
 
-        /* Только маленькая метка в углу */
-        #info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255,255,255,0.85);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-family: sans-serif;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 999;
-        }
+    /* Мини-панель в углу */
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 999;
+    }
 
-        /* Прячем все панели и логотипы */
-        .ymaps-2-1-79-controls__control,
-        .ymaps-2-1-79-controls__toolbar,
-        .ymaps-2-1-79-copyrights-pane,
-        .ymaps-2-1-79-map-copyrights-promo,
-        .ymaps-2-1-79-scaleline,
-        .ymaps-2-1-79-float-button,
-        .ymaps-2-1-79-zoom {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-        }
-    </style>
+    /* Скрываем все интерфейсные элементы */
+    .ymaps-2-1-79-controls__control,
+    .ymaps-2-1-79-controls__toolbar,
+    .ymaps-2-1-79-map-copyrights-promo,
+    .ymaps-2-1-79-scaleline,
+    .ymaps-2-1-79-zoom {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+  </style>
 
-    <!-- Подключение API Яндекс.Карт (впиши свой ключ при необходимости) -->
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317" type="text/javascript"></script>
+  <!-- Укажите свой ключ в параметре apikey -->
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <div id="info">🚗 <b>Мониторинг ДТП</b></div>
+  <div id="map"></div>
+  <div id="info">🚗 <b>Мониторинг ДТП</b></div>
 
-    <script>
-        ymaps.ready(function () {
-            const voronezhCenter = [51.673, 39.210];
+  <script>
+    ymaps.ready(function () {
+      const center = [51.673, 39.210];
 
-            // Создаём карту Воронежа без элементов управления
-            const map = new ymaps.Map("map", {
-                center: voronezhCenter,
-                zoom: 14,
-                controls: []
-            });
+      const map = new ymaps.Map('map', {
+        center: center,
+        zoom: 13,
+        controls: []
+      });
 
-            // Включаем актуальный слой пробок
-            const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
-            map.geoObjects.add(trafficProvider);
+      // Добавляем слой с пробками
+      const trafficLayer = new ymaps.Layer('https://core-jams.maps.yandex.net/tiles?l=trf,trfe&%c', {
+        projection: map.options.get('projection')
+      });
+      map.layers.add(trafficLayer);
 
-            // Активируем пробки и дорожные события
-            trafficProvider.state.set('trafficShown', true);
-            trafficProvider.state.set('infoLayerShown', true);
-        });
-    </script>
+      // Добавляем информацию о дорожных событиях
+      const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+      trafficProvider.state.set('trafficShown', true);
+      trafficProvider.state.set('infoLayerShown', true);
+      map.geoObjects.add(trafficProvider);
+    });
+  </script>
 </body>
 </html>
