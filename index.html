@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Мониторинг ДТП — Воронеж</title>
+  <meta charset="utf-8" />
+  <title>Карта Воронежа — Пробки и дорожные события</title>
   <style>
     html, body, #map {
       width: 100%;
@@ -12,70 +12,40 @@
       overflow: hidden;
     }
 
-    /* Мини-панель с текстом */
-    #info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-family: sans-serif;
-      font-size: 14px;
-      font-weight: bold;
-      z-index: 999;
-    }
-
-    /* Скрываем все элементы интерфейса */
-    .ymaps-2-1-79-controls__control,
+    /* Скрываем все панели и элементы управления */
     .ymaps-2-1-79-controls__toolbar,
-    .ymaps-2-1-79-map-copyrights-promo,
-    .ymaps-2-1-79-scaleline,
-    .ymaps-2-1-79-zoom {
+    .ymaps-2-1-79-controls__control,
+    .ymaps-2-1-79-traffic-panel {
       display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
     }
   </style>
-
-  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317"></script>
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317" type="text/javascript"></script>
 </head>
 <body>
   <div id="map"></div>
-  <div id="info">🚗 <b>Мониторинг ДТП</b></div>
 
   <script>
     ymaps.ready(function () {
-      const center = [51.673, 39.210];
+      const voronezhCenter = [51.685962, 39.185699];
 
-      // Создаём карту чуть отдалённую, чтобы видеть весь город
-      const map = new ymaps.Map('map', {
-        center: center,
-        zoom: 12, // чуть отдалили
+      const map = new ymaps.Map("map", {
+        center: voronezhCenter,
+        zoom: 13,
         controls: []
       });
 
-      // Ограничиваем область видимости только Воронежем
-      const bounds = [
-        [51.55, 39.00], // юго-запад
-        [51.80, 39.40]  // северо-восток
-      ];
-      map.setBounds(bounds, { checkZoomRange: true });
-      map.options.set('restrictMapArea', bounds);
-
-      // Добавляем контрол пробок и дорожных событий
+      // Добавляем слой пробок и дорожных событий
       const trafficControl = new ymaps.control.TrafficControl({
         state: {
           trafficShown: true,
           infoLayerShown: true
         },
-        options: {
-          visible: false // панель скрыта
-        }
+        options: { visible: false } // панель скрыта
       });
+
       map.controls.add(trafficControl);
 
-      // Активируем отображение пробок и дорожных событий
+      // Активируем отображение пробок и событий
       const provider = trafficControl.getProvider('traffic#actual');
       provider.state.set('trafficShown', true);
       provider.state.set('infoLayerShown', true);
