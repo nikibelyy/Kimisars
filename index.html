@@ -46,16 +46,16 @@
 
   <script>
     ymaps.ready(function () {
-      // Координаты центра Воронежа
       const center = [51.673, 39.210];
 
+      // Создаём карту чуть отдалённую, чтобы видеть весь город
       const map = new ymaps.Map('map', {
         center: center,
-        zoom: 15, // увеличенный масштаб для лучшей детализации города
+        zoom: 13, // чуть отдалили
         controls: []
       });
 
-      // Ограничиваем видимую область только Воронежем
+      // Ограничиваем область видимости только Воронежем
       const bounds = [
         [51.55, 39.00], // юго-запад
         [51.80, 39.40]  // северо-восток
@@ -63,11 +63,22 @@
       map.setBounds(bounds, { checkZoomRange: true });
       map.options.set('restrictMapArea', bounds);
 
-      // Добавляем слой пробок
-      const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
-      trafficProvider.state.set('trafficShown', true);
-      trafficProvider.state.set('infoLayerShown', true);
-      map.geoObjects.add(trafficProvider);
+      // Добавляем контрол пробок и дорожных событий
+      const trafficControl = new ymaps.control.TrafficControl({
+        state: {
+          trafficShown: true,
+          infoLayerShown: true
+        },
+        options: {
+          visible: false // панель скрыта
+        }
+      });
+      map.controls.add(trafficControl);
+
+      // Активируем отображение пробок и дорожных событий
+      const provider = trafficControl.getProvider('traffic#actual');
+      provider.state.set('trafficShown', true);
+      provider.state.set('infoLayerShown', true);
     });
   </script>
 </body>
