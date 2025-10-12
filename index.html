@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <title>Карта Воронежа — Пробки и дорожные события</title>
+  <meta charset="utf-8">
+  <title>Воронеж — Пробки и ДТП</title>
   <style>
     html, body, #map {
       width: 100%;
@@ -12,43 +12,56 @@
       overflow: hidden;
     }
 
-    /* Скрываем все панели и элементы управления */
-    .ymaps-2-1-79-controls__toolbar,
+    /* Скрываем все панели и кнопки */
     .ymaps-2-1-79-controls__control,
-    .ymaps-2-1-79-traffic-panel {
+    .ymaps-2-1-79-controls__toolbar,
+    .ymaps-2-1-79-traffic-panel,
+    .ymaps-2-1-79-map-copyrights-promo,
+    .ymaps-2-1-79-scaleline,
+    .ymaps-2-1-79-zoom {
       display: none !important;
     }
   </style>
-  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317" type="text/javascript"></script>
+  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317"></script>
 </head>
 <body>
   <div id="map"></div>
 
   <script>
     ymaps.ready(function () {
-      const voronezhCenter = [51.685962, 39.185699];
+      const center = [51.685962, 39.185699];
 
-      const map = new ymaps.Map("map", {
-        center: voronezhCenter,
+      const map = new ymaps.Map('map', {
+        center: center,
         zoom: 13,
         controls: []
       });
 
-      // Добавляем слой пробок и дорожных событий
-      const trafficControl = new ymaps.control.TrafficControl({
-        state: {
-          trafficShown: true,
-          infoLayerShown: true
-        },
-        options: { visible: false } // панель скрыта
-      });
-
+      // Добавляем контрол пробок (невидимый)
+      const trafficControl = new ymaps.control.TrafficControl({ options: { visible: false } });
       map.controls.add(trafficControl);
 
-      // Активируем отображение пробок и событий
+      // Получаем провайдера дорожных событий
       const provider = trafficControl.getProvider('traffic#actual');
       provider.state.set('trafficShown', true);
-      provider.state.set('infoLayerShown', true);
+      provider.state.set('infoLayerShown', true); // включаем ДТП
+
+      // Подключаем отображение событий ДТП
+      provider.state.events.add('change', () => {
+        if (!provider.state.get('isInited')) return;
+        const events = provider.state.get('events') || [];
+
+        events.forEach(e => {
+          if (e.type && e.type.toLowerCase().includes('дтп')) {
+            const placemark = new ymaps.Placemark(e.coords, {
+              balloonContent: `<b>${e.type}</b><br>${e.description || ''}`
+            }, {
+              preset: 'islands#redIcon'
+            });
+            map.geoObjects.add(placemark);
+          }
+        });
+      });
     });
   </script>
 </body>
