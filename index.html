@@ -12,24 +12,15 @@
       overflow: hidden;
     }
 
-    /* Серая панель управления */
+    /* Полностью скрываем интерфейс Яндекс.Карт */
+    .ymaps-2-1-79-controls__control,
     .ymaps-2-1-79-controls__toolbar,
-    .ymaps-2-1-79-controls__control {
-      background-color: rgba(80, 80, 80, 0.9) !important;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
-
-    /* Цвет текста и иконок */
-    .ymaps-2-1-79-traffic-panel,
-    .ymaps-2-1-79-traffic-panel * {
-      color: #fff !important;
-    }
-
-    /* Подсветка активных кнопок */
-    .ymaps-2-1-79-traffic-panel-button_active {
-      background-color: rgba(255, 255, 255, 0.2) !important;
-      border-radius: 4px;
+    .ymaps-2-1-79-copyrights-pane,
+    .ymaps-2-1-79-map-copyrights-promo,
+    .ymaps-2-1-79-scaleline {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
     }
   </style>
   <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
@@ -41,29 +32,20 @@
     ymaps.ready(function () {
       const voronezhCenter = [51.673, 39.210];
 
+      // Создаём карту без видимых контролов
       const map = new ymaps.Map("map", {
         center: voronezhCenter,
-        zoom: 12,
+        zoom: 14,
         controls: []
       });
 
-      // Добавляем и сразу включаем слой пробок
-      const trafficControl = new ymaps.control.TrafficControl({
-        state: {
-          trafficShown: true,      // пробки включены
-          infoLayerShown: true     // дорожные события включены
-        },
-        options: {
-          position: { top: 10, right: 10 }
-        }
-      });
+      // Подключаем слой пробок
+      const trafficProvider = ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
+      map.geoObjects.add(trafficProvider);
 
-      map.controls.add(trafficControl);
-
-      // Явно активируем слой пробок при старте
-      const provider = trafficControl.getProvider('traffic#actual');
-      provider.state.set('trafficShown', true);
-      provider.state.set('infoLayerShown', true);
+      // Включаем отображение пробок и дорожных событий
+      trafficProvider.state.set('trafficShown', true);
+      trafficProvider.state.set('infoLayerShown', true);
     });
   </script>
 </body>
