@@ -12,7 +12,7 @@
       overflow: hidden;
     }
 
-    /* Мини-панель в углу */
+    /* Мини-панель с текстом */
     #info {
       position: absolute;
       top: 10px;
@@ -26,7 +26,7 @@
       z-index: 999;
     }
 
-    /* Скрываем все интерфейсные элементы */
+    /* Скрываем все элементы интерфейса */
     .ymaps-2-1-79-controls__control,
     .ymaps-2-1-79-controls__toolbar,
     .ymaps-2-1-79-map-copyrights-promo,
@@ -38,7 +38,6 @@
     }
   </style>
 
-  <!-- Укажите свой ключ в параметре apikey -->
   <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317"></script>
 </head>
 <body>
@@ -47,21 +46,24 @@
 
   <script>
     ymaps.ready(function () {
+      // Координаты центра Воронежа
       const center = [51.673, 39.210];
 
       const map = new ymaps.Map('map', {
         center: center,
-        zoom: 13,
+        zoom: 15, // увеличенный масштаб для лучшей детализации города
         controls: []
       });
 
-      // Добавляем слой с пробками
-      const trafficLayer = new ymaps.Layer('https://core-jams.maps.yandex.net/tiles?l=trf,trfe&%c', {
-        projection: map.options.get('projection')
-      });
-      map.layers.add(trafficLayer);
+      // Ограничиваем видимую область только Воронежем
+      const bounds = [
+        [51.55, 39.00], // юго-запад
+        [51.80, 39.40]  // северо-восток
+      ];
+      map.setBounds(bounds, { checkZoomRange: true });
+      map.options.set('restrictMapArea', bounds);
 
-      // Добавляем информацию о дорожных событиях
+      // Добавляем слой пробок
       const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
       trafficProvider.state.set('trafficShown', true);
       trafficProvider.state.set('infoLayerShown', true);
