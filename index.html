@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Воронеж — Пробки и ДТП</title>
   <style>
     html, body, #map {
@@ -9,7 +9,6 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      overflow: hidden;
     }
 
     /* Скрываем все элементы интерфейса */
@@ -28,56 +27,59 @@
 <div id="map"></div>
 
 <script>
-ymaps.ready(function () {
-    const center = [51.685962, 39.185699];
+ymaps.ready(function() {
+  const center = [51.685962, 39.185699];
 
-    const map = new ymaps.Map('map', {
-        center: center,
-        zoom: 13,
-        controls: []
-    });
+  const map = new ymaps.Map('map', {
+    center: center,
+    zoom: 13,
+    controls: []
+  });
 
-    // Создаём провайдера пробок и событий
-    const trafficProvider = new ymaps.traffic.provider.Actual({}, { infoLayerShown: true });
-    map.geoObjects.add(trafficProvider);
-    trafficProvider.state.set('trafficShown', true);
-    trafficProvider.state.set('infoLayerShown', true);
+  // Добавляем TrafficControl (невидимый)
+  const trafficControl = new ymaps.control.TrafficControl({
+    state: { trafficShown: true, infoLayerShown: true },
+    options: { visible: false }
+  });
+  map.controls.add(trafficControl);
 
-    // Массив для хранения текущих маркеров ДТП
-    let placemarks = [];
+  const provider = trafficControl.getProvider('traffic#actual');
+  provider.state.set('trafficShown', true);
+  provider.state.set('infoLayerShown', true);
 
-    // Функция обновления ДТП
-    function updateTrafficEvents() {
-        if (!trafficProvider.state.get('isInited')) return;
+  let placemarks = [];
 
-        const events = trafficProvider.state.get('events') || [];
+  // Функция добавления маркеров ДТП
+  function addTrafficEvents() {
+    const events = provider.state.get('events') || [];
 
-        // Удаляем старые маркеры
-        placemarks.forEach(pm => map.geoObjects.remove(pm));
-        placemarks = [];
+    // Удаляем старые маркеры
+    placemarks.forEach(pm => map.geoObjects.remove(pm));
+    placemarks = [];
 
-        // Добавляем новые маркеры ДТП
-        events.forEach(e => {
-            if (e.type && e.type.toLowerCase().includes('дтп')) {
-                const placemark = new ymaps.Placemark(e.coords, {
-                    balloonContent: `<b>${e.type}</b><br>${e.description || ''}`
-                }, {
-                    preset: 'islands#redIcon'
-                });
-                map.geoObjects.add(placemark);
-                placemarks.push(placemark);
-            }
+    events.forEach(e => {
+      if (e.type && e.type.toLowerCase().includes('дтп')) {
+        const placemark = new ymaps.Placemark(e.coords, {
+          balloonContent: `<b>${e.type}</b><br>${e.description || ''}`
+        }, {
+          preset: 'islands#redIcon'
         });
-    }
+        map.geoObjects.add(placemark);
+        placemarks.push(placemark);
+      }
+    });
+  }
 
-    // Первичное обновление
-    updateTrafficEvents();
+  // Сразу добавляем события, когда провайдер инициализирован
+  provider.state.events.add('change', addTrafficEvents);
 
-    // Обновляем каждую 30 секунд
-    setInterval(updateTrafficEvents, 30000);
+  // Если уже инициализирован, обновляем сразу
+  if (provider.state.get('isInited')) {
+    addTrafficEvents();
+  }
 
-    // Также обновляем при изменении состояния провайдера
-    trafficProvider.state.events.add('change', updateTrafficEvents);
+  // Обновление каждые 30 секунд
+  setInterval(addTrafficEvents, 30000);
 });
 </script>
 </body>
