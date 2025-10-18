@@ -1,86 +1,209 @@
-<!DOCTYPE html>
+<!-- index.html -->
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Воронеж — Пробки и ДТП</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CRM PWA — iOS Glass Demo</title>
+
+  <!-- iOS Safari meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F7F8FA">
+
+  <link rel="manifest" href="manifest.json">
   <style>
-    html, body, #map {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    :root{
+      --bg:#F4F6F8;
+      --glass-bg: rgba(255,255,255,0.55);
+      --glass-border: rgba(255,255,255,0.6);
+      --accent: #0A84FF; /* iOS blue */
+      --muted:#6B7280;
+      --card-radius:14px;
+      --glass-shadow: 0 6px 18px rgba(15,23,42,0.06);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
 
-    /* Скрываем все элементы интерфейса */
-    .ymaps-2-1-79-controls__control,
-    .ymaps-2-1-79-controls__toolbar,
-    .ymaps-2-1-79-traffic-panel,
-    .ymaps-2-1-79-map-copyrights-promo,
-    .ymaps-2-1-79-scaleline,
-    .ymaps-2-1-79-zoom {
-      display: none !important;
+    /* page */
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#F7F9FB 0%,var(--bg) 100%);-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    .app{
+      min-height:100vh;
+      padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 84px);
+      box-sizing:border-box;
     }
+
+    header {
+      display:flex;align-items:center;gap:12px;
+      margin-bottom:18px;
+    }
+    .avatar {
+      width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#fff,#eee);box-shadow:var(--glass-shadow);
+      display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--accent);
+      border: 1px solid rgba(10,20,60,0.03);
+    }
+    h1{font-size:18px;margin:0;}
+    p.sub{margin:0;color:var(--muted);font-size:13px;}
+
+    /* Search input in glass */
+    .search {
+      margin: 10px 0 18px;
+    }
+    .glass-input{
+      display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px) saturate(120%);
+      box-shadow: var(--glass-shadow);
+    }
+    .glass-input input{
+      border:0;background:transparent;outline:none;font-size:15px;width:100%;
+    }
+
+    /* cards grid */
+    .grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+    @media(min-width:700px){ .grid{ grid-template-columns: repeat(3,1fr); } }
+
+    .card{
+      padding:12px;border-radius:var(--card-radius);
+      background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(250,250,250,0.45));
+      border:1px solid rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px) saturate(120%);
+      box-shadow: 0 8px 20px rgba(12,18,28,0.06);
+      transition: transform 200ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms;
+      cursor:pointer;
+    }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(12,18,28,0.09); }
+
+    .card .top{display:flex;align-items:center;gap:10px;}
+    .initial{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#fff,#f0f6ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#123456;
+      border:1px solid rgba(10,20,40,0.04);
+    }
+    .meta{flex:1;}
+    .meta .name{font-weight:600;font-size:15px;}
+    .meta .role{font-size:12px;color:var(--muted);}
+
+    .stats{display:flex;gap:8px;margin-top:10px;font-size:13px;color:var(--muted);}
+
+    /* bottom tab bar (iOS style) */
+    .tabbar{
+      position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:8px 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,250,0.8));
+      border-top:1px solid rgba(0,0,0,0.04);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 -6px 24px rgba(12,18,28,0.06);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+    }
+    .tab{
+      display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted);
+    }
+    .tab .dot{width:22px;height:22px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;}
+
+    /* nice floating CTA */
+    .fab{
+      position:fixed;right:18px;bottom:84px;width:56px;height:56px;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),#006FFF);
+      color:white;font-weight:700;border:none;box-shadow:0 12px 30px rgba(10,40,120,0.18);border:1px solid rgba(255,255,255,0.06);
+      transform:translateZ(0);
+    }
+
+    /* small animations */
+    .fade-in{animation:fadeIn .45s ease both;}
+    @keyframes fadeIn{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
   </style>
-  <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=3de168ba-04ed-42f5-bb4e-6abff9b3f317"></script>
 </head>
 <body>
-<div id="map"></div>
+  <div class="app fade-in" id="app">
+    <header>
+      <div class="avatar">VK</div>
+      <div>
+        <h1>CRM — Клиенты</h1>
+        <p class="sub">Продавайте быстрее. Сфокусируйтесь на людях.</p>
+      </div>
+    </header>
 
-<script>
-ymaps.ready(function() {
-  const center = [51.685962, 39.185699];
+    <div class="search">
+      <div class="glass-input">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#9AA6B2" stroke-width="1.6" stroke-linecap="round"/><circle cx="11.5" cy="11.5" r="5.5" stroke="#9AA6B2" stroke-width="1.6"/></svg>
+        <input id="q" placeholder="Поиск по имени, компании или сделке">
+      </div>
+    </div>
 
-  const map = new ymaps.Map('map', {
-    center: center,
-    zoom: 13,
-    controls: []
-  });
+    <div class="grid" id="list">
+      <!-- cards injected by JS -->
+    </div>
+  </div>
 
-  // Добавляем TrafficControl (невидимый)
-  const trafficControl = new ymaps.control.TrafficControl({
-    state: { trafficShown: true, infoLayerShown: true },
-    options: { visible: false }
-  });
-  map.controls.add(trafficControl);
+  <button class="fab" id="newBtn">+</button>
 
-  const provider = trafficControl.getProvider('traffic#actual');
-  provider.state.set('trafficShown', true);
-  provider.state.set('infoLayerShown', true);
+  <nav class="tabbar" role="navigation" aria-label="Главное меню">
+    <div class="tab"><div class="dot">🏠</div><div>Клиенты</div></div>
+    <div class="tab"><div class="dot">📈</div><div>Воронки</div></div>
+    <div class="tab"><div class="dot">🗂️</div><div>Задачи</div></div>
+    <div class="tab"><div class="dot">⚙️</div><div>Настройки</div></div>
+  </nav>
 
-  let placemarks = [];
+  <script>
+    // Basic demo data
+    const clients = [
+      {id:1,name:"Анна Смирнова", role:"CEO — Aurora", notes: 5, deals:2},
+      {id:2,name:"Иван Петров", role:"Sales — Beta", notes: 1, deals:0},
+      {id:3,name:"Ольга Иванова", role:"Head of Ops — Gamma", notes: 12, deals:3},
+      {id:4,name:"Евгений Котов", role:"CTO — Delta", notes: 2, deals:1},
+      {id:5,name:"Мария Белова", role:"COO — Epsilon", notes: 7, deals:4},
+      {id:6,name:"Алексей Романов", role:"Support — Zeta", notes: 0, deals:0},
+    ];
 
-  // Функция добавления маркеров ДТП
-  function addTrafficEvents() {
-    const events = provider.state.get('events') || [];
+    const listEl = document.getElementById('list');
+    const q = document.getElementById('q');
 
-    // Удаляем старые маркеры
-    placemarks.forEach(pm => map.geoObjects.remove(pm));
-    placemarks = [];
+    function render(items){
+      listEl.innerHTML = '';
+      items.forEach(c=>{
+        const div = document.createElement('div');
+        div.className='card';
+        div.innerHTML = `
+          <div class="top">
+            <div class="initial">${c.name.split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+            <div class="meta">
+              <div class="name">${c.name}</div>
+              <div class="role">${c.role}</div>
+            </div>
+          </div>
+          <div class="stats">
+            <div>🗒 ${c.notes} заметок</div>
+            <div>💼 ${c.deals} сделки</div>
+          </div>
+        `;
+        div.onclick = ()=> alert('Открыть карточку: ' + c.name);
+        listEl.appendChild(div);
+      });
+    }
 
-    events.forEach(e => {
-      if (e.type && e.type.toLowerCase().includes('дтп')) {
-        const placemark = new ymaps.Placemark(e.coords, {
-          balloonContent: `<b>${e.type}</b><br>${e.description || ''}`
-        }, {
-          preset: 'islands#redIcon'
-        });
-        map.geoObjects.add(placemark);
-        placemarks.push(placemark);
-      }
+    q.addEventListener('input', e=>{
+      const term = e.target.value.trim().toLowerCase();
+      if(!term) render(clients);
+      else render(clients.filter(c=> (c.name + ' ' + c.role).toLowerCase().includes(term)));
     });
-  }
 
-  // Сразу добавляем события, когда провайдер инициализирован
-  provider.state.events.add('change', addTrafficEvents);
+    document.getElementById('newBtn').addEventListener('click', ()=> alert('Создать нового клиента (демо)'));
 
-  // Если уже инициализирован, обновляем сразу
-  if (provider.state.get('isInited')) {
-    addTrafficEvents();
-  }
+    // initial render
+    render(clients);
 
-  // Обновление каждые 30 секунд
-  setInterval(addTrafficEvents, 30000);
-});
-</script>
+    // PWA install prompt handling (basic)
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      e.preventDefault();
+      deferredPrompt = e;
+      // show custom mini-UI or CTA (omitted for brevity)
+      console.log('install prompt saved');
+    });
+
+    // register service worker for offline (if supported)
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js').then(()=>console.log('sw registered'));
+    }
+  </script>
 </body>
 </html>
