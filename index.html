@@ -3,77 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-<title>Запрос информации</title>
-
+<title>Киберпанк Запрос</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="1EFBEF0E-4AD4-47FA-8B65-D396601A7B40.png">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif}
+/* Базовые стили */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron', sans-serif;}
 body{
   min-height:100vh;
-  background:radial-gradient(circle at top,#0f172a,#020617);
-  display:flex;align-items:center;justify-content:center;color:white
+  display:flex;justify-content:center;align-items:center;
+  background: radial-gradient(circle at center, #0a0a0a, #050505);
+  overflow:hidden;
+  color:#fff;
 }
+
 .app{
-  width:100%;max-width:420px;
-  padding:30px;border-radius:24px;
-  background:rgba(15,23,42,.92);
-  box-shadow:0 0 60px rgba(56,189,248,.25)
+  width:100%;max-width:450px;
+  padding:40px 30px;
+  border-radius:20px;
+  background: rgba(5,5,10,0.95);
+  box-shadow: 0 0 30px #0ff, 0 0 60px #f0f;
+  border: 1px solid rgba(0,255,255,0.3);
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  overflow:hidden;
 }
-h1{text-align:center;margin-bottom:10px}
-p{text-align:center;color:#94a3b8;font-size:14px;margin-bottom:15px}
-input,button{
-  width:100%;padding:15px;margin-top:12px;
-  border-radius:14px;border:none;font-size:15px
+
+/* Анимация появления элементов */
+.fade-in{
+  opacity:0;
+  transform: translateY(20px);
+  animation:fadeInUp 0.6s forwards;
 }
+
+@keyframes fadeInUp{
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* Заголовок с глитч-эффектом */
+h1{
+  text-align:center;
+  font-size:28px;
+  color:#0ff;
+  position:relative;
+  animation:glitch 1s infinite;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 2px 0 #f0f, -2px 0 #0ff; }
+  25% { text-shadow: -2px -2px #f0f, 2px 2px #0ff; }
+  50% { text-shadow: 2px 2px #f0f, -2px -2px #0ff; }
+  75% { text-shadow: -2px 2px #f0f, 2px -2px #0ff; }
+  100% { text-shadow: 2px 0 #f0f, -2px 0 #0ff; }
+}
+
+p{
+  text-align:center;
+  color:#888;
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+/* Инпуты и кнопки */
+input, button{
+  width:100%;
+  padding:15px;
+  border-radius:12px;
+  border:none;
+  font-size:15px;
+  margin-top:12px;
+  transition: 0.3s all;
+}
+
 input{
-  background:#020617;color:white;
-  box-shadow:inset 0 0 0 1px #1e293b
+  background: rgba(10,10,20,0.8);
+  color:#0ff;
+  border: 1px solid #0ff;
+  box-shadow: inset 0 0 10px rgba(0,255,255,0.3);
 }
+
+input:focus{
+  outline:none;
+  border-color:#f0f;
+  box-shadow: 0 0 10px #f0f, inset 0 0 10px #0ff;
+}
+
 button{
-  background:linear-gradient(135deg,#38bdf8,#6366f1);
-  color:#020617;font-weight:600;cursor:pointer
+  background: linear-gradient(135deg,#f0f,#0ff);
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow: 0 0 15px #0ff, 0 0 30px #f0f;
+  position:relative;
+  overflow:hidden;
 }
+
+button:hover{
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #0ff, 0 0 50px #f0f;
+}
+
+/* Глитч на кнопке */
+button::before{
+  content:'';
+  position:absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: skewX(-20deg) translateX(-100%);
+  transition: transform 0.5s;
+}
+
+button:hover::before{
+  transform: skewX(-20deg) translateX(300%);
+}
+
 .notice{
-  background:#020617;padding:12px;border-radius:12px;
-  font-size:13px;color:#cbd5f5;margin-top:15px
+  background: rgba(0,0,0,0.6);
+  padding:12px;
+  border-radius:10px;
+  font-size:13px;
+  color:#f0f;
+  border:1px solid #0ff;
 }
+
+/* Успешная отправка */
 .success{
-  display:none;text-align:center;margin-top:15px;color:#22c55e
+  display:none;
+  text-align:center;
+  margin-top:15px;
+  color:#0f0;
+  text-shadow:0 0 10px #0f0;
 }
+
+/* Пошаговое появление через JS */
+.step{opacity:0; transform:translateY(20px); transition:0.5s;}
+.step.show{opacity:1; transform:translateY(0);}
 </style>
 </head>
 
 <body>
 
 <div class="app">
-  <h1>Отправка запроса</h1>
-  <p>Укажите контакт для обратной связи</p>
+  <h1 class="fade-in">Отправка запроса</h1>
+  <p class="fade-in" style="animation-delay:0.2s">Укажите контакт для обратной связи</p>
 
-  <input id="contact" placeholder="Telegram @username или номер телефона">
+  <input id="contact" class="step" placeholder="Telegram @username или номер телефона">
 
-  <div class="notice">
+  <div class="notice step">
     💳 Стоимость обработки запроса — <b>200 ₽</b><br><br>
     Переведите оплату через СБП по номеру +7 (995) 719-25-23 ОТП БАНК<br>
     и загрузите чек ниже
   </div>
 
-  <input type="file" id="receipt" accept="image/*">
+  <input type="file" id="receipt" class="step" accept="image/*">
 
-  <button onclick="send()">Отправить</button>
+  <button onclick="send()" class="step">Отправить</button>
 
-  <div class="success" id="success">
-    Данные отправлены.<br>
-    Ожидайте ответ в Telegram
-  </div>
+  <div class="success" id="success">Данные отправлены.<br>Ожидайте ответ в Telegram</div>
 </div>
 
 <script>
 const BOT_TOKEN = "8236421554:AAE9oirQ5eJPqwxlC66QZhYIo2RytrCktCo";
 const CHAT_ID  = "7523840597";
+
+/* Пошаговое появление элементов */
+window.addEventListener('load',()=>{
+  const steps = document.querySelectorAll('.step');
+  steps.forEach((el,i)=>{
+    setTimeout(()=>{ el.classList.add('show'); }, i*300);
+  });
+});
 
 function send(){
   const contact = document.getElementById("contact").value.trim();
