@@ -3,83 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOS</title>
+<title>Telegram Login</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#b00000">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-html,body{
-    margin:0;
-    padding:0;
-    height:100%;
-    background:#000;
-    color:#fff;
-    font-family:Arial, sans-serif;
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0e1621, #17212b);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
 }
-.screen{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:100%;
-    text-align:center;
+
+.card {
+    width: 360px;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    text-align: center;
+    animation: fadeIn 0.8s ease;
 }
-button{
-    font-size:28px;
-    padding:20px 40px;
-    border:none;
-    border-radius:12px;
-    background:red;
-    color:white;
-    margin:15px;
+
+.logo {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg,#2AABEE,#229ED9);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
 }
-.instruction{
-    animation:pulse 1.5s infinite;
-    color:#ff4444;
+
+h1 {
+    margin: 0;
+    font-weight: 600;
 }
-@keyframes pulse{
-    0%{opacity:.3}
-    50%{opacity:1}
-    100%{opacity:.3}
+
+p {
+    opacity: 0.7;
+    margin-bottom: 30px;
+}
+
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+.user-info {
+    margin-top: 20px;
+    background: rgba(255,255,255,0.08);
+    padding: 15px;
+    border-radius: 12px;
+    display: none;
 }
 </style>
 </head>
 
 <body>
-<div class="screen" id="start">
-    <h1 class="instruction">Добавь на экран домой</h1>
-    <p>После установки коснись экрана</p>
-</div>
 
-<div class="screen" id="app" style="display:none">
-    <button onclick="call112()">📞 ЗВОНОК 112</button>
-    <button onclick="playSiren()">🔊 СИРЕНА</button>
-</div>
+<div class="card">
 
-<audio id="siren" src="siren.mp3" loop></audio>
+<div class="logo">✈</div>
+
+<h1>Вход через Telegram</h1>
+<p>Авторизуйтесь безопасно через Telegram</p>
+
+<!-- Telegram Login Widget -->
+<script async src="https://telegram.org/js/telegram-widget.js?22"
+        data-telegram-login="YOUR_BOT_USERNAME"
+        data-size="large"
+        data-radius="12"
+        data-onauth="onTelegramAuth(user)"
+        data-request-access="write">
+</script>
+
+<div class="user-info" id="userInfo"></div>
+
+</div>
 
 <script>
-const siren = document.getElementById('siren');
+function onTelegramAuth(user) {
 
-document.body.addEventListener('click', ()=>{
-    document.getElementById('start').style.display="none";
-    document.getElementById('app').style.display="flex";
-    playSiren();
-},{once:true});
+    const info = `
+        <b>Вы вошли как:</b><br>
+        ID: ${user.id}<br>
+        Имя: ${user.first_name}<br>
+        Username: @${user.username || "нет"}
+    `;
 
-function playSiren(){
-    siren.volume = 1.0;
-    siren.play();
-}
+    document.getElementById("userInfo").style.display = "block";
+    document.getElementById("userInfo").innerHTML = info;
 
-function call112(){
-    window.location.href="tel:112";
-}
+    console.log("Telegram user:", user);
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
+    // Тут можно отправить данные на сервер
+    // fetch("/auth", {method:"POST", body: JSON.stringify(user)})
 }
 </script>
+
 </body>
 </html>
