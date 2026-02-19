@@ -1,0 +1,10 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 10 L180 40 L180 120 Q100 190 20 120 L20 40 Z" fill="#ef4444"/>
+  <rect x="40" y="95" width="120" height="6" fill="white" opacity="0.7"/>
+  <text x="100" y="85" font-size="22" text-anchor="middle" fill="white" font-family="Arial" font-weight="bold">
+    ДТП
+  </text>
+  <text x="100" y="120" font-size="14" text-anchor="middle" fill="white" font-family="Arial">
+    КОНСУЛЬТАНТ
+  </text>
+</svg>
