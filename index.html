@@ -1,111 +1,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Telegram Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ДТП КОНСУЛЬТАНТ</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
-<style>
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0e1621, #17212b);
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.card {
-    width: 360px;
-    padding: 40px;
-    border-radius: 24px;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    text-align: center;
-    animation: fadeIn 0.8s ease;
-}
-
-.logo {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 20px;
-    background: linear-gradient(135deg,#2AABEE,#229ED9);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-}
-
-h1 {
-    margin: 0;
-    font-weight: 600;
-}
-
-p {
-    opacity: 0.7;
-    margin-bottom: 30px;
-}
-
-@keyframes fadeIn {
-    from {opacity:0; transform: translateY(20px);}
-    to {opacity:1; transform: translateY(0);}
-}
-
-.user-info {
-    margin-top: 20px;
-    background: rgba(255,255,255,0.08);
-    padding: 15px;
-    border-radius: 12px;
-    display: none;
-}
-</style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="card">
+<div class="app">
+  <img src="logo.svg" class="logo">
 
-<div class="logo">✈</div>
+  <h1>ДТП КОНСУЛЬТАНТ</h1>
 
-<h1>Вход через Telegram</h1>
-<p>Авторизуйтесь безопасно через Telegram</p>
+  <input id="phone" type="tel" placeholder="Введите номер клиента">
 
-<!-- Telegram Login Widget -->
-<script async src="https://telegram.org/js/telegram-widget.js?22"
-        data-telegram-login="YOUR_BOT_USERNAME"
-        data-size="large"
-        data-radius="12"
-        data-onauth="onTelegramAuth(user)"
-        data-request-access="write">
-</script>
+  <button id="sendBtn">Отправить направление</button>
 
-<div class="user-info" id="userInfo"></div>
-
+  <div class="hint">
+    SMS откроется автоматически
+  </div>
 </div>
 
+<script src="app.js"></script>
+
 <script>
-function onTelegramAuth(user) {
-
-    const info = `
-        <b>Вы вошли как:</b><br>
-        ID: ${user.id}<br>
-        Имя: ${user.first_name}<br>
-        Username: @${user.username || "нет"}
-    `;
-
-    document.getElementById("userInfo").style.display = "block";
-    document.getElementById("userInfo").innerHTML = info;
-
-    console.log("Telegram user:", user);
-
-    // Тут можно отправить данные на сервер
-    // fetch("/auth", {method:"POST", body: JSON.stringify(user)})
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
 }
 </script>
 
