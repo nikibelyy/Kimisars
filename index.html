@@ -9,14 +9,15 @@
 
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
-background:#f2f2f7;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI";
+background:#f1f3f6;
+color:#111;
 }
 
 /* HEADER */
 
 .header{
-padding:24px 18px 10px;
+padding:24px 20px 10px;
 font-size:26px;
 font-weight:700;
 }
@@ -24,22 +25,23 @@ font-weight:700;
 /* SEARCH */
 
 .search{
-padding:10px 16px 16px;
+padding:10px 16px 18px;
 }
 
 .search input{
 width:100%;
-padding:13px;
-border-radius:18px;
+padding:14px;
+border-radius:20px;
 border:none;
-background:rgba(255,255,255,0.9);
 font-size:16px;
+background:rgba(255,255,255,0.9);
+box-shadow:0 3px 8px rgba(0,0,0,0.05);
 }
 
 /* LIST */
 
 .list{
-padding:0 10px 120px;
+padding:0 12px 120px;
 }
 
 /* CARD */
@@ -47,12 +49,13 @@ padding:0 10px 120px;
 .card{
 display:flex;
 align-items:center;
-background:white;
-border-radius:18px;
+background:rgba(255,255,255,0.85);
+backdrop-filter:blur(15px);
+border-radius:20px;
 padding:14px;
 margin-bottom:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.06);
-transition:.2s;
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
+transition:.15s;
 }
 
 .card:active{
@@ -62,8 +65,8 @@ transform:scale(.97);
 /* AVATAR */
 
 .avatar{
-width:46px;
-height:46px;
+width:44px;
+height:44px;
 border-radius:50%;
 background:#007aff;
 color:white;
@@ -90,22 +93,22 @@ font-size:14px;
 color:#666;
 }
 
-/* FLOAT BUTTON */
+/* FAB */
 
 .fab{
 position:fixed;
-right:18px;
-bottom:28px;
+right:20px;
+bottom:30px;
 width:60px;
 height:60px;
 border-radius:50%;
 background:#007aff;
 color:white;
-font-size:30px;
+font-size:32px;
 display:flex;
 align-items:center;
 justify-content:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.25);
+box-shadow:0 12px 25px rgba(0,0,0,0.25);
 cursor:pointer;
 }
 
@@ -129,45 +132,38 @@ border-radius:22px;
 padding:22px;
 width:86%;
 max-width:340px;
+animation:pop .2s ease;
 }
 
-/* FLOATING LABEL INPUT */
-
-.field{
-position:relative;
-margin-bottom:16px;
+@keyframes pop{
+from{transform:scale(.9);opacity:.7}
+to{transform:scale(1);opacity:1}
 }
 
-.field input{
+/* INPUT */
+
+.input{
+margin-bottom:14px;
+}
+
+.input label{
+font-size:13px;
+color:#666;
+display:block;
+margin-bottom:4px;
+}
+
+.input input{
 width:100%;
-padding:14px 12px;
-border-radius:12px;
+padding:12px;
+border-radius:10px;
 border:1px solid #ddd;
 font-size:15px;
-outline:none;
-}
-
-.field label{
-position:absolute;
-left:12px;
-top:14px;
-color:#888;
-font-size:14px;
-transition:.2s;
-background:white;
-padding:0 4px;
-}
-
-.field input:focus + label,
-.field input:not(:placeholder-shown) + label{
-top:-7px;
-font-size:12px;
-color:#007aff;
 }
 
 .form button{
 width:100%;
-padding:12px;
+padding:13px;
 border:none;
 border-radius:12px;
 background:#007aff;
@@ -194,24 +190,24 @@ font-size:16px;
 
 <div class="form">
 
-<div class="field">
-<input id="name" placeholder=" " />
+<div class="input">
 <label>ФИО клиента</label>
+<input id="name">
 </div>
 
-<div class="field">
-<input id="brand" placeholder=" " />
+<div class="input">
 <label>Марка автомобиля</label>
+<input id="brand">
 </div>
 
-<div class="field">
-<input id="number" placeholder=" " />
+<div class="input">
 <label>Госномер</label>
+<input id="number">
 </div>
 
-<div class="field">
-<input id="phone" placeholder=" " />
+<div class="input">
 <label>Телефон</label>
+<input id="phone">
 </div>
 
 <button onclick="saveClient()">Сохранить</button>
@@ -242,7 +238,6 @@ let card=document.createElement("div")
 card.className="card"
 
 card.innerHTML=`
-
 <div class="avatar">${initials}</div>
 
 <div class="info">
@@ -251,10 +246,9 @@ card.innerHTML=`
 <div class="meta">🔢 ${c.number}</div>
 <div class="meta">📞 ${c.phone}</div>
 </div>
-
 `
 
-/* OPEN EDIT */
+/* EDIT */
 
 card.onclick=()=>{
 openForm(c)
@@ -291,7 +285,7 @@ list.appendChild(card)
 
 /* OPEN FORM */
 
-function openForm(client=null){
+function openForm(client){
 
 modal.style.display="flex"
 
@@ -299,19 +293,19 @@ if(client){
 
 editingId=client.id
 
-name.value=client.name
-brand.value=client.brand
-number.value=client.number
-phone.value=client.phone
+document.getElementById("name").value=client.name
+document.getElementById("brand").value=client.brand
+document.getElementById("number").value=client.number
+document.getElementById("phone").value=client.phone
 
 }else{
 
 editingId=null
 
-name.value=""
-brand.value=""
-number.value=""
-phone.value=""
+document.getElementById("name").value=""
+document.getElementById("brand").value=""
+document.getElementById("number").value=""
+document.getElementById("phone").value=""
 
 }
 
@@ -321,25 +315,30 @@ phone.value=""
 
 function saveClient(){
 
-if(!name.value||!brand.value||!number.value||!phone.value) return
+let name=document.getElementById("name").value
+let brand=document.getElementById("brand").value
+let number=document.getElementById("number").value
+let phone=document.getElementById("phone").value
+
+if(!name||!brand||!number||!phone) return
 
 if(editingId){
 
 let c=clients.find(x=>x.id===editingId)
 
-c.name=name.value
-c.brand=brand.value
-c.number=number.value
-c.phone=phone.value
+c.name=name
+c.brand=brand
+c.number=number
+c.phone=phone
 
 }else{
 
 clients.push({
 id:Date.now(),
-name:name.value,
-brand:brand.value,
-number:number.value,
-phone:phone.value
+name,
+brand,
+number,
+phone
 })
 
 }
