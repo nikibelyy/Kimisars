@@ -2,40 +2,51 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ДТП-СФЕРА</title>
 
 <style>
 
+:root{
+--blue:#007AFF;
+--bg:#f2f2f7;
+}
+
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI";
-background:#f1f3f6;
+background:var(--bg);
 color:#111;
+}
+
+/* SAFE AREA */
+
+.wrapper{
+padding-top:env(safe-area-inset-top);
 }
 
 /* HEADER */
 
 .header{
-padding:24px 20px 10px;
-font-size:26px;
+font-size:28px;
 font-weight:700;
+padding:20px 18px 6px;
 }
 
 /* SEARCH */
 
 .search{
-padding:10px 16px 18px;
+padding:8px 16px 16px;
 }
 
 .search input{
 width:100%;
-padding:14px;
-border-radius:20px;
+padding:14px 16px;
+border-radius:18px;
 border:none;
 font-size:16px;
-background:rgba(255,255,255,0.9);
-box-shadow:0 3px 8px rgba(0,0,0,0.05);
+background:white;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
 /* LIST */
@@ -49,13 +60,12 @@ padding:0 12px 120px;
 .card{
 display:flex;
 align-items:center;
-background:rgba(255,255,255,0.85);
-backdrop-filter:blur(15px);
-border-radius:20px;
-padding:14px;
-margin-bottom:10px;
-box-shadow:0 4px 12px rgba(0,0,0,0.05);
-transition:.15s;
+background:white;
+border-radius:22px;
+padding:16px;
+margin-bottom:12px;
+box-shadow:0 6px 16px rgba(0,0,0,0.05);
+transition:transform .15s;
 }
 
 .card:active{
@@ -65,16 +75,17 @@ transform:scale(.97);
 /* AVATAR */
 
 .avatar{
-width:44px;
-height:44px;
+width:50px;
+height:50px;
 border-radius:50%;
-background:#007aff;
+background:var(--blue);
 color:white;
 display:flex;
 align-items:center;
 justify-content:center;
 font-weight:600;
-margin-right:12px;
+font-size:18px;
+margin-right:14px;
 }
 
 /* INFO */
@@ -84,13 +95,14 @@ flex:1;
 }
 
 .name{
+font-size:17px;
 font-weight:600;
-font-size:16px;
+margin-bottom:3px;
 }
 
 .meta{
 font-size:14px;
-color:#666;
+color:#6b6b6b;
 }
 
 /* FAB */
@@ -99,12 +111,12 @@ color:#666;
 position:fixed;
 right:20px;
 bottom:30px;
-width:60px;
-height:60px;
+width:64px;
+height:64px;
 border-radius:50%;
-background:#007aff;
+background:var(--blue);
 color:white;
-font-size:32px;
+font-size:34px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -124,15 +136,16 @@ background:rgba(0,0,0,0.35);
 display:none;
 align-items:center;
 justify-content:center;
+padding:20px;
 }
 
 .form{
 background:white;
-border-radius:22px;
+border-radius:24px;
 padding:22px;
-width:86%;
-max-width:340px;
-animation:pop .2s ease;
+width:100%;
+max-width:360px;
+animation:pop .25s;
 }
 
 @keyframes pop{
@@ -140,41 +153,42 @@ from{transform:scale(.9);opacity:.7}
 to{transform:scale(1);opacity:1}
 }
 
-/* INPUT */
-
-.input{
-margin-bottom:14px;
+.field{
+margin-bottom:16px;
 }
 
-.input label{
+.field label{
+display:block;
 font-size:13px;
 color:#666;
-display:block;
 margin-bottom:4px;
 }
 
-.input input{
+.field input{
 width:100%;
-padding:12px;
-border-radius:10px;
+padding:13px;
+border-radius:12px;
 border:1px solid #ddd;
-font-size:15px;
+font-size:16px;
 }
 
 .form button{
 width:100%;
-padding:13px;
+padding:14px;
 border:none;
-border-radius:12px;
-background:#007aff;
+border-radius:14px;
+background:var(--blue);
 color:white;
-font-size:16px;
+font-size:17px;
+font-weight:600;
 }
 
 </style>
 </head>
 
 <body>
+
+<div class="wrapper">
 
 <div class="header">ДТП-СФЕРА</div>
 
@@ -184,28 +198,30 @@ font-size:16px;
 
 <div class="list" id="list"></div>
 
+</div>
+
 <div class="fab" onclick="openForm()">+</div>
 
 <div class="modal" id="modal">
 
 <div class="form">
 
-<div class="input">
+<div class="field">
 <label>ФИО клиента</label>
 <input id="name">
 </div>
 
-<div class="input">
+<div class="field">
 <label>Марка автомобиля</label>
 <input id="brand">
 </div>
 
-<div class="input">
+<div class="field">
 <label>Госномер</label>
 <input id="number">
 </div>
 
-<div class="input">
+<div class="field">
 <label>Телефон</label>
 <input id="phone">
 </div>
@@ -213,6 +229,7 @@ font-size:16px;
 <button onclick="saveClient()">Сохранить</button>
 
 </div>
+
 </div>
 
 <script>
@@ -238,6 +255,7 @@ let card=document.createElement("div")
 card.className="card"
 
 card.innerHTML=`
+
 <div class="avatar">${initials}</div>
 
 <div class="info">
@@ -248,11 +266,7 @@ card.innerHTML=`
 </div>
 `
 
-/* EDIT */
-
-card.onclick=()=>{
-openForm(c)
-}
+card.onclick=()=>openForm(c)
 
 /* SWIPE DELETE */
 
@@ -283,8 +297,6 @@ list.appendChild(card)
 
 }
 
-/* OPEN FORM */
-
 function openForm(client){
 
 modal.style.display="flex"
@@ -293,52 +305,50 @@ if(client){
 
 editingId=client.id
 
-document.getElementById("name").value=client.name
-document.getElementById("brand").value=client.brand
-document.getElementById("number").value=client.number
-document.getElementById("phone").value=client.phone
+name.value=client.name
+brand.value=client.brand
+number.value=client.number
+phone.value=client.phone
 
 }else{
 
 editingId=null
 
-document.getElementById("name").value=""
-document.getElementById("brand").value=""
-document.getElementById("number").value=""
-document.getElementById("phone").value=""
+name.value=""
+brand.value=""
+number.value=""
+phone.value=""
 
 }
 
 }
-
-/* SAVE CLIENT */
 
 function saveClient(){
 
-let name=document.getElementById("name").value
-let brand=document.getElementById("brand").value
-let number=document.getElementById("number").value
-let phone=document.getElementById("phone").value
+let n=name.value
+let b=brand.value
+let num=number.value
+let p=phone.value
 
-if(!name||!brand||!number||!phone) return
+if(!n||!b||!num||!p) return
 
 if(editingId){
 
 let c=clients.find(x=>x.id===editingId)
 
-c.name=name
-c.brand=brand
-c.number=number
-c.phone=phone
+c.name=n
+c.brand=b
+c.number=num
+c.phone=p
 
 }else{
 
 clients.push({
 id:Date.now(),
-name,
-brand,
-number,
-phone
+name:n,
+brand:b,
+number:num,
+phone:p
 })
 
 }
@@ -349,8 +359,6 @@ render(clients)
 modal.style.display="none"
 
 }
-
-/* SEARCH */
 
 search.oninput=e=>{
 
