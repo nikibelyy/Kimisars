@@ -39,15 +39,17 @@ margin-bottom:12px;
 display:flex;
 gap:8px;
 margin-bottom:16px;
+flex-wrap:wrap;
 }
 
 .stat{
 flex:1;
+min-width:90px;
 background:white;
 padding:10px;
 border-radius:14px;
 text-align:center;
-font-size:14px;
+font-size:13px;
 box-shadow:0 4px 10px rgba(0,0,0,0.05);
 }
 
@@ -101,14 +103,19 @@ margin-right:12px;
 
 .meta{font-size:14px;color:#666}
 
-/* favorite */
+/* money */
 
-.favorite{
+.money{
 position:absolute;
 right:10px;
 top:10px;
-font-size:18px;
+font-size:20px;
 cursor:pointer;
+opacity:.4;
+}
+
+.money.paid{
+opacity:1;
 }
 
 /* fab */
@@ -208,6 +215,11 @@ font-weight:600;
 Всего
 </div>
 
+<div class="stat">
+<span id="statPaid">0</span>
+💵 Оплачено
+</div>
+
 </div>
 
 <div class="search">
@@ -269,7 +281,7 @@ function saveStorage(){
 localStorage.setItem("clients",JSON.stringify(clients))
 }
 
-/* random color */
+/* random avatar color */
 
 function randomColor(){
 
@@ -295,22 +307,24 @@ yesterday.setDate(today.getDate()-1)
 
 let todayCount=0
 let yesterdayCount=0
+let paid=0
 
 clients.forEach(c=>{
 
 let d=new Date(c.date)
 
-if(d.toDateString()==today.toDateString())
-todayCount++
+if(d.toDateString()==today.toDateString()) todayCount++
 
-if(d.toDateString()==yesterday.toDateString())
-yesterdayCount++
+if(d.toDateString()==yesterday.toDateString()) yesterdayCount++
+
+if(c.paid) paid++
 
 })
 
 document.getElementById("statToday").textContent=todayCount
 document.getElementById("statYesterday").textContent=yesterdayCount
 document.getElementById("statTotal").textContent=clients.length
+document.getElementById("statPaid").textContent=paid
 
 }
 
@@ -320,13 +334,11 @@ function render(data){
 
 list.innerHTML=""
 
-data.sort((a,b)=>b.favorite-a.favorite)
-
 data.forEach(c=>{
 
 let initials=c.name.split(" ").map(x=>x[0]).join("").slice(0,2)
 
-let star=c.favorite?"⭐":"☆"
+let moneyClass=c.paid?"money paid":"money"
 
 let card=document.createElement("div")
 
@@ -348,17 +360,17 @@ card.innerHTML=`
 
 </div>
 
-<div class="favorite">${star}</div>
+<div class="${moneyClass}">💵</div>
 
 `
 
-/* toggle favorite */
+/* toggle paid */
 
-card.querySelector(".favorite").onclick=(e)=>{
+card.querySelector(".money").onclick=(e)=>{
 
 e.stopPropagation()
 
-c.favorite=!c.favorite
+c.paid=!c.paid
 
 saveStorage()
 
@@ -391,8 +403,6 @@ clients=clients.filter(x=>x.id!==c.id)
 saveStorage()
 
 render(clients)
-
-updateStats()
 
 }
 
@@ -466,7 +476,7 @@ brand:b,
 number:num,
 phone:p,
 color:randomColor(),
-favorite:false,
+paid:false,
 date:new Date()
 
 })
