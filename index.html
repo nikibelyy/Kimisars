@@ -113,21 +113,24 @@ color:#34C759;
 margin-top:6px;
 }
 
-/* fab */
+/* buttons */
 
-.fab{
+.actions{
 position:fixed;
 right:18px;
 bottom:30px;
-width:60px;
-height:60px;
-border-radius:50%;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.btn{
+padding:14px 18px;
+border-radius:14px;
 background:#007AFF;
 color:white;
-font-size:32px;
-display:flex;
-align-items:center;
-justify-content:center;
+font-weight:600;
+text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.25);
 cursor:pointer;
 }
@@ -165,11 +168,17 @@ display:block;
 margin-bottom:4px;
 }
 
-.field input{
+.field input,
+.field textarea{
 width:100%;
 padding:12px;
 border-radius:10px;
 border:1px solid #ddd;
+}
+
+textarea{
+resize:none;
+height:80px;
 }
 
 .form button{
@@ -228,7 +237,15 @@ font-weight:600;
 
 </div>
 
-<div class="fab" onclick="openForm()">+</div>
+<div class="actions">
+
+<div class="btn" onclick="openCallCenter()">Колл Центр</div>
+
+<div class="btn" onclick="openForm()">+ Клиент</div>
+
+</div>
+
+<!-- CLIENT MODAL -->
 
 <div class="modal" id="modal">
 
@@ -260,6 +277,33 @@ font-weight:600;
 </div>
 
 <button onclick="saveClient()">Сохранить</button>
+
+</div>
+
+</div>
+
+<!-- CALL CENTER MODAL -->
+
+<div class="modal" id="callModal">
+
+<div class="form">
+
+<div class="field">
+<label>Имя клиента</label>
+<input id="callName">
+</div>
+
+<div class="field">
+<label>Телефон</label>
+<input id="callPhone">
+</div>
+
+<div class="field">
+<label>Комментарий</label>
+<textarea id="callComment"></textarea>
+</div>
+
+<button onclick="sendTelegram()">Отправить в Telegram</button>
 
 </div>
 
@@ -301,10 +345,10 @@ money+=Number(c.money||0)
 
 })
 
-document.getElementById("statToday").textContent=todayCount
-document.getElementById("statYesterday").textContent=yesterdayCount
-document.getElementById("statTotal").textContent=clients.length
-document.getElementById("statMoney").textContent=money+" ₽"
+statToday.textContent=todayCount
+statYesterday.textContent=yesterdayCount
+statTotal.textContent=clients.length
+statMoney.textContent=money+" ₽"
 
 }
 
@@ -360,43 +404,14 @@ card.className="card"
 card.innerHTML=`
 
 <div class="name">${c.name}</div>
-
 <div class="row">Марка: ${c.brand}</div>
-
 <div class="row">Гос номер: ${c.number}</div>
-
 <div class="row">Телефон: ${c.phone}</div>
-
 <div class="money">Сумма: ${c.money||0} ₽</div>
 
 `
 
 card.onclick=()=>openForm(c)
-
-let startX
-
-card.addEventListener("touchstart",e=>{
-startX=e.touches[0].clientX
-})
-
-card.addEventListener("touchend",e=>{
-
-let endX=e.changedTouches[0].clientX
-
-if(startX-endX>120){
-
-if(confirm("Удалить клиента?")){
-
-clients=clients.filter(x=>x.id!==c.id)
-
-saveStorage()
-render(clients)
-
-}
-
-}
-
-})
 
 list.appendChild(card)
 
@@ -407,7 +422,7 @@ drawChart()
 
 }
 
-/* open form */
+/* client form */
 
 function openForm(client){
 
@@ -478,6 +493,32 @@ saveStorage()
 render(clients)
 
 modal.style.display="none"
+
+}
+
+/* call center */
+
+function openCallCenter(){
+callModal.style.display="flex"
+}
+
+function sendTelegram(){
+
+let name=callName.value
+let phone=callPhone.value
+let comment=callComment.value
+
+let text=`Колл Центр ДТП-СФЕРА
+
+Клиент: ${name}
+Телефон: ${phone}
+Комментарий: ${comment}`
+
+let url=`https://t.me/Irishka_0923?text=${encodeURIComponent(text)}`
+
+window.open(url,"_blank")
+
+callModal.style.display="none"
 
 }
 
