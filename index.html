@@ -11,12 +11,13 @@ body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
 background:#f2f2f7;
+overflow-x:hidden;
 }
 
 /* HEADER */
 
 .header{
-padding:22px 18px 10px 18px;
+padding:22px 18px 8px 18px;
 font-size:24px;
 font-weight:600;
 }
@@ -24,59 +25,88 @@ font-weight:600;
 /* SEARCH */
 
 .search{
-padding:10px 16px;
+padding:8px 16px 14px 16px;
 }
 
 .search input{
 width:100%;
 padding:12px;
-border-radius:16px;
+border-radius:18px;
 border:none;
 outline:none;
-background:rgba(255,255,255,0.7);
+background:rgba(255,255,255,0.8);
 backdrop-filter:blur(10px);
 font-size:16px;
-box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* CLIENT LIST */
+/* LIST */
 
 .list{
-padding:10px 14px 100px 14px;
+padding:0 10px 120px 10px;
 }
 
+/* CARD */
+
 .card{
-background:rgba(255,255,255,0.75);
-backdrop-filter:blur(18px);
+display:flex;
+align-items:center;
+background:white;
 border-radius:18px;
-padding:14px;
+padding:12px;
 margin-bottom:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.05);
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+transition:transform .2s;
+}
+
+.card:active{
+transform:scale(.97);
+}
+
+/* AVATAR */
+
+.avatar{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#007aff;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:600;
+margin-right:12px;
+font-size:15px;
+}
+
+/* INFO */
+
+.info{
+flex:1;
 }
 
 .name{
 font-weight:600;
 font-size:16px;
-margin-bottom:4px;
 }
 
 .meta{
 font-size:14px;
-color:#555;
+color:#666;
 }
 
+/* ACTIONS */
+
 .actions{
-margin-top:8px;
+display:flex;
+gap:6px;
 }
 
 .actions button{
 border:none;
-background:#e5e5ea;
-padding:6px 10px;
-border-radius:10px;
-margin-right:6px;
-font-size:13px;
-cursor:pointer;
+background:#ececec;
+padding:6px 8px;
+border-radius:8px;
+font-size:12px;
 }
 
 /* FLOAT BUTTON */
@@ -90,15 +120,23 @@ height:56px;
 border-radius:50%;
 background:#007aff;
 color:white;
-font-size:28px;
+font-size:30px;
 display:flex;
 align-items:center;
 justify-content:center;
-box-shadow:0 6px 20px rgba(0,0,0,0.2);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
 cursor:pointer;
+transition:transform .3s,opacity .3s;
 }
 
-/* ADD FORM */
+/* HIDE BUTTON */
+
+.hide{
+transform:translateY(100px);
+opacity:0;
+}
+
+/* MODAL */
 
 .modal{
 position:fixed;
@@ -106,7 +144,7 @@ top:0;
 left:0;
 right:0;
 bottom:0;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.35);
 display:none;
 align-items:center;
 justify-content:center;
@@ -117,13 +155,19 @@ background:white;
 border-radius:20px;
 padding:20px;
 width:85%;
-max-width:350px;
+max-width:340px;
+animation:pop .2s ease;
+}
+
+@keyframes pop{
+from{transform:scale(.9)}
+to{transform:scale(1)}
 }
 
 .form input{
 width:100%;
-margin-bottom:10px;
 padding:10px;
+margin-bottom:10px;
 border-radius:10px;
 border:1px solid #ddd;
 font-size:15px;
@@ -144,9 +188,7 @@ font-size:16px;
 
 <body>
 
-<div class="header">
-ДТП-СФЕРА
-</div>
+<div class="header">ДТП-СФЕРА</div>
 
 <div class="search">
 <input id="search" placeholder="Поиск по номеру авто">
@@ -154,7 +196,7 @@ font-size:16px;
 
 <div class="list" id="list"></div>
 
-<div class="fab" onclick="openForm()">+</div>
+<div class="fab" id="fab" onclick="openForm()">+</div>
 
 <div class="modal" id="modal">
 <div class="form">
@@ -171,6 +213,9 @@ font-size:16px;
 let clients = JSON.parse(localStorage.getItem("clients")) || []
 
 const list = document.getElementById("list")
+const fab = document.getElementById("fab")
+
+/* RENDER */
 
 function render(data){
 
@@ -178,19 +223,27 @@ list.innerHTML=""
 
 data.forEach(c=>{
 
+let initials = c.name.split(" ").map(x=>x[0]).join("").slice(0,2)
+
 let card=document.createElement("div")
 card.className="card"
 
 card.innerHTML=`
+
+<div class="avatar">${initials}</div>
+
+<div class="info">
 <div class="name">${c.name}</div>
-<div class="meta">${c.brand}</div>
-<div class="meta">${c.number}</div>
-<div class="meta">${c.phone}</div>
+<div class="meta">🚗 ${c.brand}</div>
+<div class="meta">🔢 ${c.number}</div>
+<div class="meta">📞 ${c.phone}</div>
+</div>
 
 <div class="actions">
-<button onclick="edit(${c.id})">Редактировать</button>
-<button onclick="remove(${c.id})">Удалить</button>
+<button onclick="edit(${c.id})">✏️</button>
+<button onclick="remove(${c.id})">🗑</button>
 </div>
+
 `
 
 list.appendChild(card)
@@ -199,50 +252,64 @@ list.appendChild(card)
 
 }
 
+/* SAVE */
+
 function save(){
 localStorage.setItem("clients",JSON.stringify(clients))
 }
 
+/* ADD */
+
 function add(){
 
-let name=document.getElementById("name").value
-let brand=document.getElementById("brand").value
-let number=document.getElementById("number").value
-let phone=document.getElementById("phone").value
+let name=nameInput.value
+let brand=brandInput.value
+let number=numberInput.value
+let phone=phoneInput.value
 
 if(!name||!brand||!number||!phone) return
 
-let id=Date.now()
-
-clients.push({id,name,brand,number,phone})
+clients.push({
+id:Date.now(),
+name,
+brand,
+number,
+phone
+})
 
 save()
 render(clients)
 
 closeForm()
 
+nameInput.value=""
+brandInput.value=""
+numberInput.value=""
+phoneInput.value=""
+
 }
+
+/* EDIT */
 
 function edit(id){
 
 let c=clients.find(x=>x.id==id)
 
-let name=prompt("ФИО",c.name)
-let brand=prompt("Марка",c.brand)
-let number=prompt("Госномер",c.number)
-let phone=prompt("Телефон",c.phone)
-
-c.name=name
-c.brand=brand
-c.number=number
-c.phone=phone
+c.name=prompt("ФИО",c.name)
+c.brand=prompt("Марка",c.brand)
+c.number=prompt("Номер",c.number)
+c.phone=prompt("Телефон",c.phone)
 
 save()
 render(clients)
 
 }
 
+/* REMOVE */
+
 function remove(id){
+
+if(confirm("Удалить клиента?")){
 
 clients=clients.filter(x=>x.id!=id)
 
@@ -251,7 +318,11 @@ render(clients)
 
 }
 
-document.getElementById("search").oninput=e=>{
+}
+
+/* SEARCH */
+
+search.oninput=e=>{
 
 let q=e.target.value.toLowerCase()
 
@@ -261,13 +332,33 @@ render(filtered)
 
 }
 
+/* MODAL */
+
 function openForm(){
-document.getElementById("modal").style.display="flex"
+modal.style.display="flex"
 }
 
 function closeForm(){
-document.getElementById("modal").style.display="none"
+modal.style.display="none"
 }
+
+/* FAB HIDE ON SCROLL */
+
+let lastScroll=0
+
+window.addEventListener("scroll",()=>{
+
+let current=window.scrollY
+
+if(current>lastScroll){
+fab.classList.add("hide")
+}else{
+fab.classList.remove("hide")
+}
+
+lastScroll=current
+
+})
 
 render(clients)
 
