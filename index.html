@@ -1,335 +1,168 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>ДТП-СФЕРА</title>
 
 <style>
 
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
-
 margin:0;
-
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI";
-
 background:#f2f2f7;
-
 overflow-x:hidden;
-
 }
 
-/* CONTAINER */
-
 .container{
-
 max-width:430px;
-
 margin:auto;
-
 padding:env(safe-area-inset-top) 14px 120px;
-
 }
 
 /* HEADER */
 
 .header{
-
-font-size:28px;
-
+font-size:26px;
 font-weight:700;
-
 margin-bottom:10px;
-
 }
 
 /* SEARCH */
 
 .search input{
-
 width:100%;
-
-padding:14px 16px;
-
-border-radius:18px;
-
+padding:14px;
+border-radius:16px;
 border:none;
-
 font-size:16px;
-
 background:white;
-
 box-shadow:0 4px 10px rgba(0,0,0,0.05);
-
 margin-bottom:16px;
-
 }
 
 /* CARD */
 
 .card{
-
 display:flex;
-
 align-items:center;
-
-width:100%;
-
-padding:14px;
-
 background:white;
-
-border-radius:20px;
-
+border-radius:18px;
+padding:14px;
 margin-bottom:10px;
-
-box-shadow:0 6px 16px rgba(0,0,0,0.05);
-
-transition:.2s;
-
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
 
 .card:active{
-
-transform:scale(.96);
-
+transform:scale(.97);
 }
 
 /* AVATAR */
 
 .avatar{
-
-width:48px;
-
-height:48px;
-
+width:46px;
+height:46px;
+min-width:46px;
 border-radius:50%;
-
 color:white;
-
 display:flex;
-
 align-items:center;
-
 justify-content:center;
-
 font-weight:600;
-
-font-size:17px;
-
 margin-right:12px;
-
 }
 
 /* INFO */
 
-.info{
-
-flex:1;
-
-min-width:0;
-
-}
+.info{flex:1}
 
 .name{
-
-font-size:16px;
-
 font-weight:600;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
+font-size:16px;
 }
 
 .meta{
-
 font-size:14px;
-
 color:#666;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
 }
 
 /* FAB */
 
 .fab{
-
 position:fixed;
-
-right:20px;
-
+right:18px;
 bottom:30px;
-
-width:62px;
-
-height:62px;
-
+width:60px;
+height:60px;
 border-radius:50%;
-
 background:#007AFF;
-
 color:white;
-
 font-size:32px;
-
 display:flex;
-
 align-items:center;
-
 justify-content:center;
-
-box-shadow:0 12px 25px rgba(0,0,0,0.25);
-
-transition:.3s;
-
+box-shadow:0 10px 20px rgba(0,0,0,0.25);
+cursor:pointer;
 }
 
 /* MODAL */
 
 .modal{
-
 position:fixed;
-
 top:0;
 left:0;
 right:0;
 bottom:0;
-
 background:rgba(0,0,0,0.35);
-
 display:none;
-
 align-items:center;
-
 justify-content:center;
-
 padding:20px;
-
 }
 
 /* FORM */
 
 .form{
-
 background:white;
-
-border-radius:24px;
-
+border-radius:20px;
 padding:20px;
-
 width:100%;
-
-max-width:380px;
-
-animation:popup .25s;
-
+max-width:360px;
 }
-
-@keyframes popup{
-
-from{
-transform:scale(.9);
-opacity:0;
-}
-
-to{
-transform:scale(1);
-opacity:1;
-}
-
-}
-
-/* INPUT */
 
 .field{
-
-margin-bottom:14px;
-
+margin-bottom:12px;
 }
 
 .field label{
-
 font-size:13px;
-
-color:#555;
-
 display:block;
-
 margin-bottom:4px;
-
 }
 
 .field input{
-
 width:100%;
-
 padding:12px;
-
-border-radius:12px;
-
+border-radius:10px;
 border:1px solid #ddd;
-
-font-size:15px;
-
 }
-
-/* BUTTON */
 
 .form button{
-
 width:100%;
-
-padding:14px;
-
+padding:13px;
 border:none;
-
-border-radius:14px;
-
+border-radius:12px;
 background:#007AFF;
-
 color:white;
-
 font-size:16px;
-
 font-weight:600;
-
-}
-
-/* ANIMATION */
-
-.fade{
-
-animation:fade .25s;
-
-}
-
-@keyframes fade{
-
-from{opacity:0}
-
-to{opacity:1}
-
 }
 
 </style>
-
 </head>
 
 <body>
@@ -339,16 +172,14 @@ to{opacity:1}
 <div class="header">ДТП-СФЕРА</div>
 
 <div class="search">
-
-<input id="search" placeholder="Поиск">
-
+<input id="searchInput" placeholder="Поиск клиента / номер / телефон">
 </div>
 
 <div id="list"></div>
 
 </div>
 
-<div class="fab" id="fab" onclick="openForm()">+</div>
+<div class="fab" onclick="openForm()">+</div>
 
 <div class="modal" id="modal">
 
@@ -356,22 +187,22 @@ to{opacity:1}
 
 <div class="field">
 <label>ФИО клиента</label>
-<input id="name">
+<input id="nameInput">
 </div>
 
 <div class="field">
 <label>Марка автомобиля</label>
-<input id="brand">
+<input id="brandInput">
 </div>
 
 <div class="field">
 <label>Госномер</label>
-<input id="number">
+<input id="numberInput">
 </div>
 
 <div class="field">
 <label>Телефон</label>
-<input id="phone">
+<input id="phoneInput">
 </div>
 
 <button onclick="saveClient()">Сохранить</button>
@@ -382,28 +213,33 @@ to{opacity:1}
 
 <script>
 
-let clients=JSON.parse(localStorage.getItem("clients"))||[]
+let clients = JSON.parse(localStorage.getItem("clients")) || []
 
-let editingId=null
+let editingId = null
 
-const list=document.getElementById("list")
+const list = document.getElementById("list")
 
-function save(){
+const modal = document.getElementById("modal")
 
+const nameInput = document.getElementById("nameInput")
+const brandInput = document.getElementById("brandInput")
+const numberInput = document.getElementById("numberInput")
+const phoneInput = document.getElementById("phoneInput")
+
+const searchInput = document.getElementById("searchInput")
+
+function saveStorage(){
 localStorage.setItem("clients",JSON.stringify(clients))
-
 }
 
 function randomColor(){
 
 const colors=[
-
 "#007AFF",
 "#5856D6",
 "#FF9500",
 "#34C759",
 "#FF2D55"
-
 ]
 
 return colors[Math.floor(Math.random()*colors.length)]
@@ -420,7 +256,7 @@ let initials=c.name.split(" ").map(x=>x[0]).join("").slice(0,2)
 
 let card=document.createElement("div")
 
-card.className="card fade"
+card.className="card"
 
 card.innerHTML=`
 
@@ -460,7 +296,7 @@ if(confirm("Удалить клиента?")){
 
 clients=clients.filter(x=>x.id!==c.id)
 
-save()
+saveStorage()
 
 render(clients)
 
@@ -484,19 +320,19 @@ if(client){
 
 editingId=client.id
 
-name.value=client.name
-brand.value=client.brand
-number.value=client.number
-phone.value=client.phone
+nameInput.value=client.name
+brandInput.value=client.brand
+numberInput.value=client.number
+phoneInput.value=client.phone
 
 }else{
 
 editingId=null
 
-name.value=""
-brand.value=""
-number.value=""
-phone.value=""
+nameInput.value=""
+brandInput.value=""
+numberInput.value=""
+phoneInput.value=""
 
 }
 
@@ -504,10 +340,10 @@ phone.value=""
 
 function saveClient(){
 
-let n=name.value
-let b=brand.value
-let num=number.value
-let p=phone.value
+let n=nameInput.value.trim()
+let b=brandInput.value.trim()
+let num=numberInput.value.trim()
+let p=phoneInput.value.trim()
 
 if(!n||!b||!num||!p) return
 
@@ -525,22 +361,17 @@ c.phone=p
 clients.push({
 
 id:Date.now(),
-
 name:n,
-
 brand:b,
-
 number:num,
-
 phone:p,
-
 color:randomColor()
 
 })
 
 }
 
-save()
+saveStorage()
 
 render(clients)
 
@@ -548,16 +379,14 @@ modal.style.display="none"
 
 }
 
-search.oninput=e=>{
+searchInput.oninput=e=>{
 
 let q=e.target.value.toLowerCase()
 
 let filtered=clients.filter(c=>
 
 c.name.toLowerCase().includes(q) ||
-
 c.number.toLowerCase().includes(q) ||
-
 c.phone.toLowerCase().includes(q)
 
 )
@@ -566,32 +395,9 @@ render(filtered)
 
 }
 
-/* hide fab on scroll */
-
-let lastScroll=0
-
-window.addEventListener("scroll",()=>{
-
-let current=window.scrollY
-
-if(current>lastScroll){
-
-fab.style.transform="translateY(120px)"
-
-}else{
-
-fab.style.transform="translateY(0)"
-
-}
-
-lastScroll=current
-
-})
-
 render(clients)
 
 </script>
 
 </body>
-
 </html>
