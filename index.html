@@ -16,8 +16,8 @@ background:#f2f2f7;
 /* HEADER */
 
 .header{
-padding:20px;
-font-size:22px;
+padding:22px 18px 10px 18px;
+font-size:24px;
 font-weight:600;
 }
 
@@ -36,16 +36,17 @@ outline:none;
 background:rgba(255,255,255,0.7);
 backdrop-filter:blur(10px);
 font-size:16px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* CLIENT LIST */
 
 .list{
-padding:10px 14px 90px 14px;
+padding:10px 14px 100px 14px;
 }
 
 .card{
-background:rgba(255,255,255,0.7);
+background:rgba(255,255,255,0.75);
 backdrop-filter:blur(18px);
 border-radius:18px;
 padding:14px;
@@ -64,8 +65,6 @@ font-size:14px;
 color:#555;
 }
 
-/* BUTTONS */
-
 .actions{
 margin-top:8px;
 }
@@ -77,6 +76,7 @@ padding:6px 10px;
 border-radius:10px;
 margin-right:6px;
 font-size:13px;
+cursor:pointer;
 }
 
 /* FLOAT BUTTON */
@@ -84,7 +84,7 @@ font-size:13px;
 .fab{
 position:fixed;
 right:18px;
-bottom:90px;
+bottom:30px;
 width:56px;
 height:56px;
 border-radius:50%;
@@ -98,34 +98,7 @@ box-shadow:0 6px 20px rgba(0,0,0,0.2);
 cursor:pointer;
 }
 
-/* BOTTOM NAV */
-
-.nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:70px;
-background:rgba(255,255,255,0.75);
-backdrop-filter:blur(20px);
-display:flex;
-justify-content:space-around;
-align-items:center;
-border-top:1px solid rgba(0,0,0,0.05);
-}
-
-.nav div{
-text-align:center;
-font-size:12px;
-color:#444;
-}
-
-.nav span{
-display:block;
-font-size:22px;
-}
-
-/* ADD FORM MODAL */
+/* ADD FORM */
 
 .modal{
 position:fixed;
@@ -153,13 +126,14 @@ margin-bottom:10px;
 padding:10px;
 border-radius:10px;
 border:1px solid #ddd;
+font-size:15px;
 }
 
 .form button{
 width:100%;
-padding:10px;
+padding:11px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 background:#007aff;
 color:white;
 font-size:16px;
@@ -181,13 +155,6 @@ font-size:16px;
 <div class="list" id="list"></div>
 
 <div class="fab" onclick="openForm()">+</div>
-
-<div class="nav">
-<div><span>💬</span>Чаты</div>
-<div><span>👥</span>Контакты</div>
-<div><span>⚙️</span>Настройки</div>
-<div><span>👤</span>Профиль</div>
-</div>
 
 <div class="modal" id="modal">
 <div class="form">
