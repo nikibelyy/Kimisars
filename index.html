@@ -4,11 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ДТП-СФЕРА</title>
-
-<!-- PWA Manifest -->
 <link rel="manifest" href="manifest.json">
-
 <style>
+/* ==== Основные стили ==== */
 body {
   margin: 0;
   font-family: "Segoe UI", "Helvetica Neue", sans-serif;
@@ -26,37 +24,41 @@ header {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Поиск и форма добавления */
 .search-bar, .add-client-bar {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  padding: 10px;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
 }
 
 .search-bar input, .add-client-bar input {
-  padding: 10px;
-  border-radius: 25px;
+  padding: 8px;
+  border-radius: 20px;
   border: 1px solid #ccc;
   outline: none;
-  font-size: 1em;
+  font-size: 0.95em;
 }
 
-.search-bar input { width: 60%; }
-.add-client-bar input { width: 150px; }
+.search-bar input { flex: 1 1 60%; min-width: 120px; }
+.add-client-bar input { flex: 1 1 22%; min-width: 80px; }
 
-.search-bar button, .add-client-bar button {
+.add-client-bar button {
   background: #0088cc;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 25px;
+  padding: 8px 12px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
+  flex: 1 1 15%;
+  min-width: 70px;
 }
 
+/* Таблица */
 .table-container {
-  padding: 10px;
+  padding: 8px;
   overflow-x: auto;
 }
 
@@ -66,12 +68,15 @@ table {
   background: white;
   border-radius: 10px;
   overflow: hidden;
+  min-width: 100%;
 }
 
 th, td {
-  padding: 10px;
+  padding: 8px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9em;
+  white-space: nowrap; /* предотвращает перенос текста */
 }
 
 th {
@@ -79,9 +84,27 @@ th {
   font-weight: 600;
 }
 
+/* Кнопки в таблице */
+td button {
+  padding: 4px 6px;
+  border: none;
+  border-radius: 10px;
+  background: #0088cc;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8em;
+  margin-right: 3px;
+}
+
+/* ==== Адаптация под iPhone ==== */
 @media screen and (max-width: 480px) {
-  .search-bar input { width: 55%; }
-  th, td { font-size: 0.9em; padding: 8px; }
+  th, td {
+    font-size: 0.8em;
+    padding: 6px;
+  }
+  .add-client-bar input { flex: 1 1 40%; min-width: 60px; }
+  .add-client-bar button { flex: 1 1 40%; min-width: 60px; }
+  .search-bar input { flex: 1 1 70%; }
 }
 </style>
 </head>
@@ -92,7 +115,6 @@ th {
 <!-- Поиск -->
 <div class="search-bar">
   <input type="text" id="searchInput" placeholder="Поиск по номеру авто...">
-  <button onclick="exportPDF()">Экспорт PDF</button>
 </div>
 
 <!-- Форма добавления нового клиента -->
@@ -113,7 +135,6 @@ th {
         <th>Марка авто</th>
         <th>Госномер</th>
         <th>Телефон</th>
-        <th>Выбрать</th>
         <th>Действия</th>
       </tr>
     </thead>
@@ -121,13 +142,9 @@ th {
   </table>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// ==== База клиентов ====
-let clients = [
-  {id:1, name:"Иван Иванов", car_brand:"Toyota", car_number:"A123BC77", phone:"+7 999 111 22 33"},
-  {id:2, name:"Петр Петров", car_brand:"BMW", car_number:"B456CD99", phone:"+7 999 444 55 66"}
-];
+// ==== LocalStorage база ====
+let clients = JSON.parse(localStorage.getItem('clients')) || [];
 
 const tableBody = document.querySelector('#clientsTable tbody');
 const searchInput = document.getElementById('searchInput');
@@ -142,7 +159,6 @@ function renderTable(data) {
       <td>${client.car_brand}</td>
       <td>${client.car_number}</td>
       <td>${client.phone}</td>
-      <td><input type="checkbox" class="selectClient" data-id="${client.id}"></td>
       <td>
         <button onclick="editClient(${client.id})">Редактировать</button>
         <button onclick="deleteClient(${client.id})">Удалить</button>
@@ -169,7 +185,9 @@ function addClient() {
 
   const id = clients.length ? clients[clients.length-1].id + 1 : 1;
   clients.push({id, name, car_brand: brand, car_number: number, phone});
+  saveClients();
   renderTable(clients);
+
   document.getElementById('newName').value = '';
   document.getElementById('newBrand').value = '';
   document.getElementById('newNumber').value = '';
@@ -188,6 +206,7 @@ function editClient(id) {
     client.car_brand = newBrand;
     client.car_number = newNumber;
     client.phone = newPhone;
+    saveClients();
     renderTable(clients);
   }
 }
@@ -196,28 +215,20 @@ function editClient(id) {
 function deleteClient(id) {
   if(confirm("Удалить этого клиента?")) {
     clients = clients.filter(c => c.id !== id);
+    saveClients();
     renderTable(clients);
   }
 }
 
-// ==== Экспорт PDF ====
-function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const selectedIds = Array.from(document.querySelectorAll('.selectClient:checked')).map(cb => parseInt(cb.dataset.id));
-  const exportData = selectedIds.length ? clients.filter(c => selectedIds.includes(c.id)) : clients;
-  let y = 10;
-  exportData.forEach(c => {
-    doc.text(`${c.name} | ${c.car_brand} | ${c.car_number} | ${c.phone}`, 10, y);
-    y += 10;
-  });
-  doc.save('clients.pdf');
+// ==== Сохранение в localStorage ====
+function saveClients() {
+  localStorage.setItem('clients', JSON.stringify(clients));
 }
 
 // ==== Инициализация ====
 renderTable(clients);
 
-// ==== PWA Service Worker ====
+// ==== Service Worker для оффлайн ====
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js')
     .then(() => console.log('Service Worker зарегистрирован'))
