@@ -7,6 +7,8 @@
 
 <title>ДТП-СФЕРА</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 *{box-sizing:border-box}
@@ -17,15 +19,11 @@ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI";
 background:#f2f2f7;
 }
 
-/* container */
-
 .container{
 max-width:430px;
 margin:auto;
 padding:env(safe-area-inset-top) 14px 120px;
 }
-
-/* header */
 
 .header{
 font-size:26px;
@@ -38,8 +36,8 @@ margin-bottom:12px;
 .stats{
 display:flex;
 gap:8px;
-margin-bottom:16px;
 flex-wrap:wrap;
+margin-bottom:16px;
 }
 
 .stat{
@@ -50,13 +48,23 @@ padding:10px;
 border-radius:14px;
 text-align:center;
 font-size:13px;
-box-shadow:0 4px 10px rgba(0,0,0,0.05);
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
 .stat span{
+display:block;
 font-size:18px;
 font-weight:600;
-display:block;
+}
+
+/* chart */
+
+.chartBox{
+background:white;
+border-radius:16px;
+padding:10px;
+margin-bottom:18px;
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
 /* search */
@@ -68,7 +76,7 @@ border-radius:16px;
 border:none;
 font-size:16px;
 background:white;
-box-shadow:0 4px 10px rgba(0,0,0,0.05);
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
 margin-bottom:16px;
 }
 
@@ -76,46 +84,48 @@ margin-bottom:16px;
 
 .card{
 display:flex;
-align-items:center;
+gap:12px;
 background:white;
-border-radius:18px;
-padding:14px;
-margin-bottom:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.05);
-position:relative;
+border-radius:20px;
+padding:16px;
+margin-bottom:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.card:active{
+transform:scale(.97);
 }
 
 .avatar{
-width:46px;
-height:46px;
+width:52px;
+height:52px;
 border-radius:50%;
-color:white;
 display:flex;
 align-items:center;
 justify-content:center;
+color:white;
 font-weight:600;
-margin-right:12px;
+font-size:18px;
 }
 
 .info{flex:1}
 
-.name{font-weight:600;font-size:16px}
-
-.meta{font-size:14px;color:#666}
-
-/* money */
-
-.money{
-position:absolute;
-right:10px;
-top:10px;
-font-size:20px;
-cursor:pointer;
-opacity:.4;
+.name{
+font-size:17px;
+font-weight:600;
+margin-bottom:4px;
 }
 
-.money.paid{
-opacity:1;
+.row{
+font-size:14px;
+color:#666;
+margin-top:2px;
+}
+
+.money{
+margin-top:4px;
+font-weight:600;
+color:#34C759;
 }
 
 /* fab */
@@ -189,7 +199,6 @@ font-weight:600;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -212,14 +221,18 @@ font-weight:600;
 
 <div class="stat">
 <span id="statTotal">0</span>
-Всего
+Клиентов
 </div>
 
 <div class="stat">
-<span id="statPaid">0</span>
-Оплачено
+<span id="statMoney">0</span>
+💰 Доход
 </div>
 
+</div>
+
+<div class="chartBox">
+<canvas id="chart"></canvas>
 </div>
 
 <div class="search">
@@ -256,6 +269,11 @@ font-weight:600;
 <input id="phoneInput">
 </div>
 
+<div class="field">
+<label>Сумма заработка</label>
+<input id="moneyInput" type="number">
+</div>
+
 <button onclick="saveClient()">Сохранить</button>
 
 </div>
@@ -264,40 +282,22 @@ font-weight:600;
 
 <script>
 
-let clients = JSON.parse(localStorage.getItem("clients")) || []
+let clients=JSON.parse(localStorage.getItem("clients"))||[]
 let editingId=null
+let chart
 
 const list=document.getElementById("list")
-const modal=document.getElementById("modal")
-
-const nameInput=document.getElementById("nameInput")
-const brandInput=document.getElementById("brandInput")
-const numberInput=document.getElementById("numberInput")
-const phoneInput=document.getElementById("phoneInput")
-
-const searchInput=document.getElementById("searchInput")
 
 function saveStorage(){
 localStorage.setItem("clients",JSON.stringify(clients))
 }
 
-/* random avatar color */
-
 function randomColor(){
-
-const colors=[
-"#007AFF",
-"#5856D6",
-"#FF9500",
-"#34C759",
-"#FF2D55"
-]
-
+const colors=["#007AFF","#5856D6","#FF9500","#34C759","#FF2D55"]
 return colors[Math.floor(Math.random()*colors.length)]
-
 }
 
-/* stats */
+/* statistics */
 
 function updateStats(){
 
@@ -307,7 +307,7 @@ yesterday.setDate(today.getDate()-1)
 
 let todayCount=0
 let yesterdayCount=0
-let paid=0
+let money=0
 
 clients.forEach(c=>{
 
@@ -317,14 +317,53 @@ if(d.toDateString()==today.toDateString()) todayCount++
 
 if(d.toDateString()==yesterday.toDateString()) yesterdayCount++
 
-if(c.paid) paid++
+money+=Number(c.money||0)
 
 })
 
 document.getElementById("statToday").textContent=todayCount
 document.getElementById("statYesterday").textContent=yesterdayCount
 document.getElementById("statTotal").textContent=clients.length
-document.getElementById("statPaid").textContent=paid
+document.getElementById("statMoney").textContent=money+" ₽"
+
+}
+
+/* chart */
+
+function drawChart(){
+
+let map={}
+
+clients.forEach(c=>{
+let d=new Date(c.date).toLocaleDateString()
+map[d]=(map[d]||0)+Number(c.money||0)
+})
+
+let labels=Object.keys(map)
+let data=Object.values(map)
+
+if(chart) chart.destroy()
+
+chart=new Chart(document.getElementById("chart"),{
+
+type:"line",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Доход",
+data:data,
+borderWidth:3,
+tension:.3
+}]
+},
+
+options:{
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true}}
+}
+
+})
 
 }
 
@@ -338,47 +377,30 @@ data.forEach(c=>{
 
 let initials=c.name.split(" ").map(x=>x[0]).join("").slice(0,2)
 
-let moneyClass=c.paid?"money paid":"money"
-
 let card=document.createElement("div")
-
 card.className="card"
 
 card.innerHTML=`
 
-<div class="avatar" style="background:${c.color}">${initials}</div>
+<div class="avatar" style="background:${c.color}">
+${initials}
+</div>
 
 <div class="info">
 
 <div class="name">${c.name}</div>
 
-<div class="meta">🚗 ${c.brand}</div>
+<div class="row">🚗 ${c.brand}</div>
 
-<div class="meta">🔢 ${c.number}</div>
+<div class="row">🔢 ${c.number}</div>
 
-<div class="meta">📞 ${c.phone}</div>
+<div class="row">📞 ${c.phone}</div>
+
+<div class="money">💰 ${c.money||0} ₽</div>
 
 </div>
 
-<div class="${moneyClass}">💵</div>
-
 `
-
-/* toggle paid */
-
-card.querySelector(".money").onclick=(e)=>{
-
-e.stopPropagation()
-
-c.paid=!c.paid
-
-saveStorage()
-
-render(clients)
-
-}
-
-/* edit */
 
 card.onclick=()=>openForm(c)
 
@@ -401,7 +423,6 @@ if(confirm("Удалить клиента?")){
 clients=clients.filter(x=>x.id!==c.id)
 
 saveStorage()
-
 render(clients)
 
 }
@@ -415,6 +436,7 @@ list.appendChild(card)
 })
 
 updateStats()
+drawChart()
 
 }
 
@@ -432,6 +454,7 @@ nameInput.value=client.name
 brandInput.value=client.brand
 numberInput.value=client.number
 phoneInput.value=client.phone
+moneyInput.value=client.money
 
 }else{
 
@@ -441,12 +464,11 @@ nameInput.value=""
 brandInput.value=""
 numberInput.value=""
 phoneInput.value=""
+moneyInput.value=""
 
 }
 
 }
-
-/* save */
 
 function saveClient(){
 
@@ -454,6 +476,7 @@ let n=nameInput.value.trim()
 let b=brandInput.value.trim()
 let num=numberInput.value.trim()
 let p=phoneInput.value.trim()
+let m=moneyInput.value||0
 
 if(!n||!b||!num||!p)return
 
@@ -465,6 +488,7 @@ c.name=n
 c.brand=b
 c.number=num
 c.phone=p
+c.money=m
 
 }else{
 
@@ -475,8 +499,8 @@ name:n,
 brand:b,
 number:num,
 phone:p,
+money:m,
 color:randomColor(),
-paid:false,
 date:new Date()
 
 })
