@@ -54,7 +54,7 @@ box-shadow:0 4px 12px rgba(0,0,0,0.05);
 .stat span{
 display:block;
 font-size:18px;
-font-weight:600;
+font-weight:700;
 }
 
 /* chart */
@@ -83,8 +83,6 @@ margin-bottom:16px;
 /* card */
 
 .card{
-display:flex;
-gap:12px;
 background:white;
 border-radius:20px;
 padding:16px;
@@ -96,36 +94,23 @@ box-shadow:0 10px 25px rgba(0,0,0,0.08);
 transform:scale(.97);
 }
 
-.avatar{
-width:52px;
-height:52px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-font-weight:600;
-font-size:18px;
-}
-
-.info{flex:1}
-
 .name{
-font-size:17px;
-font-weight:600;
-margin-bottom:4px;
+font-size:18px;
+font-weight:700;
+margin-bottom:6px;
 }
 
 .row{
-font-size:14px;
-color:#666;
-margin-top:2px;
+font-size:15px;
+font-weight:700;
+margin-top:4px;
 }
 
 .money{
-margin-top:4px;
-font-weight:600;
+font-size:16px;
+font-weight:700;
 color:#34C759;
+margin-top:6px;
 }
 
 /* fab */
@@ -292,11 +277,6 @@ function saveStorage(){
 localStorage.setItem("clients",JSON.stringify(clients))
 }
 
-function randomColor(){
-const colors=["#007AFF","#5856D6","#FF9500","#34C759","#FF2D55"]
-return colors[Math.floor(Math.random()*colors.length)]
-}
-
 /* statistics */
 
 function updateStats(){
@@ -351,7 +331,6 @@ type:"line",
 data:{
 labels:labels,
 datasets:[{
-label:"Доход",
 data:data,
 borderWidth:3,
 tension:.3
@@ -375,36 +354,24 @@ list.innerHTML=""
 
 data.forEach(c=>{
 
-let initials=c.name.split(" ").map(x=>x[0]).join("").slice(0,2)
-
 let card=document.createElement("div")
 card.className="card"
 
 card.innerHTML=`
 
-<div class="avatar" style="background:${c.color}">
-${initials}
-</div>
-
-<div class="info">
-
 <div class="name">${c.name}</div>
 
-<div class="row">Марка ${c.brand}</div>
+<div class="row">Марка: ${c.brand}</div>
 
-<div class="row">Гос номер ${c.number}</div>
+<div class="row">Гос номер: ${c.number}</div>
 
-<div class="row">Телефон ${c.phone}</div>
+<div class="row">Телефон: ${c.phone}</div>
 
-<div class="money">Сумма ${c.money||0} ₽</div>
-
-</div>
+<div class="money">Сумма: ${c.money||0} ₽</div>
 
 `
 
 card.onclick=()=>openForm(c)
-
-/* swipe delete */
 
 let startX
 
@@ -500,7 +467,6 @@ brand:b,
 number:num,
 phone:p,
 money:m,
-color:randomColor(),
 date:new Date()
 
 })
