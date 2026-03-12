@@ -4,236 +4,306 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ДТП-СФЕРА</title>
-<link rel="manifest" href="manifest.json">
+
 <style>
-/* ==== Основные стили ==== */
-body {
-  margin: 0;
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-  background: #f0f3f5;
-  color: #111;
+
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
+background:#f2f2f7;
 }
 
-header {
-  background: #0088cc;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* HEADER */
+
+.header{
+padding:20px;
+font-size:22px;
+font-weight:600;
 }
 
-/* Поиск и форма добавления */
-.search-bar, .add-client-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px;
+/* SEARCH */
+
+.search{
+padding:10px 16px;
 }
 
-.search-bar input, .add-client-bar input {
-  padding: 8px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
-  outline: none;
-  font-size: 0.95em;
+.search input{
+width:100%;
+padding:12px;
+border-radius:16px;
+border:none;
+outline:none;
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(10px);
+font-size:16px;
 }
 
-.search-bar input { flex: 1 1 60%; min-width: 120px; }
-.add-client-bar input { flex: 1 1 22%; min-width: 80px; }
+/* CLIENT LIST */
 
-.add-client-bar button {
-  background: #0088cc;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  flex: 1 1 15%;
-  min-width: 70px;
+.list{
+padding:10px 14px 90px 14px;
 }
 
-/* Таблица */
-.table-container {
-  padding: 8px;
-  overflow-x: auto;
+.card{
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(18px);
+border-radius:18px;
+padding:14px;
+margin-bottom:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.05);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  min-width: 100%;
+.name{
+font-weight:600;
+font-size:16px;
+margin-bottom:4px;
 }
 
-th, td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 0.9em;
-  white-space: nowrap; /* предотвращает перенос текста */
+.meta{
+font-size:14px;
+color:#555;
 }
 
-th {
-  background: #f5f5f5;
-  font-weight: 600;
+/* BUTTONS */
+
+.actions{
+margin-top:8px;
 }
 
-/* Кнопки в таблице */
-td button {
-  padding: 4px 6px;
-  border: none;
-  border-radius: 10px;
-  background: #0088cc;
-  color: white;
-  cursor: pointer;
-  font-size: 0.8em;
-  margin-right: 3px;
+.actions button{
+border:none;
+background:#e5e5ea;
+padding:6px 10px;
+border-radius:10px;
+margin-right:6px;
+font-size:13px;
 }
 
-/* ==== Адаптация под iPhone ==== */
-@media screen and (max-width: 480px) {
-  th, td {
-    font-size: 0.8em;
-    padding: 6px;
-  }
-  .add-client-bar input { flex: 1 1 40%; min-width: 60px; }
-  .add-client-bar button { flex: 1 1 40%; min-width: 60px; }
-  .search-bar input { flex: 1 1 70%; }
+/* FLOAT BUTTON */
+
+.fab{
+position:fixed;
+right:18px;
+bottom:90px;
+width:56px;
+height:56px;
+border-radius:50%;
+background:#007aff;
+color:white;
+font-size:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 6px 20px rgba(0,0,0,0.2);
+cursor:pointer;
 }
+
+/* BOTTOM NAV */
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:70px;
+background:rgba(255,255,255,0.75);
+backdrop-filter:blur(20px);
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid rgba(0,0,0,0.05);
+}
+
+.nav div{
+text-align:center;
+font-size:12px;
+color:#444;
+}
+
+.nav span{
+display:block;
+font-size:22px;
+}
+
+/* ADD FORM MODAL */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.4);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.form{
+background:white;
+border-radius:20px;
+padding:20px;
+width:85%;
+max-width:350px;
+}
+
+.form input{
+width:100%;
+margin-bottom:10px;
+padding:10px;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+.form button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:10px;
+background:#007aff;
+color:white;
+font-size:16px;
+}
+
 </style>
 </head>
+
 <body>
 
-<header>ДТП-СФЕРА</header>
-
-<!-- Поиск -->
-<div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Поиск по номеру авто...">
+<div class="header">
+ДТП-СФЕРА
 </div>
 
-<!-- Форма добавления нового клиента -->
-<div class="add-client-bar">
-  <input type="text" id="newName" placeholder="ФИО">
-  <input type="text" id="newBrand" placeholder="Марка авто">
-  <input type="text" id="newNumber" placeholder="Госномер">
-  <input type="text" id="newPhone" placeholder="Телефон">
-  <button onclick="addClient()">Добавить</button>
+<div class="search">
+<input id="search" placeholder="Поиск по номеру авто">
 </div>
 
-<!-- Таблица клиентов -->
-<div class="table-container">
-  <table id="clientsTable">
-    <thead>
-      <tr>
-        <th>ФИО</th>
-        <th>Марка авто</th>
-        <th>Госномер</th>
-        <th>Телефон</th>
-        <th>Действия</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<div class="list" id="list"></div>
+
+<div class="fab" onclick="openForm()">+</div>
+
+<div class="nav">
+<div><span>💬</span>Чаты</div>
+<div><span>👥</span>Контакты</div>
+<div><span>⚙️</span>Настройки</div>
+<div><span>👤</span>Профиль</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="form">
+<input id="name" placeholder="ФИО">
+<input id="brand" placeholder="Марка авто">
+<input id="number" placeholder="Госномер">
+<input id="phone" placeholder="Телефон">
+<button onclick="add()">Добавить</button>
+</div>
 </div>
 
 <script>
-// ==== LocalStorage база ====
-let clients = JSON.parse(localStorage.getItem('clients')) || [];
 
-const tableBody = document.querySelector('#clientsTable tbody');
-const searchInput = document.getElementById('searchInput');
+let clients = JSON.parse(localStorage.getItem("clients")) || []
 
-// ==== Рендер таблицы ====
-function renderTable(data) {
-  tableBody.innerHTML = '';
-  data.forEach(client => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${client.name}</td>
-      <td>${client.car_brand}</td>
-      <td>${client.car_number}</td>
-      <td>${client.phone}</td>
-      <td>
-        <button onclick="editClient(${client.id})">Редактировать</button>
-        <button onclick="deleteClient(${client.id})">Удалить</button>
-      </td>
-    `;
-    tableBody.appendChild(row);
-  });
+const list = document.getElementById("list")
+
+function render(data){
+
+list.innerHTML=""
+
+data.forEach(c=>{
+
+let card=document.createElement("div")
+card.className="card"
+
+card.innerHTML=`
+<div class="name">${c.name}</div>
+<div class="meta">${c.brand}</div>
+<div class="meta">${c.number}</div>
+<div class="meta">${c.phone}</div>
+
+<div class="actions">
+<button onclick="edit(${c.id})">Редактировать</button>
+<button onclick="remove(${c.id})">Удалить</button>
+</div>
+`
+
+list.appendChild(card)
+
+})
+
 }
 
-// ==== Поиск ====
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  const filtered = clients.filter(c => c.car_number.toLowerCase().includes(query));
-  renderTable(filtered);
-});
-
-// ==== Добавление клиента ====
-function addClient() {
-  const name = document.getElementById('newName').value.trim();
-  const brand = document.getElementById('newBrand').value.trim();
-  const number = document.getElementById('newNumber').value.trim();
-  const phone = document.getElementById('newPhone').value.trim();
-  if(!name || !brand || !number || !phone) return alert("Заполните все поля!");
-
-  const id = clients.length ? clients[clients.length-1].id + 1 : 1;
-  clients.push({id, name, car_brand: brand, car_number: number, phone});
-  saveClients();
-  renderTable(clients);
-
-  document.getElementById('newName').value = '';
-  document.getElementById('newBrand').value = '';
-  document.getElementById('newNumber').value = '';
-  document.getElementById('newPhone').value = '';
+function save(){
+localStorage.setItem("clients",JSON.stringify(clients))
 }
 
-// ==== Редактирование клиента ====
-function editClient(id) {
-  const client = clients.find(c => c.id === id);
-  const newName = prompt("ФИО:", client.name);
-  const newBrand = prompt("Марка авто:", client.car_brand);
-  const newNumber = prompt("Госномер:", client.car_number);
-  const newPhone = prompt("Телефон:", client.phone);
-  if(newName && newBrand && newNumber && newPhone) {
-    client.name = newName;
-    client.car_brand = newBrand;
-    client.car_number = newNumber;
-    client.phone = newPhone;
-    saveClients();
-    renderTable(clients);
-  }
+function add(){
+
+let name=document.getElementById("name").value
+let brand=document.getElementById("brand").value
+let number=document.getElementById("number").value
+let phone=document.getElementById("phone").value
+
+if(!name||!brand||!number||!phone) return
+
+let id=Date.now()
+
+clients.push({id,name,brand,number,phone})
+
+save()
+render(clients)
+
+closeForm()
+
 }
 
-// ==== Удаление клиента ====
-function deleteClient(id) {
-  if(confirm("Удалить этого клиента?")) {
-    clients = clients.filter(c => c.id !== id);
-    saveClients();
-    renderTable(clients);
-  }
+function edit(id){
+
+let c=clients.find(x=>x.id==id)
+
+let name=prompt("ФИО",c.name)
+let brand=prompt("Марка",c.brand)
+let number=prompt("Госномер",c.number)
+let phone=prompt("Телефон",c.phone)
+
+c.name=name
+c.brand=brand
+c.number=number
+c.phone=phone
+
+save()
+render(clients)
+
 }
 
-// ==== Сохранение в localStorage ====
-function saveClients() {
-  localStorage.setItem('clients', JSON.stringify(clients));
+function remove(id){
+
+clients=clients.filter(x=>x.id!=id)
+
+save()
+render(clients)
+
 }
 
-// ==== Инициализация ====
-renderTable(clients);
+document.getElementById("search").oninput=e=>{
 
-// ==== Service Worker для оффлайн ====
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(() => console.log('Service Worker зарегистрирован'))
-    .catch(err => console.log('Ошибка Service Worker:', err));
+let q=e.target.value.toLowerCase()
+
+let filtered=clients.filter(c=>c.number.toLowerCase().includes(q))
+
+render(filtered)
+
 }
+
+function openForm(){
+document.getElementById("modal").style.display="flex"
+}
+
+function closeForm(){
+document.getElementById("modal").style.display="none"
+}
+
+render(clients)
+
 </script>
 
 </body>
