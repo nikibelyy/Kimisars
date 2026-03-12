@@ -32,8 +32,7 @@ width:100%;
 padding:13px;
 border-radius:18px;
 border:none;
-background:rgba(255,255,255,0.85);
-backdrop-filter:blur(10px);
+background:rgba(255,255,255,0.9);
 font-size:16px;
 }
 
@@ -54,12 +53,10 @@ padding:14px;
 margin-bottom:10px;
 box-shadow:0 2px 10px rgba(0,0,0,0.06);
 transition:.2s;
-touch-action:pan-y;
 }
 
-.card.swipe{
-transform:translateX(-120px);
-opacity:.5;
+.card:active{
+transform:scale(.97);
 }
 
 /* AVATAR */
@@ -93,20 +90,6 @@ font-size:14px;
 color:#666;
 }
 
-/* ACTION */
-
-.actions{
-display:flex;
-gap:6px;
-}
-
-.actions button{
-border:none;
-background:#ececec;
-padding:6px 8px;
-border-radius:8px;
-}
-
 /* FLOAT BUTTON */
 
 .fab{
@@ -124,12 +107,6 @@ align-items:center;
 justify-content:center;
 box-shadow:0 10px 25px rgba(0,0,0,0.25);
 cursor:pointer;
-transition:.3s;
-}
-
-.hide{
-transform:translateY(120px);
-opacity:0;
 }
 
 /* MODAL */
@@ -148,18 +125,44 @@ justify-content:center;
 
 .form{
 background:white;
-border-radius:20px;
+border-radius:22px;
 padding:22px;
-width:85%;
+width:86%;
 max-width:340px;
 }
 
-.form input{
+/* FLOATING LABEL INPUT */
+
+.field{
+position:relative;
+margin-bottom:16px;
+}
+
+.field input{
 width:100%;
-padding:11px;
-margin-bottom:10px;
-border-radius:10px;
+padding:14px 12px;
+border-radius:12px;
 border:1px solid #ddd;
+font-size:15px;
+outline:none;
+}
+
+.field label{
+position:absolute;
+left:12px;
+top:14px;
+color:#888;
+font-size:14px;
+transition:.2s;
+background:white;
+padding:0 4px;
+}
+
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label{
+top:-7px;
+font-size:12px;
+color:#007aff;
 }
 
 .form button{
@@ -185,17 +188,33 @@ font-size:16px;
 
 <div class="list" id="list"></div>
 
-<div class="fab" id="fab" onclick="openForm()">+</div>
+<div class="fab" onclick="openForm()">+</div>
 
 <div class="modal" id="modal">
+
 <div class="form">
 
-<input id="name" placeholder="ФИО">
-<input id="brand" placeholder="Марка авто">
-<input id="number" placeholder="Госномер">
-<input id="phone" placeholder="Телефон">
+<div class="field">
+<input id="name" placeholder=" " />
+<label>ФИО клиента</label>
+</div>
 
-<button onclick="add()">Добавить</button>
+<div class="field">
+<input id="brand" placeholder=" " />
+<label>Марка автомобиля</label>
+</div>
+
+<div class="field">
+<input id="number" placeholder=" " />
+<label>Госномер</label>
+</div>
+
+<div class="field">
+<input id="phone" placeholder=" " />
+<label>Телефон</label>
+</div>
+
+<button onclick="saveClient()">Сохранить</button>
 
 </div>
 </div>
@@ -203,16 +222,13 @@ font-size:16px;
 <script>
 
 let clients = JSON.parse(localStorage.getItem("clients")) || []
+let editingId = null
 
 const list = document.getElementById("list")
-
-/* SAVE */
 
 function save(){
 localStorage.setItem("clients",JSON.stringify(clients))
 }
-
-/* RENDER */
 
 function render(data){
 
@@ -236,12 +252,13 @@ card.innerHTML=`
 <div class="meta">📞 ${c.phone}</div>
 </div>
 
-<div class="actions">
-<button onclick="edit(${c.id})">✏️</button>
-<button onclick="remove(${c.id})">🗑</button>
-</div>
-
 `
+
+/* OPEN EDIT */
+
+card.onclick=()=>{
+openForm(c)
+}
 
 /* SWIPE DELETE */
 
@@ -253,9 +270,17 @@ startX=e.touches[0].clientX
 
 card.addEventListener("touchend",e=>{
 let endX=e.changedTouches[0].clientX
+
 if(startX-endX>120){
-remove(c.id)
+
+if(confirm("Удалить клиента?")){
+clients=clients.filter(x=>x.id!==c.id)
+save()
+render(clients)
 }
+
+}
+
 })
 
 list.appendChild(card)
@@ -264,29 +289,24 @@ list.appendChild(card)
 
 }
 
-/* ADD */
+/* OPEN FORM */
 
-function add(){
+function openForm(client=null){
 
-let name=document.getElementById("name").value
-let brand=document.getElementById("brand").value
-let number=document.getElementById("number").value
-let phone=document.getElementById("phone").value
+modal.style.display="flex"
 
-if(!name||!brand||!number||!phone) return
+if(client){
 
-clients.push({
-id:Date.now(),
-name,
-brand,
-number,
-phone
-})
+editingId=client.id
 
-save()
-render(clients)
+name.value=client.name
+brand.value=client.brand
+number.value=client.number
+phone.value=client.phone
 
-closeForm()
+}else{
+
+editingId=null
 
 name.value=""
 brand.value=""
@@ -295,34 +315,39 @@ phone.value=""
 
 }
 
-/* EDIT */
+}
 
-function edit(id){
+/* SAVE CLIENT */
 
-let c=clients.find(x=>x.id==id)
+function saveClient(){
 
-c.name=prompt("ФИО",c.name)
-c.brand=prompt("Марка",c.brand)
-c.number=prompt("Номер",c.number)
-c.phone=prompt("Телефон",c.phone)
+if(!name.value||!brand.value||!number.value||!phone.value) return
+
+if(editingId){
+
+let c=clients.find(x=>x.id===editingId)
+
+c.name=name.value
+c.brand=brand.value
+c.number=number.value
+c.phone=phone.value
+
+}else{
+
+clients.push({
+id:Date.now(),
+name:name.value,
+brand:brand.value,
+number:number.value,
+phone:phone.value
+})
+
+}
 
 save()
 render(clients)
 
-}
-
-/* REMOVE */
-
-function remove(id){
-
-if(confirm("Удалить клиента?")){
-
-clients=clients.filter(x=>x.id!=id)
-
-save()
-render(clients)
-
-}
+modal.style.display="none"
 
 }
 
@@ -343,34 +368,6 @@ c.phone.toLowerCase().includes(q)
 render(filtered)
 
 }
-
-/* MODAL */
-
-function openForm(){
-modal.style.display="flex"
-}
-
-function closeForm(){
-modal.style.display="none"
-}
-
-/* FAB HIDE */
-
-let lastScroll=0
-
-window.addEventListener("scroll",()=>{
-
-let current=window.scrollY
-
-if(current>lastScroll){
-fab.classList.add("hide")
-}else{
-fab.classList.remove("hide")
-}
-
-lastScroll=current
-
-})
 
 render(clients)
 
