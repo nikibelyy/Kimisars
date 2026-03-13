@@ -3,11 +3,9 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>ДТП-СФЕРА</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Правовой Эксперт</title>
 
 <style>
 
@@ -22,49 +20,13 @@ background:#f2f2f7;
 .container{
 max-width:430px;
 margin:auto;
-padding:env(safe-area-inset-top) 14px 120px;
+padding:20px 14px 120px;
 }
 
 .header{
-font-size:26px;
+font-size:28px;
 font-weight:700;
-margin-bottom:12px;
-}
-
-/* stats */
-
-.stats{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-margin-bottom:16px;
-}
-
-.stat{
-flex:1;
-min-width:90px;
-background:white;
-padding:10px;
-border-radius:14px;
-text-align:center;
-font-size:13px;
-box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-.stat span{
-display:block;
-font-size:18px;
-font-weight:700;
-}
-
-/* chart */
-
-.chartBox{
-background:white;
-border-radius:16px;
-padding:10px;
-margin-bottom:18px;
-box-shadow:0 4px 12px rgba(0,0,0,0.05);
+margin-bottom:20px;
 }
 
 /* search */
@@ -84,10 +46,12 @@ margin-bottom:16px;
 
 .card{
 background:white;
-border-radius:20px;
+border-radius:18px;
 padding:16px;
 margin-bottom:12px;
 box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:.2s;
+touch-action:pan-y;
 }
 
 .card:active{
@@ -102,35 +66,20 @@ margin-bottom:6px;
 
 .row{
 font-size:15px;
-font-weight:700;
 margin-top:4px;
 }
 
-.money{
-font-size:16px;
-font-weight:700;
-color:#34C759;
-margin-top:6px;
-}
+/* button */
 
-/* buttons */
-
-.actions{
+.addBtn{
 position:fixed;
-right:18px;
+right:20px;
 bottom:30px;
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-
-.btn{
-padding:14px 18px;
-border-radius:14px;
 background:#007AFF;
 color:white;
+border-radius:16px;
+padding:16px 20px;
 font-weight:600;
-text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,0.25);
 cursor:pointer;
 }
@@ -168,17 +117,11 @@ display:block;
 margin-bottom:4px;
 }
 
-.field input,
-.field textarea{
+.field input{
 width:100%;
 padding:12px;
 border-radius:10px;
 border:1px solid #ddd;
-}
-
-textarea{
-resize:none;
-height:80px;
 }
 
 .form button{
@@ -199,35 +142,7 @@ font-weight:600;
 
 <div class="container">
 
-<div class="header">ДТП-СФЕРА</div>
-
-<div class="stats">
-
-<div class="stat">
-<span id="statToday">0</span>
-Сегодня
-</div>
-
-<div class="stat">
-<span id="statYesterday">0</span>
-Вчера
-</div>
-
-<div class="stat">
-<span id="statTotal">0</span>
-Клиентов
-</div>
-
-<div class="stat">
-<span id="statMoney">0</span>
-Доход
-</div>
-
-</div>
-
-<div class="chartBox">
-<canvas id="chart"></canvas>
-</div>
+<div class="header">Правовой Эксперт</div>
 
 <div class="search">
 <input id="searchInput" placeholder="Поиск клиент / номер / телефон">
@@ -237,15 +152,9 @@ font-weight:600;
 
 </div>
 
-<div class="actions">
+<div class="addBtn" onclick="openForm()">+ Клиент</div>
 
-<div class="btn" onclick="openCallCenter()">Колл Центр</div>
-
-<div class="btn" onclick="openForm()">Клиент</div>
-
-</div>
-
-<!-- CLIENT MODAL -->
+<!-- MODAL -->
 
 <div class="modal" id="modal">
 
@@ -271,39 +180,7 @@ font-weight:600;
 <input id="phoneInput">
 </div>
 
-<div class="field">
-<label>Сумма заработка</label>
-<input id="moneyInput" type="number">
-</div>
-
 <button onclick="saveClient()">Сохранить</button>
-
-</div>
-
-</div>
-
-<!-- CALL CENTER MODAL -->
-
-<div class="modal" id="callModal">
-
-<div class="form">
-
-<div class="field">
-<label>Имя клиента</label>
-<input id="callName">
-</div>
-
-<div class="field">
-<label>Телефон</label>
-<input id="callPhone">
-</div>
-
-<div class="field">
-<label>Комментарий</label>
-<textarea id="callComment"></textarea>
-</div>
-
-<button onclick="sendTelegram()">Отправить в Telegram</button>
 
 </div>
 
@@ -313,81 +190,11 @@ font-weight:600;
 
 let clients=JSON.parse(localStorage.getItem("clients"))||[]
 let editingId=null
-let chart
 
 const list=document.getElementById("list")
 
 function saveStorage(){
 localStorage.setItem("clients",JSON.stringify(clients))
-}
-
-/* statistics */
-
-function updateStats(){
-
-let today=new Date()
-let yesterday=new Date()
-yesterday.setDate(today.getDate()-1)
-
-let todayCount=0
-let yesterdayCount=0
-let money=0
-
-clients.forEach(c=>{
-
-let d=new Date(c.date)
-
-if(d.toDateString()==today.toDateString()) todayCount++
-
-if(d.toDateString()==yesterday.toDateString()) yesterdayCount++
-
-money+=Number(c.money||0)
-
-})
-
-statToday.textContent=todayCount
-statYesterday.textContent=yesterdayCount
-statTotal.textContent=clients.length
-statMoney.textContent=money+" ₽"
-
-}
-
-/* chart */
-
-function drawChart(){
-
-let map={}
-
-clients.forEach(c=>{
-let d=new Date(c.date).toLocaleDateString()
-map[d]=(map[d]||0)+Number(c.money||0)
-})
-
-let labels=Object.keys(map)
-let data=Object.values(map)
-
-if(chart) chart.destroy()
-
-chart=new Chart(document.getElementById("chart"),{
-
-type:"line",
-
-data:{
-labels:labels,
-datasets:[{
-data:data,
-borderWidth:3,
-tension:.3
-}]
-},
-
-options:{
-plugins:{legend:{display:false}},
-scales:{y:{beginAtZero:true}}
-}
-
-})
-
 }
 
 /* render */
@@ -407,22 +214,48 @@ card.innerHTML=`
 <div class="row">Марка: ${c.brand}</div>
 <div class="row">Гос номер: ${c.number}</div>
 <div class="row">Телефон: ${c.phone}</div>
-<div class="money">Сумма: ${c.money||0} ₽</div>
 
 `
 
+/* click edit */
+
 card.onclick=()=>openForm(c)
+
+/* swipe delete */
+
+let startX=0
+
+card.addEventListener("touchstart",e=>{
+startX=e.touches[0].clientX
+})
+
+card.addEventListener("touchend",e=>{
+
+let endX=e.changedTouches[0].clientX
+
+if(startX-endX>100){
+
+if(confirm("Удалить клиента?")){
+
+clients=clients.filter(x=>x.id!==c.id)
+
+saveStorage()
+
+render(clients)
+
+}
+
+}
+
+})
 
 list.appendChild(card)
 
 })
 
-updateStats()
-drawChart()
-
 }
 
-/* client form */
+/* form */
 
 function openForm(client){
 
@@ -436,7 +269,6 @@ nameInput.value=client.name
 brandInput.value=client.brand
 numberInput.value=client.number
 phoneInput.value=client.phone
-moneyInput.value=client.money
 
 }else{
 
@@ -446,7 +278,6 @@ nameInput.value=""
 brandInput.value=""
 numberInput.value=""
 phoneInput.value=""
-moneyInput.value=""
 
 }
 
@@ -458,7 +289,6 @@ let n=nameInput.value.trim()
 let b=brandInput.value.trim()
 let num=numberInput.value.trim()
 let p=phoneInput.value.trim()
-let m=moneyInput.value||0
 
 if(!n||!b||!num||!p)return
 
@@ -470,7 +300,6 @@ c.name=n
 c.brand=b
 c.number=num
 c.phone=p
-c.money=m
 
 }else{
 
@@ -481,7 +310,6 @@ name:n,
 brand:b,
 number:num,
 phone:p,
-money:m,
 date:new Date()
 
 })
@@ -493,32 +321,6 @@ saveStorage()
 render(clients)
 
 modal.style.display="none"
-
-}
-
-/* call center */
-
-function openCallCenter(){
-callModal.style.display="flex"
-}
-
-function sendTelegram(){
-
-let name=callName.value
-let phone=callPhone.value
-let comment=callComment.value
-
-let text=`Колл Центр ДТП-СФЕРА
-
-Клиент: ${name}
-Телефон: ${phone}
-Комментарий: ${comment}`
-
-let url=`https://t.me/Irishka_0923?text=${encodeURIComponent(text)}`
-
-window.open(url,"_blank")
-
-callModal.style.display="none"
 
 }
 
