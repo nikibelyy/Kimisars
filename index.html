@@ -3,163 +3,272 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>ДТП Эксперт</title>
 
+<link rel="manifest" href="manifest.json">
+
 <style>
 
-*{box-sizing:border-box}
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
 
 body{
+
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:linear-gradient(180deg,#ffffff,#f4f6f9);
-color:#111;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI";
+background:#0b0b0b;
+color:white;
+
 }
 
 /* container */
 
 .container{
-max-width:430px;
+
+max-width:450px;
 margin:auto;
-padding:20px 16px 140px;
+padding:20px 16px 120px;
+
 }
 
 /* header */
 
 .header{
+
 font-size:32px;
 font-weight:700;
 letter-spacing:-0.5px;
 margin-bottom:20px;
+
 }
 
 /* search */
 
 .search input{
+
 width:100%;
-padding:14px;
+padding:16px;
+
 border-radius:14px;
+
 border:none;
+
+background:#1c1c1e;
+
+color:white;
+
 font-size:16px;
-background:white;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
-margin-bottom:20px;
+
+outline:none;
+
+margin-bottom:18px;
+
 }
 
 /* cards */
 
 .card{
-background:white;
+
+background:#151515;
+
 border-radius:20px;
+
 padding:18px;
+
 margin-bottom:14px;
-box-shadow:0 15px 35px rgba(0,0,0,0.08);
-transition:.25s;
+
+box-shadow:
+
+0 0 0 1px rgba(255,255,255,0.04),
+
+0 10px 30px rgba(0,0,0,0.6);
+
+transition:0.25s;
+
+position:relative;
+
 }
 
-.card:hover{
-transform:translateY(-2px);
+.card:active{
+
+transform:scale(.96);
+
 }
 
 .name{
-font-size:19px;
-font-weight:700;
-margin-bottom:8px;
+
+font-size:18px;
+
+font-weight:600;
+
+margin-bottom:6px;
+
 }
 
 .row{
-font-size:15px;
-opacity:.8;
+
+opacity:.65;
+
+font-size:14px;
+
 margin-top:3px;
+
+}
+
+/* swipe delete */
+
+.delete{
+
+position:absolute;
+
+right:0;
+
+top:0;
+
+bottom:0;
+
+width:90px;
+
+background:#ff3b30;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:0 20px 20px 0;
+
+font-weight:600;
+
 }
 
 /* buttons */
 
-.btn{
+.addBtn{
+
 position:fixed;
+
 right:20px;
-border-radius:18px;
-padding:16px 22px;
-font-weight:600;
-box-shadow:0 15px 30px rgba(0,0,0,0.25);
-cursor:pointer;
-backdrop-filter:blur(10px);
-}
 
-.clientBtn{
 bottom:30px;
-background:#007AFF;
-color:white;
-}
 
-.callBtn{
-bottom:95px;
 background:white;
-color:#111;
+
+color:black;
+
+border-radius:16px;
+
+padding:16px 22px;
+
+font-weight:600;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.8);
+
 }
 
 /* modal */
 
 .modal{
+
 position:fixed;
+
 top:0;
+
 left:0;
+
 right:0;
+
 bottom:0;
-background:rgba(0,0,0,0.35);
+
+background:rgba(0,0,0,0.7);
+
 display:none;
+
 align-items:center;
+
 justify-content:center;
+
 padding:20px;
+
 }
 
 .form{
-background:white;
+
+background:#151515;
+
 border-radius:24px;
-padding:22px;
+
+padding:24px;
+
 width:100%;
+
 max-width:360px;
-box-shadow:0 30px 60px rgba(0,0,0,0.25);
+
+box-shadow:0 30px 60px rgba(0,0,0,0.8);
+
 }
 
 .field{
+
 margin-bottom:14px;
+
 }
 
 .field label{
-font-size:13px;
-opacity:.7;
+
+font-size:12px;
+
+opacity:.6;
+
 display:block;
+
 margin-bottom:4px;
+
 }
 
-.field input,.field textarea{
+.field input{
+
 width:100%;
-padding:12px;
-border-radius:12px;
-border:1px solid #e5e5e5;
-font-size:14px;
-}
 
-textarea{
-resize:none;
-height:80px;
+padding:14px;
+
+border-radius:12px;
+
+border:none;
+
+background:#1c1c1e;
+
+color:white;
+
 }
 
 .form button{
+
 width:100%;
-padding:14px;
+
+padding:15px;
+
 border:none;
+
 border-radius:14px;
-background:#007AFF;
-color:white;
-font-size:16px;
+
+background:white;
+
+color:black;
+
 font-weight:600;
+
+font-size:16px;
+
 }
 
 </style>
+
 </head>
 
 <body>
@@ -169,42 +278,51 @@ font-weight:600;
 <div class="header">ДТП Эксперт</div>
 
 <div class="search">
-<input id="searchInput" placeholder="Поиск клиент / номер / телефон">
+
+<input id="searchInput" placeholder="Поиск клиента">
+
 </div>
 
 <div id="list"></div>
 
 </div>
 
-<!-- buttons -->
-
-<div class="btn callBtn" onclick="openCall()">Колл Центр</div>
-<div class="btn clientBtn" onclick="openForm()">Клиенты</div>
-
-<!-- CLIENT MODAL -->
+<div class="addBtn" onclick="openForm()">Клиент</div>
 
 <div class="modal" id="modal">
 
 <div class="form">
 
 <div class="field">
-<label>ФИО клиента</label>
+
+<label>ФИО</label>
+
 <input id="nameInput">
+
 </div>
 
 <div class="field">
-<label>Марка автомобиля</label>
+
+<label>Марка</label>
+
 <input id="brandInput">
+
 </div>
 
 <div class="field">
+
 <label>Госномер</label>
+
 <input id="numberInput">
+
 </div>
 
 <div class="field">
+
 <label>Телефон</label>
+
 <input id="phoneInput">
+
 </div>
 
 <button onclick="saveClient()">Сохранить</button>
@@ -213,42 +331,18 @@ font-weight:600;
 
 </div>
 
-<!-- CALL CENTER MODAL -->
-
-<div class="modal" id="callModal">
-
-<div class="form">
-
-<div class="field">
-<label>Имя клиента</label>
-<input id="callName">
-</div>
-
-<div class="field">
-<label>Телефон</label>
-<input id="callPhone">
-</div>
-
-<div class="field">
-<label>Комментарий</label>
-<textarea id="callComment"></textarea>
-</div>
-
-<button onclick="sendTelegram()">Открыть Telegram</button>
-
-</div>
-
-</div>
-
 <script>
 
 let clients=JSON.parse(localStorage.getItem("clients"))||[]
-let editingId=null
+
+let editing=null
 
 const list=document.getElementById("list")
 
-function saveStorage(){
+function save(){
+
 localStorage.setItem("clients",JSON.stringify(clients))
+
 }
 
 /* render */
@@ -260,18 +354,54 @@ list.innerHTML=""
 data.forEach(c=>{
 
 let card=document.createElement("div")
+
 card.className="card"
 
 card.innerHTML=`
 
 <div class="name">${c.name}</div>
-<div class="row">Марка: ${c.brand}</div>
-<div class="row">Гос номер: ${c.number}</div>
-<div class="row">Телефон: ${c.phone}</div>
+
+<div class="row">${c.brand}</div>
+
+<div class="row">${c.number}</div>
+
+<div class="row">${c.phone}</div>
 
 `
 
+/* edit */
+
 card.onclick=()=>openForm(c)
+
+/* swipe */
+
+let startX
+
+card.addEventListener("touchstart",e=>{
+
+startX=e.touches[0].clientX
+
+})
+
+card.addEventListener("touchend",e=>{
+
+let endX=e.changedTouches[0].clientX
+
+if(startX-endX>100){
+
+if(confirm("Удалить клиента?")){
+
+clients=clients.filter(x=>x.id!==c.id)
+
+save()
+
+render(clients)
+
+}
+
+}
+
+})
 
 list.appendChild(card)
 
@@ -279,28 +409,34 @@ list.appendChild(card)
 
 }
 
-/* client form */
+/* form */
 
-function openForm(client){
+function openForm(c){
 
 modal.style.display="flex"
 
-if(client){
+if(c){
 
-editingId=client.id
+editing=c.id
 
-nameInput.value=client.name
-brandInput.value=client.brand
-numberInput.value=client.number
-phoneInput.value=client.phone
+nameInput.value=c.name
+
+brandInput.value=c.brand
+
+numberInput.value=c.number
+
+phoneInput.value=c.phone
 
 }else{
 
-editingId=null
+editing=null
 
 nameInput.value=""
+
 brandInput.value=""
+
 numberInput.value=""
+
 phoneInput.value=""
 
 }
@@ -310,19 +446,25 @@ phoneInput.value=""
 function saveClient(){
 
 let n=nameInput.value.trim()
+
 let b=brandInput.value.trim()
+
 let num=numberInput.value.trim()
+
 let p=phoneInput.value.trim()
 
 if(!n||!b||!num||!p)return
 
-if(editingId){
+if(editing){
 
-let c=clients.find(x=>x.id===editingId)
+let c=clients.find(x=>x.id===editing)
 
 c.name=n
+
 c.brand=b
+
 c.number=num
+
 c.phone=p
 
 }else{
@@ -330,43 +472,24 @@ c.phone=p
 clients.push({
 
 id:Date.now(),
+
 name:n,
+
 brand:b,
+
 number:num,
+
 phone:p
 
 })
 
 }
 
-saveStorage()
+save()
 
 render(clients)
 
 modal.style.display="none"
-
-}
-
-/* call center */
-
-function openCall(){
-callModal.style.display="flex"
-}
-
-function sendTelegram(){
-
-let name=callName.value
-let phone=callPhone.value
-let comment=callComment.value
-
-let text=`Новый клиент
-Имя: ${name}
-Телефон: ${phone}
-Комментарий: ${comment}`
-
-let url=`https://t.me/Irishka_0923?text=${encodeURIComponent(text)}`
-
-window.open(url,"_blank")
 
 }
 
@@ -376,19 +499,29 @@ searchInput.oninput=e=>{
 
 let q=e.target.value.toLowerCase()
 
-let filtered=clients.filter(c=>
+let f=clients.filter(c=>
 
 c.name.toLowerCase().includes(q)||
+
 c.number.toLowerCase().includes(q)||
+
 c.phone.toLowerCase().includes(q)
 
 )
 
-render(filtered)
+render(f)
 
 }
 
 render(clients)
+
+/* PWA */
+
+if("serviceWorker" in navigator){
+
+navigator.serviceWorker.register("sw.js")
+
+}
 
 </script>
 
