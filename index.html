@@ -3,217 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аварийный комиссар Воронеж | Оформление ДТП 24/7 | Быстрый выезд</title>
-    <meta name="description" content="Служба аварийных комиссаров в Воронеже. Быстрое оформление ДТП без ГИБДД, помощь на дороге, круглосуточно. Прибытие от 15 минут. Звоните: +7 (951) 870-39-34">
-    <meta name="keywords" content="аварийный комиссар воронеж, аварком воронеж, оформление дтп, помощь при дтп воронеж, вызвать комиссара, дтп антонова овсиенко">
     
-    <title>Служба Аварийных Комиссаров - Воронеж</title>
+    <title>Аварийный Комиссар Воронеж - Помощь При ДТП 24/7 - Вызов +7 (951) 870-39-34</title>
+    <meta name="description" content="Профессиональная служба аварийных комиссаров в Воронеже. Быстрый выезд за 15-30 минут. Оформление Европротокола без ГИБДД. Помощь в сложных ситуациях на дороге круглосуточно. Адрес: Антонова Овсиенко, 7.">
+    <meta name="keywords" content="аварийный комиссар воронеж, служба аварийных комиссаров, помощь при дтп воронеж, оформить европротокол воронеж, аварком воронеж, антонова овсиенко 7, вызов аварийного комиссара">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EmergencyService",
+      "name": "Аварийный Комиссар Воронеж",
+      "description": "Круглосуточная служба аварийных комиссаров в Воронеже. Оформление ДТП, Европротокола.",
+      "image": "https://images.unsplash.com/photo-1562314541-65b1c9003b14?q=80&w=400",
+      "telephone": "+7 (951) 870-39-34",
+      "priceRange": "$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "ул. Антонова Овсиенко, 7",
+        "addressLocality": "Воронеж",
+        "postalCode": "394000",
+        "addressCountry": "RU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 51.7247, 
+        "longitude": 39.1557
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        ],
+        "opens": "00:00",
+        "closes": "23:59"
+      }
+    }
+    </script>
+
     <style>
-        /* Базовые настройки и шрифты */
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
+        /* СОВРЕМЕННЫЙ КРАСИВЫЙ СТИЛЬ */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
 
-        body {
-            background-color: #f4f7f6;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Цветовая палитра в стиле 112 */
         :root {
-            --primary-blue: #0A2240;
-            --accent-red: #D32F2F;
-            --white: #FFFFFF;
+            --bg-color: #FFFFFF;
+            --text-primary: #1A1A1A;
+            --text-secondary: #555555;
+            --main-blue: #003366; /* Глубокий синий - доверие */
+            --main-orange: #FF8C00; /* Мягкий оранжевый - акцент */
+            --light-blue: #EBF1F8;
+            --transition: all 0.4s ease;
         }
 
-        /* Шапка сайта */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-primary); overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        ul { list-style: none; }
+
+        /* HEADER */
         header {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 5%;
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            backdrop-filter: blur(5px);
+            opacity: 0; animation: fadeInDown 0.8s ease forwards;
         }
 
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--main-blue); }
+        .logo span { color: var(--main-orange); }
+        
+        .header-phone { font-weight: 700; font-size: 1.1rem; color: var(--main-blue); }
+        .header-phone:hover { color: var(--main-orange); transform: scale(1.05); }
 
-        .logo span {
-            color: var(--accent-red);
-        }
-
-        /* Главный экран */
+        /* HERO SECTION */
         .hero {
-            margin-top: 60px;
-            background: linear-gradient(rgba(10, 34, 64, 0.9), rgba(10, 34, 64, 0.8)), url('https://images.unsplash.com/photo-1562314541-65b1c9003b14?auto=format&fit=crop&q=80') center/cover;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            color: var(--white);
+            height: 100vh;
+            background: linear-gradient(rgba(0,51,102,0.8), rgba(0,51,102,0.6)), url('https://images.unsplash.com/photo-1562314541-65b1c9003b14?auto=format&fit=crop&q=80') center/cover;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: white; padding: 0 5%; margin-top: 60px;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            animation: fadeInDown 1s ease-out;
+            font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0; animation: fadeInUp 0.8s ease 0.3s forwards;
         }
 
         .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            max-width: 600px;
-            animation: fadeInUp 1s ease-out 0.5s both;
+            font-size: 1.3rem; font-weight: 300; max-width: 700px; margin-bottom: 40px;
+            opacity: 0; animation: fadeInUp 0.8s ease 0.6s forwards;
         }
 
-        /* Пульсирующая кнопка вызова */
+        /* ПУЛЬСИРУЮЩАЯ КНОПКА CALL-TO-ACTION */
         .call-btn {
             display: inline-block;
-            background-color: var(--accent-red);
-            color: var(--white);
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: 700;
-            padding: 20px 40px;
-            border-radius: 50px;
-            box-shadow: 0 0 20px rgba(211, 47, 47, 0.6);
-            animation: pulse 2s infinite;
-            transition: transform 0.3s;
+            background-color: var(--main-orange);
+            color: white;
+            font-size: 1.5rem; font-weight: 700;
+            padding: 20px 50px; border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.5);
+            opacity: 0; animation: fadeInUp 0.8s ease 0.9s forwards, pulse 2s infinite 2s;
+            position: relative; overflow: hidden;
         }
 
-        .call-btn:hover {
-            transform: scale(1.05);
+        .call-btn:hover { background-color: #FF7F00; transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255, 140, 0, 0.7); }
+
+        /* SECTION ОБЩЕЕ */
+        section { padding: 100px 5%; opacity: 0; transform: translateY(50px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        section.active { opacity: 1; transform: translateY(0); }
+        .section-title { text-align: center; font-size: 2.8rem; font-weight: 800; color: var(--main-blue); margin-bottom: 60px; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: var(--main-orange); margin: 15px auto 0; border-radius: 2px; }
+
+        /* BENEFITS (ПРЕИМУЩЕСТВА) */
+        .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
+        .benefit-card {
+            background: white; padding: 40px; border-radius: 20px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #F0F0F0;
+            transition: var(--transition);
+        }
+        .benefit-card:hover { transform: translateY(-15px); box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-color: var(--main-blue); }
+        .benefit-icon { font-size: 3rem; color: var(--main-orange); margin-bottom: 25px; }
+        .benefit-card h3 { font-size: 1.6rem; color: var(--main-blue); margin-bottom: 15px; }
+        .benefit-card p { color: var(--text-secondary); font-size: 1rem; line-height: 1.7; }
+
+        /* HOW IT WORKS (СХЕМА РАБОТЫ) */
+        .steps { display: flex; flex-direction: column; gap: 40px; max-width: 900px; margin: 0 auto; }
+        .step { display: flex; align-items: center; gap: 30px; background: var(--light-blue); padding: 30px; border-radius: 20px; transition: var(--transition); }
+        .step:hover { background: white; box-shadow: 0 10px 30px rgba(0,51,102,0.1); }
+        .step-num { font-size: 3.5rem; font-weight: 800; color: var(--main-orange); min-width: 80px; text-align: center; }
+        .step-text h3 { color: var(--main-blue); font-size: 1.5rem; margin-bottom: 5px; }
+        .step-text p { color: var(--text-secondary); }
+
+        /* CONTACTS & MAP */
+        .contacts { background: var(--light-blue); }
+        .contacts-content { display: flex; gap: 50px; align-items: center; }
+        .contacts-info { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .contact-item { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
+        .contact-item h4 { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .contact-item p { font-size: 1.3rem; font-weight: 600; color: var(--main-blue); }
+        .contact-item.phone p { font-size: 1.8rem; font-weight: 700; color: var(--main-orange); }
+        
+        .map-container { flex: 1; height: 350px; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 5px solid white; }
+
+        /* FOOTER */
+        footer { background: var(--main-blue); color: white; padding: 50px 5% 30px; text-align: center; }
+        .footer-logo { font-size: 1.8rem; font-weight: 800; color: white; margin-bottom: 10px; }
+        .footer-logo span { color: var(--main-orange); }
+        footer p { font-weight: 300; opacity: 0.8; margin-bottom: 15px; }
+        .copyright { font-size: 0.9rem; opacity: 0.5; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+
+        /* КНОПКА ВВЕРХ */
+        .back-to-top {
+            position: fixed; bottom: 30px; right: 30px; background: var(--main-orange);
+            color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; box-shadow: 0 5px 15px rgba(255,140,0,0.3); z-index: 100;
+            opacity: 0; visibility: hidden; transition: var(--transition);
+        }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top:hover { transform: scale(1.1) translateY(-5px); background: var(--main-blue); }
+
+        /* АНИМАЦИИ */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.6); } 70% { box-shadow: 0 0 0 25px rgba(255, 140, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0); } }
+
+        /* АДАПТИВ ПОД ТЕЛЕФОНЫ */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .contacts-content { flex-direction: column; }
         }
 
-        /* Блок преимуществ */
-        .features {
-            padding: 60px 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .feature-card h3 {
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-        }
-
-        /* Контакты и подвал */
-        footer {
-            background-color: var(--primary-blue);
-            color: var(--white);
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        footer h2 {
-            color: var(--accent-red);
-            margin-bottom: 20px;
-        }
-
-        footer p {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-
-        /* Адаптация под телефоны */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 1.8rem; }
-            .hero p { font-size: 1rem; }
-            .call-btn { font-size: 1.2rem; padding: 15px 30px; }
-            header { flex-direction: column; gap: 10px; text-align: center; }
-            .hero { margin-top: 80px; }
-        }
-
-        /* Анимации */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(211, 47, 47, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            header { padding: 10px 5%; }
+            .logo { font-size: 1.3rem; }
+            .header-phone { font-size: 1rem; }
+            
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1.1rem; }
+            .call-btn { font-size: 1.2rem; padding: 15px 35px; width: 100%; max-width: 300px; }
+            
+            .section-title { font-size: 2.2rem; margin-bottom: 40px; }
+            .step { flex-direction: column; text-align: center; gap: 10px; padding: 20px; }
+            .step-num { font-size: 3rem; min-width: auto; }
+            
+            .contact-item.phone p { font-size: 1.5rem; }
+            .map-container { height: 250px; }
+            
+            section { padding: 60px 5%; }
+            .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">Служба <span>Аварком</span></div>
+        <div class="logo">Воронеж <span>АварКом</span></div>
         <div>
-            <a href="tel:+79518703934" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">+7 (951) 870-39-34</a>
+            <a href="tel:+79518703934" class="header-phone">+7 (951) 870-39-34</a>
         </div>
     </header>
 
-    <section class="hero">
-        <h1>Аварийный комиссар<br>в Воронеже</h1>
-        <p>Служба экстренной помощи при ДТП. Приедем за 15 минут. Правильно оформим европротокол, защитим от автоподстав и поможем получить выплату по ОСАГО.</p>
-        <a href="tel:+79518703934" class="call-btn">ЭКСТРЕННЫЙ ВЫЗОВ</a>
+    <section class="hero active">
+        <h1>Аварийный Комиссар<br>в Воронеже</h1>
+        <p>Быстрая помощь при ДТП. Прибудем за 20 минут. Оформим все документы без ГИБДД. Защитим ваши интересы круглосуточно.</p>
+        <a href="tel:+79518703934" class="call-btn">ВЫЗВАТЬ СЕЙЧАС</a>
     </section>
 
-    <section class="features">
-        <div class="feature-card">
-            <h3>Прибытие от 15 минут</h3>
-            <p>Патрульные машины дежурят по всему Воронежу. Быстро приедем на Антонова-Овсиенко и в любой другой район города.</p>
+    <section id="benefits">
+        <h2 class="section-title">Почему мы?</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">⏱️</div>
+                <h3>Выезд от 15 мин.</h3>
+                <p>Патрульные машины дежурят по всему Воронежу. Приедем на Антонова-Овсиенко и в любой район максимально быстро.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">📄</div>
+                <h3>Без ГИБДД</h3>
+                <p>Профессионально оформим Европротокол. Избавим от многочасового ожидания инспекторов и штрафов.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🌙</div>
+                <h3>Работаем 24/7</h3>
+                <p>Мы всегда на связи. Неважно, день сейчас или глубокая ночь — мы приедем и поможем.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">🛡️</div>
+                <h3>Юр. поддержка</h3>
+                <p>Помощь в спорах со страховыми, независимая экспертиза. Гарантируем юридическую чистоту оформления.</p>
+            </div>
         </div>
-        <div class="feature-card">
-            <h3>Без ГИБДД</h3>
-            <p>Оформляем ДТП по Европротоколу быстро и юридически грамотно. Вам не придется часами ждать инспекторов.</p>
+    </section>
+
+    <section id="how-it-works">
+        <h2 class="section-title">Как мы работаем</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">01</div>
+                <div class="step-text">
+                    <h3>Ваш звонок</h3>
+                    <p>Позвоните нам по номеру <a href="tel:+79518703934" style="color: var(--main-blue); font-weight: 600;">+7 (951) 870-39-34</a>. Сообщите место ДТП.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <div class="step-text">
+                    <h3>Прибытие комиссара</h3>
+                    <p>Ближайший свободный комиссар выезжает немедленно. Ожидание в среднем 20 минут.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <div class="step-text">
+                    <h3>Оформление ДТП</h3>
+                    <p>Комиссар фиксирует повреждения, составляет схему ДТП, помогает заполнить Европротокол.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">04</div>
+                <div class="step-text">
+                    <h3>Помощь со страховой</h3>
+                    <p>Вы получаете полный пакет документов для страховой компании и консультацию по дальнейшим шагам.</p>
+                </div>
+            </div>
         </div>
-        <div class="feature-card">
-            <h3>Работаем 24/7</h3>
-            <p>Выезжаем на аварии круглосуточно, без праздников и выходных. Мы всегда на связи.</p>
+    </section>
+
+    <section id="contacts" class="contacts">
+        <h2 class="section-title">Связаться с нами</h2>
+        <div class="contacts-content">
+            <div class="contacts-info">
+                <div class="contact-item phone">
+                    <h4>Экстренный вызов 24/7:</h4>
+                    <p><a href="tel:+79518703934">+7 (951) 870-39-34</a></p>
+                </div>
+                <div class="contact-item">
+                    <h4>Наш офис в Воронеже:</h4>
+                    <p>ул. Антонова Овсиенко, д. 7</p>
+                </div>
+                <div class="contact-item">
+                    <h4>E-mail:</h4>
+                    <p>info@avarkom-vrn.ru</p>
+                </div>
+            </div>
+            <div class="map-container">
+                <a href="https://yandex.ru/maps/193/voronezh/house/ulitsa_antonova_ovsiyenko_7/Z0AYdwdoT0EOQFtrfXtwcX5jYQ==/" target="_blank">
+                    <img src="https://static-maps.yandex.ru/1.x/?ll=39.1557,51.7247&z=15&size=600,350&l=map&pt=39.1557,51.7247,pm2orl" alt="Карта Антонова Овсиенко 7" style="width: 100%; height: 100%; object-fit: cover;">
+                </a>
+            </div>
         </div>
     </section>
 
     <footer>
-        <h2>Наши контакты</h2>
-        <p><strong>Телефон экстренного вызова:</strong> <a href="tel:+79518703934" style="color: var(--accent-red); text-decoration: none;">+7 (951) 870-39-34</a></p>
-        <p><strong>Адрес офиса:</strong> г. Воронеж, ул. Антонова-Овсиенко, д. 7</p>
-        <p style="margin-top: 30px; font-size: 0.9rem; color: #aaa;">&copy; 2024 Служба аварийных комиссаров Воронеж. Все права защищены.</p>
+        <div class="footer-logo">Воронеж <span>АварКом</span></div>
+        <p>Профессиональная помощь при ДТП</p>
+        <p>тел: <a href="tel:+79518703934" style="color: var(--main-orange); font-weight: 600;">+7 (951) 870-39-34</a></p>
+        <p>г. Воронеж, ул. Антонова Овсиенко, д. 7</p>
+        <div class="copyright">&copy; 2024 Служба аварийных комиссаров Воронеж.</div>
     </footer>
 
+    <a href="#" class="back-to-top" id="backToTop">↑</a>
+
+    <script>
+        // Анимация появления секций
+        const sections = document.querySelectorAll('section');
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            const triggerBottom = window.innerHeight / 5 * 4;
+
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < triggerBottom) {
+                    section.classList.add('active');
+                }
+            });
+
+            // Показ кнопки "Вверх"
+            if (window.scrollY > 500) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.add('show');
+            }
+        });
+    </script>
 </body>
 </html>
