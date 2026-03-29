@@ -1,158 +1,270 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ДТП Эксперт</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:#0b0b0b;color:white;}
-.container{max-width:460px;margin:auto;padding:20px 16px 140px;}
-.header{font-size:32px;font-weight:700;margin-bottom:20px;letter-spacing:-0.5px;}
-.search input{width:100%;padding:16px;border-radius:14px;border:none;background:#1c1c1e;color:white;font-size:16px;margin-bottom:18px;outline:none;}
-.card{background:#151515;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 10px 30px rgba(0,0,0,0.6);transition:.25s;}
-.card:active{transform:scale(.96);}
-.name{font-size:18px;font-weight:600;margin-bottom:6px;}
-.row{font-size:14px;opacity:.7;margin-top:3px;}
-.addBtn{position:fixed;right:20px;bottom:30px;background:white;color:black;border-radius:16px;padding:16px 22px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.8);cursor:pointer;}
-.callBtn{position:fixed;right:20px;bottom:95px;background:#1f1f1f;color:white;border-radius:16px;padding:16px 22px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,0.8);cursor:pointer;}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;padding:20px;}
-.form{background:#151515;border-radius:22px;padding:22px;width:100%;max-width:360px;box-shadow:0 30px 60px rgba(0,0,0,0.8);}
-.field{margin-bottom:14px;}
-.field label{font-size:12px;opacity:.6;display:block;margin-bottom:4px;}
-.field input,.field textarea{width:100%;padding:14px;border-radius:12px;border:none;background:#1c1c1e;color:white;font-size:14px;}
-textarea{resize:none;height:80px;}
-.form button{width:100%;padding:15px;border:none;border-radius:14px;background:white;color:black;font-size:16px;font-weight:600;cursor:pointer;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Аварийный Комиссар Воронеж | Быстрое оформление ДТП</title>
+    <meta name="description" content="Аварийный комиссар в Воронеже. Быстрый выезд при ДТП, правильное оформление документов без ГИБДД, помощь на дороге. Звоните: +7 (951) 870-39-34. Офис: ул. Антонова-Овсеенко, 7.">
+    <meta name="keywords" content="аварийный комиссар Воронеж, аварком Воронеж, вызов аварийного комиссара, ДТП Воронеж, помощь при ДТП, европротокол Воронеж, Антонова Овсеенко">
+    
+    <style>
+        /* Базовые настройки в стиле Apple/Tesla */
+        :root {
+            --bg-color: #000000;
+            --surface-color: #1d1d1f;
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --accent: #2997ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Навигация (Glassmorphism) */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        nav .nav-phone {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav .nav-phone:hover {
+            color: var(--accent);
+        }
+
+        /* Главный экран */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            background: radial-gradient(circle at center, #1a1a1c 0%, #000000 70%);
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 600;
+            letter-spacing: -0.05em;
+            margin-bottom: 10px;
+        }
+
+        .hero h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        /* Кнопка */
+        .btn-primary {
+            display: inline-block;
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            padding: 18px 40px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            background-color: #ffffff;
+        }
+
+        /* Секция преимуществ */
+        .services {
+            padding: 120px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 60px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .card:hover {
+            background-color: #2d2d2f;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Контакты */
+        .contacts {
+            padding: 120px 20px;
+            background-color: var(--surface-color);
+            text-align: center;
+        }
+
+        .contacts h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+
+        .contact-info {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .contact-info span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .contact-info a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Анимации при прокрутке (Tesla/Apple эффект) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Адаптация под телефоны */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero h2 { font-size: 1.3rem; }
+            .section-title, .contacts h2 { font-size: 2.2rem; }
+            .contact-info { font-size: 1.2rem; }
+            .btn-primary { padding: 15px 30px; font-size: 1.1rem; width: 100%; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<div class="header">ДТП Эксперт</div>
-<div class="search"><input id="searchInput" placeholder="Поиск клиента"></div>
-<div id="list"></div>
-</div>
+    <nav>
+        <div class="logo">АВАРКОМ.ВРН</div>
+        <a href="tel:+79518703934" class="nav-phone">+7 (951) 870-39-34</a>
+    </nav>
 
-<div class="callBtn" onclick="openCall()">Колл Центр</div>
-<div class="addBtn" onclick="openForm()">Клиент</div>
+    <header class="hero">
+        <h1 class="reveal">Аварийный комиссар.</h1>
+        <h2 class="reveal" style="transition-delay: 0.2s;">Быстрое решение проблем при ДТП в Воронеже. Без нервов и очередей.</h2>
+        <a href="tel:+79518703934" class="btn-primary reveal" style="transition-delay: 0.4s;">Вызвать комиссара</a>
+    </header>
 
-<div class="modal" id="modal">
-<div class="form">
-<div class="field"><label>ФИО клиента</label><input id="nameInput"></div>
-<div class="field"><label>Марка автомобиля</label><input id="brandInput"></div>
-<div class="field"><label>Госномер</label><input id="numberInput"></div>
-<div class="field"><label>Телефон</label><input id="phoneInput"></div>
-<button onclick="saveClient()">Сохранить</button>
-</div>
-</div>
+    <section class="services">
+        <h2 class="section-title reveal">Почему мы.</h2>
+        <div class="grid">
+            <div class="card reveal">
+                <h3>Прибытие от 15 минут</h3>
+                <p>Оперативно выезжаем в любой район Воронежа и пригорода сразу после вашего звонка.</p>
+            </div>
+            <div class="card reveal" style="transition-delay: 0.2s;">
+                <h3>Законно и грамотно</h3>
+                <p>Правильно составляем схему ДТП, европротокол и фото/видео фиксацию для 100% выплаты по ОСАГО/КАСКО.</p>
+            </div>
+            <div class="card reveal" style="transition-delay: 0.4s;">
+                <h3>Экономия времени</h3>
+                <p>Освобождаем проезжую часть и избавляем от многочасового ожидания сотрудников ГИБДД.</p>
+            </div>
+        </div>
+    </section>
 
-<div class="modal" id="callModal">
-<div class="form">
-<div class="field"><label>Имя клиента</label><input id="callName"></div>
-<div class="field"><label>Телефон</label><input id="callPhone"></div>
-<div class="field"><label>Комментарий</label><textarea id="callComment"></textarea></div>
-<button onclick="sendTelegram()">Открыть Telegram</button>
-</div>
-</div>
+    <section class="contacts">
+        <h2 class="reveal">Связь и офис.</h2>
+        <p class="contact-info reveal">Телефон: <a href="tel:+79518703934">+7 (951) 870-39-34</a></p>
+        <p class="contact-info reveal">Город: <span>Воронеж</span></p>
+        <p class="contact-info reveal">Адрес: <span>ул. Антонова-Овсеенко, 7</span></p>
+        <p class="contact-info reveal" style="margin-top: 30px; font-size: 1.1rem;">Работаем круглосуточно.</p>
+    </section>
 
-<script>
-let clients=JSON.parse(localStorage.getItem("clients"))||[]
-let editingId=null
-const list=document.getElementById("list")
+    <footer>
+        &copy; 2024 Аварийный комиссар Воронеж. Все права защищены.
+    </footer>
 
-function saveStorage(){localStorage.setItem("clients",JSON.stringify(clients))}
-
-function render(data){
-list.innerHTML=""
-data.forEach(c=>{
-let card=document.createElement("div")
-card.className="card"
-card.innerHTML=`
-<div class="name">${c.name}</div>
-<div class="row">Марка: ${c.brand}</div>
-<div class="row">Госномер: ${c.number}</div>
-<div class="row">Телефон: ${c.phone}</div>`
-
-card.onclick=()=>openForm(c)
-
-let startX=0
-card.addEventListener("touchstart",e=>{startX=e.touches[0].clientX})
-card.addEventListener("touchend",e=>{
-let endX=e.changedTouches[0].clientX
-if(startX-endX>100){
-if(confirm("Удалить клиента?")){
-clients=clients.filter(x=>x.id!==c.id)
-saveStorage()
-render(clients)
-}}})
-
-list.appendChild(card)
-})
-}
-
-function openForm(client){
-modal.style.display="flex"
-if(client){
-editingId=client.id
-nameInput.value=client.name
-brandInput.value=client.brand
-numberInput.value=client.number
-phoneInput.value=client.phone
-}else{
-editingId=null
-nameInput.value=""
-brandInput.value=""
-numberInput.value=""
-phoneInput.value=""
-}
-}
-
-function saveClient(){
-let n=nameInput.value.trim()
-let b=brandInput.value.trim()
-let num=numberInput.value.trim()
-let p=phoneInput.value.trim()
-if(!n||!b||!num||!p)return
-
-if(editingId){
-let c=clients.find(x=>x.id===editingId)
-c.name=n;c.brand=b;c.number=num;c.phone=p
-}else{
-clients.push({id:Date.now(),name:n,brand:b,number:num,phone:p})
-}
-
-saveStorage()
-render(clients)
-modal.style.display="none"
-}
-
-function openCall(){callModal.style.display="flex"}
-
-function sendTelegram(){
-let name=document.getElementById("callName").value
-let phone=document.getElementById("callPhone").value
-let comment=document.getElementById("callComment").value
-
-let text=`Новый клиент
-Имя: ${name}
-Телефон: ${phone}
-Комментарий: ${comment}`
-
-let url="https://t.me/Irishka_0923?text="+encodeURIComponent(text)
-window.open(url,"_blank")
-}
-
-searchInput.oninput=e=>{
-let q=e.target.value.toLowerCase()
-let filtered=clients.filter(c=>
-c.name.toLowerCase().includes(q)||
-c.number.toLowerCase().includes(q)||
-c.phone.toLowerCase().includes(q))
-render(filtered)
-}
-
-render(clients)
-</script>
-
+    <script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Вызываем сразу для первого экрана
+    </script>
 </body>
 </html>
