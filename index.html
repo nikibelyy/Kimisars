@@ -4,447 +4,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <title>Vbynkere136 | Искусство Премиального Детейлинга</title>
-    <meta name="description" content="Vbynkere136 — премиальная детейлинг-студия. Профессиональная тонировка, полировка, оклейка бронепленкой и нанесение керамики. Безупречный уход за вашим автомобилем.">
-    <meta name="keywords" content="детейлинг студия, Vbynkere136, тонировка, полировка, бронепленка, керамика авто, Воронеж, Острогожская">
-    <meta name="author" content="Vbynkere136">
+    <title>Vbynkere136 | Premium Detailing Studio</title>
+    <meta name="description" content="Vbynkere136 — премиальный детейлинг в Воронеже. Тонировка, полировка, защита кузова.">
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="favicon.ico"> <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Базовые переменные и глубокий сброс стилей */
         :root {
-            --bg-color: #000000;
-            --surface-color: #111111;
-            --surface-muted: #1c1c1e;
-            --text-main: #f5f5f7;
-            --text-muted: #86868b;
-            --accent: #ffffff;
-            --accent-muted: #d2d2d7;
-            --glass: rgba(0, 0, 0, 0.75);
-            --transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --bg: #000;
+            --card: #121212;
+            --text: #fff;
+            --muted: #86868b;
+            --accent: #fff;
             --safe-top: env(safe-area-inset-top);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 
-        html, body {
-            background-color: var(--bg-color); /* Строго черный */
-            color: var(--text-main);
+        body {
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
+            line-height: 1.5;
             overflow-x: hidden;
-            overscroll-behavior-y: none; /* Убирает "отскок" на iOS */
         }
 
-        /* Навигация в стиле Apple (Стеклянный эффект) */
+        /* Apple Glass Header */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 15px 5%;
-            padding-top: calc(15px + var(--safe-top)); /* Учитывает системную область */
+            padding: 20px 5%;
+            padding-top: calc(20px + var(--safe-top));
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--glass);
+            z-index: 1000;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            transition: var(--transition);
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
         }
 
-        header.scrolled {
-            background: rgba(0, 0, 0, 0.9);
-        }
+        .logo { font-weight: 600; font-size: 20px; letter-spacing: -0.5px; text-decoration: none; color: #fff; }
 
-        .logo {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            color: var(--accent);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .logo:hover {
-            opacity: 0.8;
-        }
-
-        nav a {
-            color: var(--accent-muted);
-            text-decoration: none;
-            margin-left: 25px;
-            font-size: 14px;
-            font-weight: 400;
-            transition: var(--transition);
-        }
-
-        nav a:hover {
-            color: var(--accent);
-        }
-
-        /* Главный экран (Hero Section) в стиле Tesla/Apple */
+        /* Hero Section */
         .hero {
-            position: relative;
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0 5%;
-            overflow: hidden;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #000), 
+                        url('https://images.unsplash.com/photo-1593466144596-8abd50ad2c52?q=80&w=2000&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            padding: 0 20px;
         }
 
-        /* Фоновое видео петля для премиального эффекта (замените URL на свое) */
-        .hero-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.6;
-            filter: grayscale(100%);
-        }
+        .hero h1 { font-size: clamp(3rem, 8vw, 5rem); font-weight: 600; letter-spacing: -3px; line-height: 1; margin-bottom: 20px; }
+        .hero p { color: var(--muted); font-size: clamp(1rem, 2vw, 1.5rem); max-width: 600px; margin-bottom: 40px; }
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-            z-index: -1;
-        }
-
-        .hero h1 {
-            font-size: clamp(40px, 8vw, 72px);
-            font-weight: 600;
-            letter-spacing: -2px;
-            margin-bottom: 15px;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeUp 1s forwards 0.4s;
-        }
-
-        .hero p {
-            font-size: clamp(16px, 3vw, 22px);
-            color: var(--text-muted);
-            max-width: 650px;
-            margin-bottom: 50px;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeUp 1s forwards 0.7s;
-        }
-
+        /* Buttons */
         .btn {
-            display: inline-block;
-            padding: 18px 50px;
-            background-color: var(--accent);
-            color: var(--bg-color);
-            text-decoration: none;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 16px;
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeUp 1s forwards 1s;
-        }
-
-        .btn:hover {
-            background-color: #e0e0e0;
-            transform: scale(1.03);
-        }
-
-        /* Секции */
-        section {
-            padding: 120px 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: clamp(32px, 5vw, 48px);
-            margin-bottom: 80px;
-            font-weight: 600;
-            letter-spacing: -1.5px;
-        }
-
-        /* Сетка услуг (Ультраминимализм) */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .service-card {
-            background: var(--surface-color);
-            padding: 50px 40px;
-            border-radius: 24px;
-            text-align: center;
-            transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.02);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            background: #1a1a1a;
-            border-color: rgba(255,255,255,0.1);
-        }
-
-        .service-card h3 {
-            font-size: 26px;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-        }
-
-        .service-card p {
-            color: var(--text-muted);
-            font-size: 16px;
-            line-height: 1.7;
-            font-weight: 300;
-        }
-
-        /* Инстаграм секция */
-        .instagram-section {
-            text-align: center;
-            background: var(--surface-muted);
+            background: #fff;
+            color: #000;
+            padding: 16px 40px;
             border-radius: 30px;
-            padding: 100px 50px;
-            margin-bottom: 120px;
-            position: relative;
-        }
-
-        .instagram-section h2 {
-            margin-bottom: 15px;
-        }
-
-        .instagram-section p {
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            font-size: 18px;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            transition: var(--transition);
-        }
-
-        .btn-outline:hover {
-            background: var(--accent);
-            color: var(--bg-color);
-            transform: scale(1.05);
-        }
-
-        /* Контакты */
-        .contact-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 100px;
-            padding-bottom: 80px;
-        }
-
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .contact-info h2 {
-            font-size: clamp(28px, 4vw, 40px);
-            margin-bottom: 40px;
-            letter-spacing: -1px;
-        }
-
-        .contact-item {
-            margin-bottom: 30px;
-        }
-
-        .contact-item strong {
-            display: block;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .contact-item span, .contact-item a {
-            font-size: 20px;
-            color: var(--accent);
             text-decoration: none;
-            transition: var(--transition);
+            font-weight: 600;
+            transition: 0.3s;
         }
+        .btn:hover { transform: scale(1.05); }
 
-        .contact-item a:hover {
-            color: var(--accent-muted);
+        section { padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
+        .stitle { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 600; letter-spacing: -1.5px; margin-bottom: 60px; text-align: center; }
+
+        /* Stats Block (Premium Trust) */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 100px;
+            text-align: center;
         }
+        .stat-item h4 { font-size: 3rem; font-weight: 600; }
+        .stat-item p { color: var(--muted); text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
 
-        .map-wrapper {
-            border-radius: 20px;
-            overflow: hidden;
-            background: var(--surface-muted);
-            height: 400px;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Services */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .card:hover { border-color: rgba(255,255,255,0.3); }
+        .card h3 { font-size: 24px; margin-bottom: 15px; }
+        .card p { color: var(--muted); font-weight: 300; }
 
-        .map-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            filter: invert(100%) hue-rotate(180deg); /* Эффект темной карты */
+        /* Accordion (FAQ Style) */
+        .faq { max-width: 800px; margin: 0 auto; }
+        details { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; }
+        summary { font-weight: 500; font-size: 18px; outline: none; }
+        details p { padding-top: 15px; color: var(--muted); font-size: 15px; }
+
+        /* Footer Mobile Style */
+        footer {
+            padding: 80px 5%;
+            background: #080808;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
+        .f-contact { margin-bottom: 40px; }
+        .f-contact p { font-size: 24px; font-weight: 500; margin-bottom: 10px; }
+        .social-link { color: var(--muted); text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .social-link:hover { color: #fff; }
 
-        /* Анимации при скролле (через JS) */
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
+        /* Reveal Animation */
+        .reveal { opacity: 0; transform: translateY(30px); transition: 1s all ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Адаптивность для телефонов */
-        @media (max-width: 900px) {
-            .hero { text-align: left; align-items: flex-start; }
-            nav { display: none; } /* Для простоты на мобильных скрываем ссылки, оставляем лого */
-            header { justify-content: center; }
-            .contact-section { grid-template-columns: 1fr; }
-            .map-wrapper { height: 300px; }
+        @media (max-width: 768px) {
+            .hero h1 { letter-spacing: -1.5px; }
         }
     </style>
 </head>
 <body>
 
-    <header id="header">
+    <header>
         <a href="#" class="logo">Vbynkere136</a>
-        <nav>
-            <a href="#services">Услуги</a>
-            <a href="#portfolio">Портфолио</a>
-            <a href="#contact">Контакты</a>
-        </nav>
+        <a href="tel:+79009287300" style="color:#fff; text-decoration:none; font-size:14px;">Позвонить</a>
     </header>
 
-    <main>
-        <div class="hero">
-            <h1>Искусство Премиального Детейлинга</h1>
-            <p>Vbynkere136 — это место, где автомобиль получает безупречный уход. Возвращаем блеск, защищаем кузов, подчеркиваем ваш статус.</p>
-            <a href="#contact" class="btn">Записаться на прием</a>
+    <div class="hero">
+        <h1>Сделано с душой.</h1>
+        <p>Премиальный детейлинг для тех, кто ценит детали. Воронеж.</p>
+        <a href="https://wa.me/79009287300" class="btn">Записаться в WhatsApp</a>
+    </div>
+
+    <section>
+        <div class="stats reveal">
+            <div class="stat-item"><h4>5+</h4><p>Лет опыта</p></div>
+            <div class="stat-item"><h4>1000+</h4><p>Машин сияют</p></div>
+            <div class="stat-item"><h4>100%</h4><p>Гарантия качества</p></div>
         </div>
 
-        <section id="services">
-            <h2 class="section-title reveal">Наши услуги</h2>
-            <div class="services-grid">
-                <div class="service-card reveal">
-                    <h3>Тонировка</h3>
-                    <p>Премиальные пленки, идеальная приватность и надежная защита от ультрафиолета. Преобразите стиль вашего автомобиля.</p>
-                </div>
-                <div class="service-card reveal">
-                    <h3>Полировка</h3>
-                    <p>Бережное восстановление глубокого зеркального блеска, устранение царапин и паутинки. Ваш кузов как новый.</p>
-                </div>
-                <div class="service-card reveal">
-                    <h3>Бронепленка</h3>
-                    <p>Антигравийная защита (PPF). Невидимый щит от сколов, царапин, дорожных реагентов и пескоструя.</p>
-                </div>
-                <div class="service-card reveal">
-                    <h3>Керамика авто</h3>
-                    <p>Высокотехнологичное нанокерамическое покрытие. Сильный гидрофобный эффект, защита от грязи и глубокий цвет.</p>
-                </div>
-            </div>
-        </section>
+        <h2 class="stitle reveal">Услуги</h2>
+        <div class="grid">
+            <div class="card reveal"><h3>Тонировка</h3><p>Только премиальные пленки. Идеальный обзор и полная приватность.</p></div>
+            <div class="card reveal"><h3>Полировка</h3><p>Восстановление заводского блеска. Удаление царапин без вреда для лака.</p></div>
+            <div class="card reveal"><h3>Бронепленка</h3><p>Защита от сколов и гравия. Полиуретан высокого качества.</p></div>
+            <div class="card reveal"><h3>Керамика</h3><p>Глубокий цвет и гидрофоб. Ваша машина будет чистой в 2 раза дольше.</p></div>
+        </div>
+    </section>
 
-        <section id="portfolio" style="padding-top: 50px;">
-            <div class="instagram-section reveal">
-                <h2>Наши последние работы</h2>
-                <p>Результат нашей работы — это сотни довольных клиентов. Убедитесь в качестве лично.</p>
-                <a href="https://instagram.com/Vbynkere136" target="_blank" class="btn btn-outline">Смотреть в Instagram @Vbynkere136</a>
-            </div>
-        </section>
+    <section>
+        <h2 class="stitle reveal">Частые вопросы</h2>
+        <div class="faq reveal">
+            <details>
+                <summary>Сколько длится полировка?</summary>
+                <p>В зависимости от состояния кузова, процедура занимает от 1 до 2 рабочих дней.</p>
+            </details>
+            <details>
+                <summary>Какую пленку вы используете?</summary>
+                <p>Мы работаем только с проверенными брендами премиум-сегмента, которые не желтеют и не отклеиваются.</p>
+            </details>
+            <details>
+                <summary>Есть ли гарантия на работы?</summary>
+                <p>Да, на все виды услуг предоставляется официальная гарантия студии Vbynkere136.</p>
+            </details>
+        </div>
+    </section>
 
-        <section id="contact" style="padding-top: 0; padding-bottom: 80px;">
-            <div class="contact-section reveal">
-                <div class="contact-info">
-                    <h2>Свяжитесь с нами</h2>
-                    <div class="contact-item">
-                        <strong>Телефон для записи (Артем)</strong>
-                        <a href="tel:+79009287300">8 (900) 928-73-00</a>
-                    </div>
-                    <div class="contact-item">
-                        <strong>Адрес студии</strong>
-                        <span>ул. Острогожская, 85а, Воронеж</span>
-                    </div>
-                    <div class="contact-item">
-                        <strong>Instagram</strong>
-                        <a href="https://instagram.com/Vbynkere136" target="_blank">@Vbynkere136</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+    <footer>
+        <div class="f-contact reveal">
+            <p>Острогожская 85a</p>
+            <a href="tel:+79009287300" style="color:#fff; font-size:32px; font-weight:600; text-decoration:none;">8 900 928 73 00</a>
+            <div style="margin-top:10px; color:var(--muted);">Артем</div>
+        </div>
+        <div class="reveal">
+            <a href="https://instagram.com/Vbynkere136" class="social-link" target="_blank">Instagram @Vbynkere136</a>
+        </div>
+        <p style="margin-top:60px; font-size:12px; color:#333;">&copy; 2026 Vbynkere136. All Rights Reserved.</p>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const header = document.getElementById('header');
-            const reveals = document.querySelectorAll('.reveal');
-
-            // Эффект смены фона шапки при скролле
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
+        }, { threshold: 0.1 });
 
-            // Анимация появления при скролле (Intersection Observer API - стандарт Apple)
-            const revealOnScroll = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, {
-                threshold: 0.1 // Срабатывает, когда 10% элемента в поле зрения
-            });
-
-            reveals.forEach((reveal) => {
-                revealOnScroll.observe(reveal);
-            });
-        });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
