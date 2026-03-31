@@ -8,394 +8,321 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FIT">
     
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/000000/00E5FF?text=FIT">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/000000/32d74b?text=FIT">
 
-    <title>FIT Tracker</title>
+    <title>FIT</title>
     
     <style>
         :root {
-            --bg-deep: #000000;
-            --bg-card: #111111;
-            --accent-electric: #00E5FF;
-            --accent-glow: rgba(0, 229, 255, 0.3);
-            --text-primary: #FFFFFF;
-            --text-secondary: #888888;
-            --text-disabled: #444444;
-            --border-steel: #222222;
-            --glass: rgba(255, 255, 255, 0.03);
-            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --bg: #000000;
+            --card-bg: #1c1c1e;
+            --accent: #32d74b; /* Ярко-зеленый Apple Fitness */
+            --accent-blue: #00E5FF;
+            --text-main: #ffffff;
+            --text-secondary: #8e8e93;
+            --glass: rgba(28, 28, 30, 0.8);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-primary);
+            background-color: var(--bg);
+            color: var(--text-main);
             margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            /* Адаптация под челку и нижнюю полосу */
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
         }
 
-        header {
-            width: 100%;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            background-color: rgba(0, 0, 0, 0.7);
-            border-bottom: 1px solid var(--border-steel);
-            position: fixed;
-            top: 0;
-            z-index: 100;
-            padding: 15px 0 env(safe-area-inset-top);
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-        }
-
-        .main-container {
-            width: 90%;
-            max-width: 380px;
-            margin-top: calc(70px + env(safe-area-inset-top));
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1;
-            padding-bottom: 30px;
-        }
-
-        .streak-section {
-            width: 100%;
-            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-deep) 100%);
-            border: 1px solid var(--border-steel);
-            border-radius: 24px;
-            padding: 25px 0;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .streak-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .streak-number {
-            font-size: 80px;
-            font-weight: 700;
-            color: var(--accent-electric);
-            line-height: 1;
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .current-day-name {
-            font-size: 16px;
-            color: var(--text-primary);
-            margin-top: 10px;
-            font-weight: 500;
-        }
-
-        .plan-header {
-            width: 100%;
+        /* Заголовок в стиле Apple */
+        .header {
+            padding: 20px 0 10px;
             text-align: left;
-            margin-bottom: 15px;
-            padding-left: 5px;
         }
 
-        .plan-header h2 {
-            font-size: 14px;
+        .header span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--accent-electric);
-            margin: 0;
         }
 
-        .task-list {
-            width: 100%;
-            margin-bottom: 30px;
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            margin: 5px 0 20px;
         }
 
-        .task-item {
-            background-color: var(--glass);
-            border: 1px solid var(--border-steel);
-            border-radius: 16px;
-            margin-bottom: 10px;
-            padding: 18px;
+        /* Карточка прогресса (Стрик) */
+        .summary-card {
+            background: linear-gradient(145deg, #2c2c2e, #1c1c1e);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
-            transition: all 0.3s var(--ease);
-            -webkit-tap-highlight-color: transparent;
+            justify-content: space-between;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        .task-item input[type="checkbox"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 26px;
-            height: 26px;
-            border: 2px solid var(--text-disabled);
-            border-radius: 50%;
-            margin-right: 15px;
-            outline: none;
-            position: relative;
-            flex-shrink: 0;
+        .streak-info h3 {
+            margin: 0;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
 
-        .task-item input[type="checkbox"]:checked {
-            border-color: var(--accent-electric);
-            background-color: var(--accent-electric);
+        .streak-val {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 5px 0 0;
         }
 
-        .task-item input[type="checkbox"]:checked::after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 9px;
-            width: 5px;
-            height: 10px;
-            border: solid var(--bg-deep);
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
+        /* Заголовок упражнений */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .task-item label {
-            font-size: 16px;
-            color: var(--text-primary);
+        .section-title em {
+            font-style: normal;
+            font-size: 14px;
+            color: var(--accent-blue);
             font-weight: 400;
         }
 
-        .task-item.checked {
-            opacity: 0.5;
-            background-color: rgba(255, 255, 255, 0.01);
+        /* Список упражнений */
+        .workout-list {
+            flex-grow: 1;
         }
 
-        .task-item.checked label {
+        .exercise-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s, opacity 0.3s;
+        }
+
+        .exercise-item:active { transform: scale(0.98); }
+
+        .checkbox-container {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #3a3a3c;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .exercise-item.checked .checkbox-container {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .exercise-item.checked .checkbox-container::after {
+            content: "✓";
+            color: #000;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .exercise-item label {
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .exercise-item.checked label {
+            color: var(--text-secondary);
             text-decoration: line-through;
         }
 
-        .action-btn-container {
-            width: 100%;
-            margin-top: auto;
-            padding-bottom: 20px;
+        /* Кнопка снизу */
+        .footer-action {
+            padding: 20px 0 10px;
         }
 
-        .btn-main {
+        .btn-finish {
             width: 100%;
-            background: #FFFFFF;
-            color: #000000;
-            border: none;
             padding: 20px;
+            border-radius: 16px;
+            border: none;
             font-size: 17px;
             font-weight: 600;
-            border-radius: 18px;
-            cursor: pointer;
-            transition: all 0.3s var(--ease);
+            background-color: var(--accent);
+            color: #000;
+            transition: all 0.3s;
         }
 
-        .btn-main:disabled {
-            background: var(--bg-card);
-            color: var(--text-disabled);
-            border: 1px solid var(--border-steel);
+        .btn-finish:disabled {
+            background-color: #2c2c2e;
+            color: #48484a;
         }
 
-        .btn-main:active:not(:disabled) {
-            transform: scale(0.96);
+        .btn-finish:active:not(:disabled) {
+            transform: scale(0.97);
+            opacity: 0.8;
         }
+
+        /* Анимация появления */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .exercise-item { animation: fadeIn 0.4s ease forwards; }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>FIT</h1>
+    <header class="header">
+        <span id="currentDate">31 МАРТА, ВТОРНИК</span>
+        <h1>Активность</h1>
     </header>
 
-    <div class="main-container">
-        
-        <div class="streak-section">
-            <div class="streak-label">ДНЕЙ ПОДРЯД</div>
-            <div class="streak-number" id="streakDisplay">0</div>
-            <div class="current-day-name" id="dayName">...</div>
+    <div class="summary-card">
+        <div class="streak-info">
+            <h3>ДНЕЙ ПОДРЯД</h3>
+            <div class="streak-val" id="streakVal">0</div>
         </div>
-
-        <div class="plan-header">
-            <h2 id="planTitle">ПЛАН ТРЕНИРОВКИ</h2>
+        <div style="text-align: right;">
+            <div style="font-size: 24px;">🔥</div>
+            <div id="dayLabel" style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;"></div>
         </div>
-
-        <div class="task-list" id="taskList"></div>
-
-        <div class="action-btn-container">
-            <button class="btn-main" id="actionBtn" onclick="completeCycle()" disabled>
-                ЗАВЕРШИТЬ ДЕНЬ
-            </button>
-        </div>
-
     </div>
+
+    <div class="section-title">
+        Тренировка <em id="workoutName">Загрузка...</em>
+    </div>
+
+    <div class="workout-list" id="workoutList">
+        </div>
+
+    <footer class="footer-action">
+        <button class="btn-finish" id="finishBtn" onclick="completeDay()" disabled>Завершить день</button>
+    </footer>
 
     <script>
         const plans = {
-            1: { 
-                title: "Ягодицы + Ноги (Вариант 1)",
-                tasks: [
-                    "Приседания (вес тела) — 12–15",
-                    "Выпады вперёд — 12 на ногу",
-                    "Мостик на скамье — 12–15",
-                    "Прыжки на батуте — 3 мин",
-                    "Планка — 30 сек"
-                ]
-            },
-            2: { 
-                title: "Руки + Кор (Вариант 1)",
-                tasks: [
-                    "Отжимания (колени/скамья) — 10–12",
-                    "Турник (негат. подтягивания) — 3–5",
-                    "Скручивания на пресс — 15–20",
-                    "Груша — 2 раунда по 1 мин"
-                ]
-            },
-            3: { 
-                title: "Лёгкий день / Кардио",
-                tasks: [
-                    "Прыжки на батуте — 5–7 мин",
-                    "Растяжка / планка с подъемом ног — 3–5 мин"
-                ]
-            },
-            4: { 
-                title: "Ягодицы + Ноги (Вариант 2)",
-                tasks: [
-                    "Присед с выпрыгиванием — 10–12",
-                    "Мостик на одной ноге — 10 на ногу",
-                    "Махи ногой назад — 12–15",
-                    "Планка боковая — 20–30 сек"
-                ]
-            },
-            5: { 
-                title: "Руки + Кор (Вариант 2)",
-                tasks: [
-                    "Жим на скамье — 10–12",
-                    "Боковая планка (подъем бедра) — 10–12",
-                    "Скручивания с поворотом — 15–20",
-                    "Груша — 2 раунда по 1 мин"
-                ]
-            },
-            6: { 
-                title: "Бассейн",
-                tasks: [
-                    "Плавание 30–40 мин"
-                ]
-            },
-            0: { 
-                title: "Восстановление",
-                tasks: [
-                    "Отдых / Растяжка / Прогулка"
-                ]
-            }
+            1: { name: "Ягодицы + Ноги (1)", tasks: ["Приседания (вес тела) — 12–15", "Выпады вперёд — 12 на ногу", "Мостик на скамье — 12–15", "Прыжки на батуте — 3 мин", "Планка — 30 сек"] },
+            2: { name: "Руки + Кор (1)", tasks: ["Отжимания (колени/скамья) — 10–12", "Турник / негат. подтягивания — 3–5", "Скручивания на пресс — 15–20", "Груша — 2×1 мин"] },
+            3: { name: "Лёгкий день / Кардио", tasks: ["Прыжки на батуте — 5–7 мин", "Растяжка / Планка с ногами — 3–5 мин"] },
+            4: { name: "Ягодицы + Ноги (2)", tasks: ["Присед с выпрыгиванием — 10–12", "Мостик на одной ноге — 10 на ногу", "Махи ногой назад — 12–15", "Планка боковая — 20–30 сек"] },
+            5: { name: "Руки + Кор (2)", tasks: ["Жим на скамье — 10–12", "Боковая планка (бедро) — 10–12", "Скручивания с поворотом — 15–20", "Груша — 2×1 мин"] },
+            6: { name: "Бассейн", tasks: ["Плавание 30–40 мин", "Контрастный душ"] },
+            0: { name: "Восстановление", tasks: ["Отдых / Растяжка / Прогулка"] }
         };
 
         const daysRu = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+        const monthsRu = ["ЯНВАРЯ", "ФЕВРАЛЯ", "МАРТА", "АПРЕЛЯ", "МАЯ", "ИЮНЯ", "ИЮЛЯ", "АВГУСТА", "СЕНТЯБРЯ", "ОКТЯБРЯ", "НОЯБРЯ", "ДЕКАБРЯ"];
 
         function getTodayKey() { return new Date().getDay(); }
-        function getDateStr() { const d = new Date(); return d.toISOString().split('T')[0]; }
-        function getYestStr() { 
-            const d = new Date(); 
-            d.setDate(d.getDate() - 1); 
-            return d.toISOString().split('T')[0];
-        }
+        function getDateKey() { return new Date().toISOString().split('T')[0]; }
 
-        function initApp() {
+        function init() {
+            const today = new Date();
+            document.getElementById('currentDate').innerText = `${today.getDate()} ${monthsRu[today.getMonth()]}, ${daysRu[today.getDay()].toUpperCase()}`;
+            
             const dayKey = getTodayKey();
-            const todayPlan = plans[dayKey];
-            
-            document.getElementById('dayName').innerText = daysRu[dayKey];
-            document.getElementById('planTitle').innerText = todayPlan.title.toUpperCase();
-            
-            const list = document.getElementById('taskList');
+            const plan = plans[dayKey];
+            document.getElementById('workoutName').innerText = plan.name;
+            document.getElementById('dayLabel').innerText = daysRu[dayKey];
+
+            const list = document.getElementById('workoutList');
             list.innerHTML = '';
-            todayPlan.tasks.forEach((task, i) => {
+            
+            plan.tasks.forEach((task, i) => {
                 const item = document.createElement('div');
-                item.className = 'task-item';
-                item.onclick = function(e) {
-                    if(e.target.tagName !== 'INPUT') {
-                        const cb = this.querySelector('input');
-                        cb.checked = !cb.checked;
-                        toggleTask(cb);
-                    }
-                };
+                item.className = 'exercise-item';
                 item.innerHTML = `
-                    <input type="checkbox" id="t${i}" onchange="toggleTask(this)">
-                    <label for="t${i}">${task}</label>
+                    <div class="checkbox-container"></div>
+                    <label>${task}</label>
                 `;
+                item.onclick = function() {
+                    if (localStorage.getItem('lastDate') === getDateKey()) return;
+                    this.classList.toggle('checked');
+                    updateBtn();
+                };
                 list.appendChild(item);
             });
 
             checkStreak();
-            updateButton();
+            updateBtn();
         }
 
-        function toggleTask(cb) {
-            const item = cb.closest('.task-item');
-            cb.checked ? item.classList.add('checked') : item.classList.remove('checked');
-            updateButton();
-        }
-
-        function updateButton() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const btn = document.getElementById('actionBtn');
-            const isDoneToday = localStorage.getItem('fit_lastDate') === getDateStr();
+        function updateBtn() {
+            const total = document.querySelectorAll('.exercise-item').length;
+            const checked = document.querySelectorAll('.exercise-item.checked').length;
+            const btn = document.getElementById('finishBtn');
+            const isDoneToday = localStorage.getItem('lastDate') === getDateKey();
 
             if (isDoneToday) {
                 btn.disabled = true;
-                btn.innerText = "ВЫПОЛНЕНО ✅";
-                checkboxes.forEach(c => { c.checked = true; c.disabled = true; c.closest('.task-item').classList.add('checked'); });
+                btn.innerText = "День зачтен ✅";
+                document.querySelectorAll('.exercise-item').forEach(el => el.classList.add('checked'));
             } else {
-                const allChecked = Array.from(checkboxes).every(c => c.checked);
-                btn.disabled = !allChecked;
-                btn.innerText = allChecked ? "ЗАВЕРШИТЬ ДЕНЬ" : "ВЫПОЛНИТЕ ПЛАН";
+                btn.disabled = checked < total;
+                btn.innerText = checked === total ? "Завершить день" : `Выполнено ${checked} из ${total}`;
             }
         }
 
         function checkStreak() {
-            let streak = parseInt(localStorage.getItem('fit_streak')) || 0;
-            const lastDate = localStorage.getItem('fit_lastDate');
-            const today = getDateStr();
-            const yesterday = getYestStr();
+            let streak = parseInt(localStorage.getItem('streak')) || 0;
+            const lastDate = localStorage.getItem('lastDate');
+            const today = getDateKey();
+            
+            const yest = new Date();
+            yest.setDate(yest.getDate() - 1);
+            const yestKey = yest.toISOString().split('T')[0];
 
-            if (lastDate && lastDate !== today && lastDate !== yesterday) {
+            // Если пропустили вчера (и не зачли сегодня) - сброс
+            if (lastDate && lastDate !== today && lastDate !== yestKey) {
                 streak = 0;
-                localStorage.setItem('fit_streak', streak);
+                localStorage.setItem('streak', 0);
             }
-            document.getElementById('streakDisplay').innerText = streak;
+            document.getElementById('streakVal').innerText = streak;
         }
 
-        function completeCycle() {
-            let streak = parseInt(localStorage.getItem('fit_streak')) || 0;
-            const lastDate = localStorage.getItem('fit_lastDate');
-            const today = getDateStr();
+        function completeDay() {
+            let streak = parseInt(localStorage.getItem('streak')) || 0;
+            const lastDate = localStorage.getItem('lastDate');
+            const today = getDateKey();
 
             if (lastDate === today) return;
 
-            if (lastDate === getYestStr() || streak === 0) {
+            const yest = new Date();
+            yest.setDate(yest.getDate() - 1);
+            const yestKey = yest.toISOString().split('T')[0];
+
+            if (lastDate === yestKey || streak === 0) {
                 streak++;
             } else {
                 streak = 1;
             }
 
-            localStorage.setItem('fit_streak', streak);
-            localStorage.setItem('fit_lastDate', today);
-            initApp();
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('lastDate', today);
+            
+            init();
         }
 
-        initApp();
+        init();
     </script>
 </body>
 </html>
