@@ -2,205 +2,130 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <title>Vbynkere136 | Premium Detailing Studio</title>
-    <meta name="description" content="Vbynkere136 — премиальный детейлинг в Воронеже. Тонировка, полировка, защита кузова.">
-    
-    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+    <title>Мой Трекер</title>
     <style>
-        :root {
-            --bg: #000;
-            --card: #121212;
-            --text: #fff;
-            --muted: #86868b;
-            --accent: #fff;
-            --safe-top: env(safe-area-inset-top);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
-
-        /* Apple Glass Header */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 5%;
-            padding-top: calc(20px + var(--safe-top));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid rgba(255,255,255,0.1);
-        }
-
-        .logo { font-weight: 600; font-size: 20px; letter-spacing: -0.5px; text-decoration: none; color: #fff; }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1c1c1e;
+            color: white;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), #000), 
-                        url('https://images.unsplash.com/photo-1593466144596-8abd50ad2c52?q=80&w=2000&auto=format&fit=crop'); 
-            background-size: cover;
-            background-position: center;
-            padding: 0 20px;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        .hero h1 { font-size: clamp(3rem, 8vw, 5rem); font-weight: 600; letter-spacing: -3px; line-height: 1; margin-bottom: 20px; }
-        .hero p { color: var(--muted); font-size: clamp(1rem, 2vw, 1.5rem); max-width: 600px; margin-bottom: 40px; }
-
-        /* Buttons */
+        .container {
+            background: #2c2c2e;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 80%;
+            max-width: 350px;
+        }
+        h1 { margin-top: 0; font-size: 24px; color: #d0b0ff; }
+        .streak-box {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ff9f0a;
+            text-shadow: 0 0 10px rgba(255, 159, 10, 0.5);
+        }
         .btn {
-            background: #fff;
-            color: #000;
-            padding: 16px 40px;
+            background: #32d74b;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
             border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+            margin-bottom: 15px;
         }
-        .btn:hover { transform: scale(1.05); }
-
-        section { padding: 100px 5%; max-width: 1400px; margin: 0 auto; }
-        .stitle { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 600; letter-spacing: -1.5px; margin-bottom: 60px; text-align: center; }
-
-        /* Stats Block (Premium Trust) */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 100px;
-            text-align: center;
-        }
-        .stat-item h4 { font-size: 3rem; font-weight: 600; }
-        .stat-item p { color: var(--muted); text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-
-        /* Services */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card {
-            background: var(--card);
-            padding: 40px;
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .card:hover { border-color: rgba(255,255,255,0.3); }
-        .card h3 { font-size: 24px; margin-bottom: 15px; }
-        .card p { color: var(--muted); font-weight: 300; }
-
-        /* Accordion (FAQ Style) */
-        .faq { max-width: 800px; margin: 0 auto; }
-        details { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; }
-        summary { font-weight: 500; font-size: 18px; outline: none; }
-        details p { padding-top: 15px; color: var(--muted); font-size: 15px; }
-
-        /* Footer Mobile Style */
-        footer {
-            padding: 80px 5%;
-            background: #080808;
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .f-contact { margin-bottom: 40px; }
-        .f-contact p { font-size: 24px; font-weight: 500; margin-bottom: 10px; }
-        .social-link { color: var(--muted); text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .social-link:hover { color: #fff; }
-
-        /* Reveal Animation */
-        .reveal { opacity: 0; transform: translateY(30px); transition: 1s all ease; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        @media (max-width: 768px) {
-            .hero h1 { letter-spacing: -1.5px; }
-        }
+        .btn:active { transform: scale(0.95); }
+        .btn:disabled { background: #636366; color: #aeaeb2; cursor: not-allowed; }
+        .status { font-size: 14px; color: #aeaeb2; }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="#" class="logo">Vbynkere136</a>
-        <a href="tel:+79009287300" style="color:#fff; text-decoration:none; font-size:14px;">Позвонить</a>
-    </header>
-
-    <div class="hero">
-        <h1>Сделано с душой.</h1>
-        <p>Премиальный детейлинг для тех, кто ценит детали. Воронеж.</p>
-        <a href="https://wa.me/79009287300" class="btn">Записаться в WhatsApp</a>
+    <div class="container">
+        <h1>Дней без пропусков 🔥</h1>
+        <div class="streak-box" id="streakDisplay">0</div>
+        <button class="btn" id="actionBtn" onclick="markDone()">Я потренировалась!</button>
+        <div class="status" id="statusText">Не забудь отметиться сегодня.</div>
     </div>
 
-    <section>
-        <div class="stats reveal">
-            <div class="stat-item"><h4>5+</h4><p>Лет опыта</p></div>
-            <div class="stat-item"><h4>1000+</h4><p>Машин сияют</p></div>
-            <div class="stat-item"><h4>100%</h4><p>Гарантия качества</p></div>
-        </div>
-
-        <h2 class="stitle reveal">Услуги</h2>
-        <div class="grid">
-            <div class="card reveal"><h3>Тонировка</h3><p>Только премиальные пленки. Идеальный обзор и полная приватность.</p></div>
-            <div class="card reveal"><h3>Полировка</h3><p>Восстановление заводского блеска. Удаление царапин без вреда для лака.</p></div>
-            <div class="card reveal"><h3>Бронепленка</h3><p>Защита от сколов и гравия. Полиуретан высокого качества.</p></div>
-            <div class="card reveal"><h3>Керамика</h3><p>Глубокий цвет и гидрофоб. Ваша машина будет чистой в 2 раза дольше.</p></div>
-        </div>
-    </section>
-
-    <section>
-        <h2 class="stitle reveal">Частые вопросы</h2>
-        <div class="faq reveal">
-            <details>
-                <summary>Сколько длится полировка?</summary>
-                <p>В зависимости от состояния кузова, процедура занимает от 1 до 2 рабочих дней.</p>
-            </details>
-            <details>
-                <summary>Какую пленку вы используете?</summary>
-                <p>Мы работаем только с проверенными брендами премиум-сегмента, которые не желтеют и не отклеиваются.</p>
-            </details>
-            <details>
-                <summary>Есть ли гарантия на работы?</summary>
-                <p>Да, на все виды услуг предоставляется официальная гарантия студии Vbynkere136.</p>
-            </details>
-        </div>
-    </section>
-
-    <footer>
-        <div class="f-contact reveal">
-            <p>Острогожская 85a</p>
-            <a href="tel:+79009287300" style="color:#fff; font-size:32px; font-weight:600; text-decoration:none;">8 900 928 73 00</a>
-            <div style="margin-top:10px; color:var(--muted);">Артем</div>
-        </div>
-        <div class="reveal">
-            <a href="https://instagram.com/Vbynkere136" class="social-link" target="_blank">Instagram @Vbynkere136</a>
-        </div>
-        <p style="margin-top:60px; font-size:12px; color:#333;">&copy; 2026 Vbynkere136. All Rights Reserved.</p>
-    </footer>
-
     <script>
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
+        // Получаем текущую дату в формате YYYY-MM-DD
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+        }
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        // Получаем вчерашнюю дату
+        function getYesterdayString() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return `${yesterday.getFullYear()}-${yesterday.getMonth()+1}-${yesterday.getDate()}`;
+        }
+
+        function updateUI() {
+            let streak = parseInt(localStorage.getItem('myStreak')) || 0;
+            let lastDate = localStorage.getItem('lastWorkoutDate');
+            let today = getTodayString();
+            let yesterday = getYesterdayString();
+
+            // Если последний раз отмечались раньше, чем вчера - стрик сгорает
+            if (lastDate !== today && lastDate !== yesterday && lastDate !== null) {
+                streak = 0;
+                localStorage.setItem('myStreak', streak);
+            }
+
+            document.getElementById('streakDisplay').innerText = streak;
+
+            if (lastDate === today) {
+                document.getElementById('actionBtn').disabled = true;
+                document.getElementById('actionBtn').innerText = "Отмечено ✅";
+                document.getElementById('statusText').innerText = "Молодец! Возвращайся завтра.";
+            } else {
+                document.getElementById('actionBtn').disabled = false;
+                document.getElementById('actionBtn').innerText = "Я потренировалась!";
+                document.getElementById('statusText').innerText = "Если не нажмешь до конца дня, серия сгорит!";
+            }
+        }
+
+        function markDone() {
+            let streak = parseInt(localStorage.getItem('myStreak')) || 0;
+            let lastDate = localStorage.getItem('lastWorkoutDate');
+            let today = getTodayString();
+            let yesterday = getYesterdayString();
+
+            if (lastDate === today) return; // Уже отмечено
+
+            if (lastDate === yesterday) {
+                streak++; // Продолжаем серию
+            } else {
+                streak = 1; // Начинаем заново
+            }
+
+            localStorage.setItem('myStreak', streak);
+            localStorage.setItem('lastWorkoutDate', today);
+            
+            // Легкая вибрация телефона для обратной связи (работает на iPhone в поддерживаемых браузерах)
+            if (navigator.vibrate) { navigator.vibrate(50); }
+            
+            updateUI();
+        }
+
+        // Запуск при открытии
+        updateUI();
     </script>
 </body>
 </html>
