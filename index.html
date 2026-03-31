@@ -2,222 +2,469 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Мой План</title>
+    <meta name="apple-mobile-web-app-title" content="TeslaFit">
+    
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180x180/000000/00E5FF?text=T">
+
+    <title>TeslaFit Tracker</title>
+    
     <style>
         :root {
-            --bg: #1c1c1e;
-            --card: #2c2c2e;
-            --accent: #ff9f0a;
-            --success: #32d74b;
-            --text: #ffffff;
-            --secondary: #aeaeb2;
+            /* Палитра Tesla: Глубокий черный, неон, сталь */
+            --bg-deep: #000000;
+            --bg-card: #111111;
+            --accent-electric: #00E5FF; /* Электрический синий Tesla */
+            --accent-glow: rgba(0, 229, 255, 0.3);
+            --text-primary: #FFFFFF;
+            --text-secondary: #888888;
+            --text-disabled: #444444;
+            --border-steel: #222222;
+            --glass: rgba(255, 255, 255, 0.03);
+            
+            /* Apple style сглаживание */
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card);
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        h1 { font-size: 20px; color: #d0b0ff; margin-bottom: 10px; }
-        .streak-box {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-        .streak-label { font-size: 14px; color: var(--secondary); margin-bottom: 20px; }
-        
-        .plan-title {
-            text-align: left;
-            font-weight: bold;
-            margin: 20px 0 10px 5px;
-            color: var(--accent);
-            border-bottom: 1px solid #3a3a3c;
-            padding-bottom: 5px;
+            /* Учет "челки" и безопасной зоны внизу на новых iPhone */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .task-list { text-align: left; margin-bottom: 25px; }
+        /* Хедер в стиле Glassmorphism (Apple) */
+        header {
+            width: 100%;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background-color: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid var(--border-steel);
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            padding: 15px 0 env(safe-area-inset-top);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        /* Главный контейнер (Tesla UI style: строгий, центрированный) */
+        .main-container {
+            width: 90%;
+            max-width: 380px;
+            margin-top: calc(70px + env(safe-area-inset-top));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            padding-bottom: 30px;
+        }
+
+        /* Секция Стрика (Энергетическое ядро Tesla) */
+        .streak-section {
+            width: 100%;
+            background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-deep) 100%);
+            border: 1px solid var(--border-steel);
+            border-radius: 20px;
+            padding: 25px 0;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .streak-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .streak-number {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--accent-electric);
+            line-height: 1;
+            text-shadow: 0 0 15px var(--accent-glow);
+            font-feature-settings: "tnum"; /* Моноширинные цифры (Apple) */
+        }
+
+        .current-day-name {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* Заголовок плана (Строгий стиль Tesla) */
+        .plan-header {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        .plan-header h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Список задач (Минимализм Apple + Технологичность Tesla) */
+        .task-list {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
         .task-item {
+            background-color: var(--glass);
+            border: 1px solid var(--border-steel);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            padding: 18px;
             display: flex;
             align-items: center;
-            background: #3a3a3c;
-            margin-bottom: 8px;
-            padding: 12px;
-            border-radius: 12px;
-            transition: 0.2s;
-        }
-        .task-item input {
-            width: 22px;
-            height: 22px;
-            margin-right: 12px;
-            accent-color: var(--success);
-        }
-        .task-item.checked { opacity: 0.6; }
-        
-        .btn {
-            background: var(--success);
-            color: black;
-            border: none;
-            padding: 18px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 16px;
-            width: 100%;
+            transition: all 0.3s var(--ease);
             cursor: pointer;
-            transition: 0.3s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn:disabled {
-            background: #48484a;
-            color: #8e8e93;
+
+        /* Кастомный Чекбокс (Tesla Electric style) */
+        .task-item input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-disabled);
+            border-radius: 50%; /* Круглый (Apple style) */
+            margin-right: 15px;
+            outline: none;
+            transition: all 0.2s var(--ease);
+            position: relative;
+            flex-shrink: 0;
         }
-        .status { margin-top: 15px; font-size: 13px; color: var(--secondary); }
+
+        .task-item input[type="checkbox"]:checked {
+            border-color: var(--accent-electric);
+            background-color: var(--accent-electric);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Галочка внутри чекбокса */
+        .task-item input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            width: 5px;
+            height: 10px;
+            border: solid var(--bg-deep);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .task-item label {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 400;
+            transition: color 0.3s var(--ease);
+            flex-grow: 1;
+        }
+
+        /* Стиль при нахождении галочки */
+        .task-item.checked {
+            border-color: var(--accent-glow);
+            background-color: rgba(0, 229, 255, 0.02);
+        }
+
+        .task-item.checked label {
+            color: var(--text-disabled);
+            text-decoration: line-through;
+        }
+
+        /* Кнопка действия (Премиальный вид, Apple Pro style) */
+        .action-btn-container {
+            width: 100%;
+            margin-top: auto; /* Прижимает к низу */
+            padding-bottom: 20px;
+        }
+
+        .btn-tesla {
+            width: 100%;
+            background: linear-gradient(180deg, #111111 0%, #000000 100%);
+            color: var(--accent-electric);
+            border: 1px solid var(--accent-electric);
+            padding: 20px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s var(--ease);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        /* Эффект нажатия (Apple стиль) */
+        .btn-tesla:active {
+            transform: scale(0.97);
+            opacity: 0.8;
+        }
+
+        /* Стиль заблокированной кнопки (Tesla стиль) */
+        .btn-tesla:disabled {
+            background: var(--bg-card);
+            color: var(--text-disabled);
+            border-color: var(--border-steel);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Эффект свечения при активации кнопки */
+        .btn-tesla:not(:disabled) {
+            animation: pulseGlow 2s infinite var(--ease);
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Дней без пропусков 🔥</h1>
-        <div class="streak-box" id="streakDisplay">0</div>
-        <div class="streak-label" id="dayName">Сегодня</div>
+    <header>
+        <h1>TeslaFit CORE</h1>
+    </header>
 
-        <div class="plan-title">План на сегодня:</div>
+    <div class="main-container">
+        
+        <div class="streak-section">
+            <div class="streak-label">SYSTEM ACTIVE</div>
+            <div class="streak-number" id="streakDisplay">0</div>
+            <div class="current-day-name" id="dayName">Загрузка...</div>
+        </div>
+
+        <div class="plan-header">
+            <h2 id="planTitle">ДНЕВНОЙ ЦИКЛ</h2>
+        </div>
+
         <div class="task-list" id="taskList">
             </div>
 
-        <button class="btn" id="actionBtn" onclick="markDayDone()" disabled>Завершить день</button>
-        <div class="status" id="statusText">Выполни все пункты, чтобы зачесть день.</div>
+        <div class="action-btn-container">
+            <button class="btn-tesla" id="actionBtn" onclick="completeCycle()" disabled>
+                ЗАВЕРШИТЬ ЦИКЛ
+            </button>
+        </div>
+
     </div>
 
     <script>
+        // --- ОБНОВЛЕННЫЕ ПЛАНЫ (Твои данные) ---
         const plans = {
-            1: ["Батут (разминка) 5 мин", "Зашагивания на скамью 3х15", "Болгарские выпады 3х12", "Ягодичный мостик 3х20", "Виброплатформа 5 мин"],
-            2: ["Бокс/Груша 20 мин", "Отжимания от скамьи 3х15", "Планка 3х60 сек", "5к+ шагов"],
-            3: ["Бассейн (интенсивно)", "5к+ шагов", "Питание 1250 ккал"],
-            4: ["Турник (подъем ног) 3х12", "Скручивания 3х20", "Батут 10 мин", "Виброплатформа 5 мин"],
-            5: ["Музыкальный бокс 15 мин", "Приседания 3х20", "5к+ шагов", "Питание 1250 ккал"],
-            6: ["Отдых / Учеба", "Растяжка 10 мин (по желанию)"],
-            0: ["Прогулка (шаги)", "Батут в удовольствие", "План питания"]
+            1: { // Понедельник
+                title: "Ягодицы + Ноги (Сила)",
+                tasks: [
+                    "Приседания (вес тела) — 12–15",
+                    "Выпады вперёд — 12 на ногу",
+                    "Мост на скамье — 12–15",
+                    "Прыжки на батуте — 3 мин",
+                    "Планка — 30 сек"
+                ]
+            },
+            2: { // Вторник
+                title: "Руки + Кор (Сила)",
+                tasks: [
+                    "Отжимания (колени/скамья) — 10–12",
+                    "Турник / негат. подтягивания — 3–5",
+                    "Скручивания на пресс — 15–20",
+                    "Груша — 2×1 мин"
+                ]
+            },
+            3: { // Среда
+                title: "Лёгкий день / Кардио",
+                tasks: [
+                    "Прыжки на батуте — 5–7 мин",
+                    "Растяжка / планка с подъемами ног — 3–5 мин"
+                ]
+            },
+            4: { // Четверг
+                title: "Ягодицы + Ноги (Вар. 2)",
+                tasks: [
+                    "Присед с выпрыгиванием — 10–12",
+                    "Мост с одной ногой — 10 на ногу",
+                    "Махи ногой назад — 12–15",
+                    "Планка боковая — 20–30 сек"
+                ]
+            },
+            5: { // Пятница
+                title: "Руки + Кор (Вар. 2)",
+                tasks: [
+                    "Жим на скамье — 10–12",
+                    "Боковая планка с подъем. бедра — 10–12",
+                    "Скручивания с поворотом — 15–20",
+                    "Груша — 2×1 мин"
+                ]
+            },
+            6: { // Суббота
+                title: "Водная регенерация",
+                tasks: [
+                    "Бассейн 30–40 мин (непрерывно)"
+                ]
+            },
+            0: { // Воскресенье
+                title: "Восстановление систем",
+                tasks: [
+                    "Отдых / Растяжка / Прогулка (активно)"
+                ]
+            }
         };
 
         const daysRu = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
 
+        // Утилиты дат
         function getTodayKey() { return new Date().getDay(); }
-        function getDateString() {
-            const d = new Date();
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-        }
-        function getYesterdayString() {
-            const d = new Date();
-            d.setDate(d.getDate() - 1);
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-        }
+        function getDateStr() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+        function getYestStr() { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
 
-        function init() {
+        // Инициализация интерфейса
+        function initApp() {
             const dayKey = getTodayKey();
-            document.getElementById('dayName').innerText = daysRu[dayKey];
+            const todayPlan = plans[dayKey];
             
-            const listContainer = document.getElementById('taskList');
-            listContainer.innerHTML = '';
-
-            plans[dayKey].forEach((task, index) => {
-                const div = document.createElement('div');
-                div.className = 'task-item';
-                div.innerHTML = `
-                    <input type="checkbox" id="task${index}" onchange="checkTasks()">
-                    <label for="task${index}">${task}</label>
+            // Заполнение заголовков
+            document.getElementById('dayName').innerText = daysRu[dayKey];
+            document.getElementById('planTitle').innerText = todayPlan.title.toUpperCase();
+            
+            // Отрисовка списка задач
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            todayPlan.tasks.forEach((task, i) => {
+                const item = document.createElement('div');
+                item.className = 'task-item';
+                item.onclick = function(e) { 
+                    // Предотвращает двойной клик если нажали именно на чекбокс
+                    if(e.target.tagName !== 'INPUT') {
+                        const cb = this.querySelector('input');
+                        cb.checked = !cb.checked;
+                        toggleTaskState(cb);
+                    }
+                };
+                
+                item.innerHTML = `
+                    <input type="checkbox" id="task${i}" onchange="toggleTaskState(this)">
+                    <label for="task${i}">${task}</label>
                 `;
-                listContainer.appendChild(div);
+                list.appendChild(item);
             });
 
-            checkStreak();
-            updateUI();
+            checkStreakLogic();
+            updateCycleButtonState();
         }
 
-        function checkTasks() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            const btn = document.getElementById('actionBtn');
-            const today = getDateString();
-            const lastDate = localStorage.getItem('lastDoneDate');
-
-            if (lastDate === today) {
-                btn.disabled = true;
-                btn.innerText = "День зачтен! ✅";
+        // Логика чекбоксов и стилей
+        function toggleTaskState(checkbox) {
+            const item = checkbox.closest('.task-item');
+            if(checkbox.checked) {
+                item.classList.add('checked');
             } else {
+                item.classList.remove('checked');
+            }
+            // Тактильная отдача (если поддерживается iOS в PWA)
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+            
+            updateCycleButtonState();
+        }
+
+        // Проверка активности кнопки завершения
+        function updateCycleButtonState() {
+            const checkboxes = document.querySelectorAll('.task-list input[type="checkbox"]');
+            const btn = document.getElementById('actionBtn');
+            const today = getDateStr();
+            const lastDone = localStorage.getItem('tf_lastDoneDate');
+
+            if (lastDone === today) {
+                // Если день уже зачтен
+                btn.disabled = true;
+                btn.innerText = "ЦИКЛ ЗАВЕРШЕН ✅";
+                // Блокируем чекбоксы
+                checkboxes.forEach(cb => { cb.checked = true; cb.disabled = true; cb.closest('.task-item').classList.add('checked'); });
+            } else {
+                // Если день еще не зачтен, проверяем все ли галочки стоят
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
                 btn.disabled = !allChecked;
-                btn.innerText = allChecked ? "Завершить день" : "Выполни план";
+                btn.innerText = allChecked ? "ЗАВЕРШИТЬ ЦИКЛ" : "ВЫПОЛНИТЕ ПЛАН";
             }
         }
 
-        function checkStreak() {
-            let streak = parseInt(localStorage.getItem('myStreak')) || 0;
-            let lastDate = localStorage.getItem('lastDoneDate');
-            const today = getDateString();
-            const yesterday = getYesterdayString();
+        // Жесткая логика Стрика (Tesla style: пропуск = сброс)
+        function checkStreakLogic() {
+            let streak = parseInt(localStorage.getItem('tf_streak')) || 0;
+            const lastDone = localStorage.getItem('tf_lastDoneDate');
+            const today = getDateStr();
+            const yest = getYestStr();
 
-            // Если последний зачет был не сегодня и не вчера — сброс
-            if (lastDate && lastDate !== today && lastDate !== yesterday) {
+            // Если последний зачет был НЕ сегодня и НЕ вчера (был пропуск) — СБРОС
+            if (lastDone && lastDone !== today && lastDone !== yest) {
                 streak = 0;
-                localStorage.setItem('myStreak', streak);
+                localStorage.setItem('tf_streak', streak);
             }
             document.getElementById('streakDisplay').innerText = streak;
         }
 
-        function markDayDone() {
-            let streak = parseInt(localStorage.getItem('myStreak')) || 0;
-            const lastDate = localStorage.getItem('lastDoneDate');
-            const today = getDateString();
-            const yesterday = getYesterdayString();
+        // Действие при нажатии кнопки "Завершить"
+        function completeCycle() {
+            let streak = parseInt(localStorage.getItem('tf_streak')) || 0;
+            const lastDone = localStorage.getItem('tf_lastDoneDate');
+            const today = getDateStr();
+            const yest = getYestStr();
 
-            if (lastDate === today) return;
+            if (lastDone === today) return; // Защита
 
-            if (lastDate === yesterday || streak === 0) {
+            // Логика увеличения стрика
+            if (lastDone === yest || streak === 0) {
                 streak++;
             } else {
-                streak = 1;
+                streak = 1; // Страховка
             }
 
-            localStorage.setItem('myStreak', streak);
-            localStorage.setItem('lastDoneDate', today);
+            localStorage.setItem('tf_streak', streak);
+            localStorage.setItem('tf_lastDoneDate', today);
             
-            if (navigator.vibrate) navigator.vibrate([100, 30, 100]);
+            // Сильная тактильная отдача (iOS)
+            if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
             
-            init();
+            // Перерисовка всего интерфейса в состояние "Завершено"
+            initApp();
         }
 
-        function updateUI() {
-            const today = getDateString();
-            const lastDate = localStorage.getItem('lastDoneDate');
-            if (lastDate === today) {
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(cb => {
-                    cb.checked = true;
-                    cb.disabled = true;
-                });
-                document.getElementById('actionBtn').disabled = true;
-                document.getElementById('actionBtn').innerText = "День зачтен! ✅";
-                document.getElementById('statusText').innerText = "Отдыхай, ты сегодня молодец!";
-            }
-        }
-
-        init();
+        // Запуск системы
+        initApp();
     </script>
 </body>
 </html>
