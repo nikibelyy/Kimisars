@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перекуп Симулятор</title>
+    <!-- Подключаем SDK Телеграма -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS для быстрого и красивого дизайна -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { font-family: sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen p-4 flex flex-col justify-between">
+
+    <!-- Шапка профиля -->
+    <div class="bg-slate-800 p-4 rounded-xl shadow-lg flex justify-between items-center mb-4">
+        <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Ваш баланс</p>
+            <h1 id="balance" class="text-2xl font-bold text-emerald-400">150 000 ₽</h1>
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-slate-400 uppercase tracking-wider">Статус</p>
+            <span class="text-sm bg-amber-500 text-slate-900 font-bold px-2 py-0.5 rounded">Новичок</span>
+        </div>
+    </div>
+
+    <!-- Основной игровой блок -->
+    <div class="flex-grow flex flex-col justify-center items-center">
+        <!-- Карточка машины -->
+        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700">
+            <div class="text-center">
+                <span class="text-5xl">🚗</span>
+                <h2 id="car-name" class="text-xl font-bold mt-2">ВАЗ 2107 (2004)</h2>
+                <p id="car-condition" class="text-xs text-red-400 mt-1">Состояние: Гнилые пороги, мотор троит</p>
+            </div>
+
+            <div class="mt-6 space-y-2 border-t border-slate-700 pt-4 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Цена покупки:</span>
+                    <span id="buy-price" class="font-bold text-slate-200">45 000 ₽</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Вложения в ремонт:</span>
+                    <span id="repair-cost" class="font-bold text-amber-400">15 000 ₽</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Рыночная цена:</span>
+                    <span id="market-price" class="font-bold text-emerald-400">85 000 ₽</span>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="mt-6 space-y-2" id="action-buttons">
+                <button onclick="buyCar()" id="btn-buy" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition">
+                    Купить авто
+                </button>
+                <button onclick="repairCar()" id="btn-repair" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition hidden">
+                    Скрутить пробег и подкрасить (-15 000 ₽)
+                </button>
+                <button onclick="sellCar()" id="btn-sell" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition hidden">
+                    Продать «Не бита, не крашена»
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <div class="text-center text-xs text-slate-500 mt-4">
+        Перекуп App v1.0 • Работает внутри Telegram
+    </div>
+
+    <!-- Логика игры -->
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand(); // Разворачиваем на весь экран
+
+        // Игровое состояние
+        let balance = 150000;
+        let hasCar = false;
+        let isRepaired = false;
+
+        const carData = {
+            name: "ВАЗ 2107 (2004)",
+            buyPrice: 45000,
+            repairCost: 15000,
+            marketPrice: 85000
+        };
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toLocaleString() + ' ₽';
+            
+            if (!hasCar) {
+                document.getElementById('car-name').innerText = carData.name;
+                document.getElementById('car-condition').innerText = "Состояние: Гнилые пороги, мотор троит";
+                document.getElementById('car-condition').className = "text-xs text-red-400 mt-1";
+                document.getElementById('btn-buy').classList.remove('hidden');
+                document.getElementById('btn-repair').classList.add('hidden');
+                document.getElementById('btn-sell').classList.add('hidden');
+            } else if (hasCar && !isRepaired) {
+                document.getElementById('car-condition').innerText = "Машина у вас в гараже. Надо бы подшаманить.";
+                document.getElementById('car-condition').className = "text-xs text-amber-400 mt-1";
+                document.getElementById('btn-buy').classList.add('hidden');
+                document.getElementById('btn-repair').classList.remove('hidden');
+                document.getElementById('btn-sell').classList.remove('hidden');
+            } else if (hasCar && isRepaired) {
+                document.getElementById('car-condition').innerText = "Вид имеет! Пробег скручен, блестит как новая.";
+                document.getElementById('car-condition').className = "text-xs text-emerald-400 mt-1";
+                document.getElementById('btn-repair').classList.add('hidden');
+                document.getElementById('btn-sell').classList.remove('hidden');
+            }
+        }
+
+        function buyCar() {
+            if (balance >= carData.buyPrice) {
+                balance -= carData.buyPrice;
+                hasCar = true;
+                isRepaired = false;
+                updateUI();
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                alert("Не хватает бабок!");
+            }
+        }
+
+        function repairCar() {
+            if (balance >= carData.repairCost) {
+                balance -= carData.repairCost;
+                isRepaired = true;
+                updateUI();
+                tg.HapticFeedback.impactOccurred('medium');
+            } else {
+                alert("Нет денег на краску и шпатлевку!");
+            }
+        }
+
+        function sellCar() {
+            // Если починили — продаем дорого, если нет — в небольшой плюс или в ноль
+            let finalPrice = isRepaired ? carData.marketPrice : (carData.buyPrice + 5000);
+            balance += finalPrice;
+            hasCar = false;
+            isRepaired = false;
+            
+            alert(`Успешно продано за ${finalPrice.toLocaleString()} ₽!`);
+            updateUI();
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        // Кнопка закрытия в ТГ сверху
+        tg.BackButton.hide();
+    </script>
+</body>
+</html>
