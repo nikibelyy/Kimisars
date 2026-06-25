@@ -2,155 +2,243 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перекуп Симулятор</title>
-    <!-- Подключаем SDK Телеграма -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Tailwind CSS для быстрого и красивого дизайна -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Аварийный комиссар Воронеж | Никита</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Аварком">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3202/3202927.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; }
+        /* Базовые настройки и шрифты */
+        :root {
+            --apple-blue: #0A84FF;
+            --apple-purple: #5E5CE6;
+            --apple-cyan: #32ADE6;
+            --glass-bg: rgba(30, 30, 32, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Анимированный фон (Aurora) */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: #000;
+        }
+        .ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            animation: float 12s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 55vw; height: 55vw; background: var(--apple-blue); }
+        .blob-2 { bottom: 10%; right: -10%; width: 65vw; height: 65vw; background: var(--apple-purple); animation-delay: -4s; }
+        .blob-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: var(--apple-cyan); animation-delay: -8s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(15%, 15%) scale(1.15); }
+        }
+
+        /* Glassmorphism Карточки */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Главная кнопка с бликом и пульсацией */
+        .btn-magic {
+            background: linear-gradient(135deg, var(--apple-blue), var(--apple-cyan));
+            color: white;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 8px 24px rgba(10, 132, 255, 0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            animation: pulse-shadow 2s infinite;
+        }
+        .btn-magic::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+        @keyframes pulse-shadow {
+            0% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(10, 132, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(10, 132, 255, 0); }
+        }
+        .btn-magic:active {
+            transform: scale(0.96);
+        }
+
+        /* Мессенджеры */
+        .btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; border: 1px solid rgba(37, 211, 102, 0.3); }
+        .btn-tg { background: rgba(0, 136, 204, 0.15); color: #0088cc; border: 1px solid rgba(0, 136, 204, 0.3); }
+
+        /* Анимации появления */
+        .fade-in-up {
+            animation: fadeInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .icon-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4 flex flex-col justify-between">
+<body class="pb-32 pt-8">
 
-    <!-- Шапка профиля -->
-    <div class="bg-slate-800 p-4 rounded-xl shadow-lg flex justify-between items-center mb-4">
-        <div>
-            <p class="text-xs text-slate-400 uppercase tracking-wider">Ваш баланс</p>
-            <h1 id="balance" class="text-2xl font-bold text-emerald-400">150 000 ₽</h1>
-        </div>
-        <div class="text-right">
-            <p class="text-xs text-slate-400 uppercase tracking-wider">Статус</p>
-            <span class="text-sm bg-amber-500 text-slate-900 font-bold px-2 py-0.5 rounded">Новичок</span>
-        </div>
+    <div class="ambient-bg">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+        <div class="ambient-blob blob-3"></div>
     </div>
 
-    <!-- Основной игровой блок -->
-    <div class="flex-grow flex flex-col justify-center items-center">
-        <!-- Карточка машины -->
-        <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-700">
-            <div class="text-center">
-                <span class="text-5xl">🚗</span>
-                <h2 id="car-name" class="text-xl font-bold mt-2">ВАЗ 2107 (2004)</h2>
-                <p id="car-condition" class="text-xs text-red-400 mt-1">Состояние: Гнилые пороги, мотор троит</p>
-            </div>
-
-            <div class="mt-6 space-y-2 border-t border-slate-700 pt-4 text-sm">
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Цена покупки:</span>
-                    <span id="buy-price" class="font-bold text-slate-200">45 000 ₽</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Вложения в ремонт:</span>
-                    <span id="repair-cost" class="font-bold text-amber-400">15 000 ₽</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-400">Рыночная цена:</span>
-                    <span id="market-price" class="font-bold text-emerald-400">85 000 ₽</span>
-                </div>
-            </div>
-
-            <!-- Кнопки действий -->
-            <div class="mt-6 space-y-2" id="action-buttons">
-                <button onclick="buyCar()" id="btn-buy" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition">
-                    Купить авто
-                </button>
-                <button onclick="repairCar()" id="btn-repair" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition hidden">
-                    Скрутить пробег и подкрасить (-15 000 ₽)
-                </button>
-                <button onclick="sellCar()" id="btn-sell" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition hidden">
-                    Продать «Не бита, не крашена»
-                </button>
-            </div>
+    <header class="px-6 mb-8 mt-4 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="inline-flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/10 mb-4">
+            <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            <span class="text-xs font-semibold tracking-wider uppercase text-white/80">Круглосуточно • 24/7</span>
         </div>
-    </div>
+        
+        <h1 class="text-[40px] leading-[1.1] font-bold tracking-tight text-white drop-shadow-md mb-2">
+            Аварийный<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Комиссар</span>
+        </h1>
+        <p class="text-white/60 text-lg font-medium mb-6">ДТП? Без паники. Приеду за 15 минут, оформлю всё по закону и сохраню ваши нервы.</p>
 
-    <!-- Подвал -->
-    <div class="text-center text-xs text-slate-500 mt-4">
-        Перекуп App v1.0 • Работает внутри Telegram
-    </div>
+        <a href="tel:+79518703934" class="btn-magic w-full block text-center">
+            <i class="fa-solid fa-phone-volume"></i>
+            Вызвать: +7 (951) 870-39-34
+        </a>
+    </header>
 
-    <!-- Логика игры -->
-    <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand(); // Разворачиваем на весь экран
-
-        // Игровое состояние
-        let balance = 150000;
-        let hasCar = false;
-        let isRepaired = false;
-
-        const carData = {
-            name: "ВАЗ 2107 (2004)",
-            buyPrice: 45000,
-            repairCost: 15000,
-            marketPrice: 85000
-        };
-
-        function updateUI() {
-            document.getElementById('balance').innerText = balance.toLocaleString() + ' ₽';
+    <section class="px-6 mb-8 fade-in-up" style="animation-delay: 0.2s;">
+        <h2 class="text-xl font-bold tracking-tight mb-4 px-1">Что я делаю:</h2>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-xl icon-box flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-file-signature text-blue-400 text-lg"></i>
+                </div>
+                <h3 class="font-bold text-[15px] mb-1 leading-tight">Европротокол</h3>
+                <p class="text-[12px] text-white/50 leading-relaxed">Оформление без ГИБДД. Быстро и без ошибок.</p>
+            </div>
             
-            if (!hasCar) {
-                document.getElementById('car-name').innerText = carData.name;
-                document.getElementById('car-condition').innerText = "Состояние: Гнилые пороги, мотор троит";
-                document.getElementById('car-condition').className = "text-xs text-red-400 mt-1";
-                document.getElementById('btn-buy').classList.remove('hidden');
-                document.getElementById('btn-repair').classList.add('hidden');
-                document.getElementById('btn-sell').classList.add('hidden');
-            } else if (hasCar && !isRepaired) {
-                document.getElementById('car-condition').innerText = "Машина у вас в гараже. Надо бы подшаманить.";
-                document.getElementById('car-condition').className = "text-xs text-amber-400 mt-1";
-                document.getElementById('btn-buy').classList.add('hidden');
-                document.getElementById('btn-repair').classList.remove('hidden');
-                document.getElementById('btn-sell').classList.remove('hidden');
-            } else if (hasCar && isRepaired) {
-                document.getElementById('car-condition').innerText = "Вид имеет! Пробег скручен, блестит как новая.";
-                document.getElementById('car-condition').className = "text-xs text-emerald-400 mt-1";
-                document.getElementById('btn-repair').classList.add('hidden');
-                document.getElementById('btn-sell').classList.remove('hidden');
-            }
-        }
+            <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-xl icon-box flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-camera text-purple-400 text-lg"></i>
+                </div>
+                <h3 class="font-bold text-[15px] mb-1 leading-tight">Фиксация</h3>
+                <p class="text-[12px] text-white/50 leading-relaxed">Детальная фото и видео фиксация места ДТП.</p>
+            </div>
 
-        function buyCar() {
-            if (balance >= carData.buyPrice) {
-                balance -= carData.buyPrice;
-                hasCar = true;
-                isRepaired = false;
-                updateUI();
-                tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                alert("Не хватает бабок!");
-            }
-        }
+            <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-xl icon-box flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-shield-halved text-cyan-400 text-lg"></i>
+                </div>
+                <h3 class="font-bold text-[15px] mb-1 leading-tight">Защита</h3>
+                <p class="text-[12px] text-white/50 leading-relaxed">Споры со страховыми (в т.ч. МАКС, ОСАГО, КАСКО).</p>
+            </div>
 
-        function repairCar() {
-            if (balance >= carData.repairCost) {
-                balance -= carData.repairCost;
-                isRepaired = true;
-                updateUI();
-                tg.HapticFeedback.impactOccurred('medium');
-            } else {
-                alert("Нет денег на краску и шпатлевку!");
-            }
-        }
+            <div class="glass-card p-4">
+                <div class="w-10 h-10 rounded-xl icon-box flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-scale-balanced text-green-400 text-lg"></i>
+                </div>
+                <h3 class="font-bold text-[15px] mb-1 leading-tight">Оценка</h3>
+                <p class="text-[12px] text-white/50 leading-relaxed">Независимая оценка ущерба вашего авто.</p>
+            </div>
+        </div>
+    </section>
 
-        function sellCar() {
-            // Если починили — продаем дорого, если нет — в небольшой плюс или в ноль
-            let finalPrice = isRepaired ? carData.marketPrice : (carData.buyPrice + 5000);
-            balance += finalPrice;
-            hasCar = false;
-            isRepaired = false;
+    <section class="px-6 mb-8 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="glass-card p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/50 via-cyan-400/50 to-purple-500/50"></div>
             
-            alert(`Успешно продано за ${finalPrice.toLocaleString()} ₽!`);
-            updateUI();
-            tg.HapticFeedback.notificationOccurred('success');
-        }
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-0.5">
+                    <div class="w-full h-full rounded-full bg-[#1c1c1e] flex items-center justify-center text-xl font-bold">Н</div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold tracking-tight">Никита</h2>
+                    <p class="text-sm text-blue-400 font-medium">Ваш комиссар</p>
+                </div>
+            </div>
 
-        // Кнопка закрытия в ТГ сверху
-        tg.BackButton.hide();
-    </script>
+            <div class="flex gap-3 mb-5 p-3 rounded-2xl bg-white/5 border border-white/5">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fa-solid fa-location-dot text-white/70 text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-[11px] text-white/40 uppercase font-bold tracking-wider mb-0.5">Офис в Воронеже</p>
+                    <p class="text-[15px] font-medium leading-tight">ул. Карпинского, 39</p>
+                </div>
+            </div>
+
+            <p class="text-center text-[12px] text-white/50 mb-3">Бесплатная консультация в мессенджерах:</p>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://wa.me/79518703934" target="_blank" class="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl btn-wa transition-transform active:scale-95">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">WhatsApp</span>
+                </a>
+                <a href="https://t.me/+79518703934" target="_blank" class="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl btn-tg transition-transform active:scale-95">
+                    <i class="fa-brands fa-telegram text-2xl"></i>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">Telegram</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="fixed bottom-0 left-0 w-full p-6 pb-8 bg-gradient-to-t from-black via-black/80 to-transparent z-50 fade-in-up" style="animation-delay: 0.5s;">
+        <a href="tel:+79518703934" class="w-full glass-card border border-blue-500/30 bg-blue-500/20 backdrop-blur-xl p-4 flex items-center justify-center gap-3 transition-transform active:scale-95">
+            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center animate-pulse">
+                <i class="fa-solid fa-phone text-white"></i>
+            </div>
+            <div class="text-left">
+                <p class="text-[11px] text-blue-200 uppercase font-bold tracking-wider mb-0.5">Срочный вызов</p>
+                <p class="text-[18px] font-bold text-white tracking-tight">+7 (951) 870-39-34</p>
+            </div>
+        </a>
+    </div>
+
 </body>
 </html>
