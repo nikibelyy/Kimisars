@@ -3,325 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Твой Гаджет | Купля-Продажа Техники</title>
+    <title>Premium Devices | Продажа и Выкуп</title>
     
-    <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Гаджеты">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/0/191.png">
     
-    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Базовые настройки и шрифты */
-        :root {
-            --apple-blue: #0A84FF;
-            --apple-purple: #5E5CE6;
-            --apple-cyan: #32ADE6;
-            --glass-bg: rgba(30, 30, 32, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-        
+        /* Типографика Apple и Tesla */
         body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            overflow-x: hidden;
+            background-color: #000000; 
+            color: #f5f5f7; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
-        /* Анимированный фон (Aurora) */
-        .ambient-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            background: #000;
-        }
-        .ambient-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.35;
-            animation: float 12s infinite ease-in-out alternate;
-        }
-        .blob-1 { top: -10%; left: -10%; width: 55vw; height: 55vw; background: var(--apple-purple); }
-        .blob-2 { bottom: 10%; right: -10%; width: 65vw; height: 65vw; background: var(--apple-blue); animation-delay: -4s; }
-        .blob-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: var(--apple-cyan); animation-delay: -8s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(15%, 15%) scale(1.15); }
+        /* Цвета в стиле Apple */
+        :root {
+            --apple-gray: #86868b;
+            --apple-dark-gray: #1d1d1f;
+            --apple-light-gray: #f5f5f7;
+            --apple-blue: #2997ff;
         }
 
-        /* Glassmorphism Карточки */
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        /* Навбар с эффектом матового стекла (Apple Glassmorphism) */
+        .glass-nav {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Карточка товара */
-        .product-card {
-            background: linear-gradient(180deg, rgba(40, 40, 42, 0.7) 0%, rgba(20, 20, 22, 0.7) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 16px;
-            transition: transform 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .product-card:active { transform: scale(0.96); }
-        
-        .product-image-box {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-            border-radius: 16px;
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
-        }
-
-        /* Бейджи */
-        .badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        .badge-new { background: rgba(50, 215, 75, 0.2); border: 1px solid rgba(50, 215, 75, 0.4); color: #32D74B; }
-        .badge-used { background: rgba(10, 132, 255, 0.2); border: 1px solid rgba(10, 132, 255, 0.4); color: #0A84FF; }
-
-        /* Кнопка */
-        .btn-magic {
-            background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple));
-            color: white;
-            padding: 16px;
-            border-radius: 20px;
+        /* Кнопки в стиле Tesla (строгие, полнотелые) и Apple (скругленные) */
+        .btn-primary {
+            background-color: #f5f5f7;
+            color: #000;
+            border-radius: 999px;
             font-weight: 600;
-            font-size: 17px;
-            box-shadow: 0 8px 24px rgba(94, 92, 230, 0.4);
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: none;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .btn-magic:active { transform: scale(0.96); }
+        .btn-primary:active { transform: scale(0.96); background-color: #e5e5ea; }
         
-        .price-gradient {
-            background: linear-gradient(to right, #fff, #a1a1aa);
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #f5f5f7;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .btn-secondary:active { transform: scale(0.96); background-color: rgba(255, 255, 255, 0.15); }
+
+        /* Карточки товаров */
+        .product-card {
+            background-color: #111111;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 28px;
+            padding: 24px;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .product-card:active {
+            transform: scale(0.97);
+            background-color: #1a1a1a;
+        }
+
+        .hero-text {
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Анимации появления */
-        .fade-in-up {
-            animation: fadeInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        /* Плавное появление контента (Reveal) */
+        .reveal {
+            animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        
-        /* Скролл бар для категорий */
+        @keyframes revealUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Скрытие скроллбара для горизонтальных списков */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="pb-32 pt-8">
+<body class="antialiased">
 
-    <!-- Анимированный задний фон -->
-    <div class="ambient-bg">
-        <div class="ambient-blob blob-1"></div>
-        <div class="ambient-blob blob-2"></div>
-        <div class="ambient-blob blob-3"></div>
-    </div>
-
-    <!-- Шапка и УТП -->
-    <header class="px-6 mb-8 mt-2 fade-in-up" style="animation-delay: 0.1s;">
-        <div class="inline-flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/10 mb-5">
-            <i class="fa-solid fa-arrows-rotate text-blue-400 text-xs"></i>
-            <span class="text-xs font-semibold tracking-wider uppercase text-white/90">Выгодный Trade-In</span>
+    <!-- Навигация (Navbar) -->
+    <nav class="fixed top-0 left-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center transition-all">
+        <div class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <i class="fa-brands fa-apple text-white/90"></i>
+            <span>Device<span class="text-[#86868b]">Store</span></span>
         </div>
-        
-        <h1 class="text-[38px] leading-[1.1] font-bold tracking-tight text-white drop-shadow-md mb-3">
-            Премиум техника<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">по лучшей цене</span>
-        </h1>
-        <p class="text-white/60 text-[15px] font-medium leading-relaxed">
-            Продаю строго оригинал. Новые и Б/У в идеальном состоянии. Любые проверки перед покупкой.
-        </p>
-    </header>
+        <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-medium text-[#2997ff] active:opacity-50 transition-opacity">
+            Связаться
+        </a>
+    </nav>
 
-    <!-- Преимущества -->
-    <section class="px-6 mb-8 fade-in-up" style="animation-delay: 0.2s;">
-        <div class="grid grid-cols-3 gap-3">
-            <div class="glass-card p-3 flex flex-col items-center text-center">
-                <i class="fa-solid fa-shield-check text-green-400 text-xl mb-2"></i>
-                <span class="text-[11px] font-bold text-white/80 uppercase">Оригинал</span>
-            </div>
-            <div class="glass-card p-3 flex flex-col items-center text-center">
-                <i class="fa-solid fa-bolt text-yellow-400 text-xl mb-2"></i>
-                <span class="text-[11px] font-bold text-white/80 uppercase">Быстрый выкуп</span>
-            </div>
-            <div class="glass-card p-3 flex flex-col items-center text-center">
-                <i class="fa-solid fa-truck-fast text-blue-400 text-xl mb-2"></i>
-                <span class="text-[11px] font-bold text-white/80 uppercase">Доставка</span>
-            </div>
-        </div>
-    </section>
+    <!-- Главный экран (Hero Section) в стиле Tesla -->
+    <section class="min-h-[85vh] flex flex-col items-center justify-center pt-24 px-6 text-center relative overflow-hidden">
+        <!-- Тонкий сфокусированный свет на фоне -->
+        <div class="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <!-- Категории (Фильтры) -->
-    <div class="px-6 mb-4 fade-in-up" style="animation-delay: 0.3s;">
-        <div class="flex gap-3 overflow-x-auto hide-scroll pb-2">
-            <button class="px-5 py-2 rounded-full bg-white text-black font-bold text-sm whitespace-nowrap active:scale-95 transition-transform">Все гаджеты</button>
-            <button class="px-5 py-2 rounded-full glass-card text-white/80 font-bold text-sm whitespace-nowrap active:scale-95 transition-transform border border-white/10">iPhone</button>
-            <button class="px-5 py-2 rounded-full glass-card text-white/80 font-bold text-sm whitespace-nowrap active:scale-95 transition-transform border border-white/10">Android</button>
-            <button class="px-5 py-2 rounded-full glass-card text-white/80 font-bold text-sm whitespace-nowrap active:scale-95 transition-transform border border-white/10">Аксессуары</button>
-        </div>
-    </div>
-
-    <!-- Витрина товаров (Каталог) -->
-    <section class="px-6 mb-8">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="z-10 w-full max-w-2xl reveal" style="animation-delay: 0.1s;">
+            <p class="text-[13px] font-semibold tracking-widest uppercase text-[#86868b] mb-4">Выкуп • Trade-in • Продажа</p>
+            <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 leading-tight text-white">
+                Абсолютное<br>качество.
+            </h1>
+            <p class="text-lg md:text-xl text-[#86868b] mb-10 max-w-md mx-auto font-medium">
+                Строго оригинальная техника Apple и Android. Идеальное состояние, гарантия честной сделки и любые проверки.
+            </p>
             
-            <!-- Товар 1 -->
-            <div class="product-card fade-in-up" style="animation-delay: 0.4s;">
-                <div class="badge badge-used">Б/У • Идеал</div>
-                <div class="product-image-box">
-                    <i class="fa-brands fa-apple text-5xl text-white/20"></i>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4">
+                <a href="#catalog" class="btn-primary w-full sm:w-auto px-8 py-3.5 text-center">
+                    Смотреть каталог
+                </a>
+                <a href="https://t.me/YOUR_TELEGRAM" class="btn-secondary w-full sm:w-auto px-8 py-3.5 text-center flex items-center justify-center gap-2">
+                    Оценить мой телефон
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Фильтры -->
+    <section id="catalog" class="px-6 py-6 border-t border-white/10 sticky top-[60px] glass-nav z-40">
+        <div class="flex gap-3 overflow-x-auto hide-scroll justify-start md:justify-center">
+            <button class="px-6 py-2 rounded-full bg-white text-black font-semibold text-sm whitespace-nowrap">Все модели</button>
+            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">iPhone</button>
+            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">Samsung</button>
+            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">Аксессуары</button>
+        </div>
+    </section>
+
+    <!-- Витрина (Каталог товаров) -->
+    <section class="px-6 py-12 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold tracking-tight mb-8 pl-2 reveal" style="animation-delay: 0.2s;">В наличии. <span class="text-[#86868b]">Готовы к встрече.</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Карточка 1 -->
+            <div class="product-card reveal" style="animation-delay: 0.3s;">
+                <div class="w-full flex justify-between items-start mb-6">
+                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Новый</span>
+                    <i class="fa-brands fa-apple text-xl text-white/50"></i>
                 </div>
-                <h3 class="font-bold text-[15px] leading-tight mb-1">iPhone 15 Pro Max</h3>
-                <p class="text-[12px] text-white/50 mb-3 line-clamp-1">256GB • Natural Titanium • АКБ 100%</p>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-white/40 uppercase font-bold mb-0.5">Цена</p>
-                        <p class="font-bold text-lg price-gradient tracking-tight">105 000 ₽</p>
-                    </div>
+                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-gray-800 to-gray-600 rounded-3xl opacity-20 blur-xl"></div>
+                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold tracking-tight mb-1">iPhone 15 Pro Max</h3>
+                <p class="text-sm text-[#86868b] mb-6">256GB • Natural Titanium • Запечатан</p>
+                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                    <p class="text-lg font-semibold text-white">105 000 ₽</p>
+                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
+                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Товар 2 -->
-            <div class="product-card fade-in-up" style="animation-delay: 0.45s;">
-                <div class="badge badge-new">Новый</div>
-                <div class="product-image-box">
-                    <i class="fa-brands fa-apple text-5xl text-white/20"></i>
+            <!-- Карточка 2 -->
+            <div class="product-card reveal" style="animation-delay: 0.4s;">
+                <div class="w-full flex justify-between items-start mb-6">
+                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Идеал • Б/У</span>
+                    <i class="fa-brands fa-apple text-xl text-white/50"></i>
                 </div>
-                <h3 class="font-bold text-[15px] leading-tight mb-1">iPhone 13</h3>
-                <p class="text-[12px] text-white/50 mb-3 line-clamp-1">128GB • Midnight • Запечатан</p>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-white/40 uppercase font-bold mb-0.5">Цена</p>
-                        <p class="font-bold text-lg price-gradient tracking-tight">55 000 ₽</p>
-                    </div>
+                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-black rounded-3xl opacity-30 blur-xl"></div>
+                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
                 </div>
-            </div>
-
-            <!-- Товар 3 -->
-            <div class="product-card fade-in-up" style="animation-delay: 0.5s;">
-                <div class="badge badge-used">Б/У • Отличное</div>
-                <div class="product-image-box">
-                    <i class="fa-brands fa-android text-5xl text-white/20"></i>
-                </div>
-                <h3 class="font-bold text-[15px] leading-tight mb-1">Samsung S24 Ultra</h3>
-                <p class="text-[12px] text-white/50 mb-3 line-clamp-1">512GB • Phantom Black</p>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-white/40 uppercase font-bold mb-0.5">Цена</p>
-                        <p class="font-bold text-lg price-gradient tracking-tight">92 000 ₽</p>
-                    </div>
+                <h3 class="text-xl font-bold tracking-tight mb-1">iPhone 14 Pro</h3>
+                <p class="text-sm text-[#86868b] mb-6">128GB • Deep Purple • АКБ 98%</p>
+                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                    <p class="text-lg font-semibold text-white">72 000 ₽</p>
+                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
+                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Товар 4 (AirPods) -->
-            <div class="product-card fade-in-up" style="animation-delay: 0.55s;">
-                <div class="badge badge-new">Новый</div>
-                <div class="product-image-box">
-                    <i class="fa-solid fa-ear-listen text-4xl text-white/20"></i>
+            <!-- Карточка 3 -->
+            <div class="product-card reveal" style="animation-delay: 0.5s;">
+                <div class="w-full flex justify-between items-start mb-6">
+                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Идеал • Б/У</span>
+                    <i class="fa-brands fa-android text-xl text-white/50"></i>
                 </div>
-                <h3 class="font-bold text-[15px] leading-tight mb-1">AirPods Pro 2</h3>
-                <p class="text-[12px] text-white/50 mb-3 line-clamp-1">Type-C • Оригинал</p>
-                <div class="flex items-end justify-between">
-                    <div>
-                        <p class="text-[10px] text-white/40 uppercase font-bold mb-0.5">Цена</p>
-                        <p class="font-bold text-lg price-gradient tracking-tight">21 000 ₽</p>
-                    </div>
+                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-green-900 to-black rounded-3xl opacity-20 blur-xl"></div>
+                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold tracking-tight mb-1">Samsung S23 Ultra</h3>
+                <p class="text-sm text-[#86868b] mb-6">512GB • Phantom Black • На гарантии</p>
+                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+                    <p class="text-lg font-semibold text-white">85 000 ₽</p>
+                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
+                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- Блок Инфо / FAQ -->
-    <section class="px-6 mb-8 fade-in-up" style="animation-delay: 0.6s;">
-        <div class="glass-card p-5">
-            <h2 class="text-lg font-bold mb-3">Как происходит сделка?</h2>
-            <ul class="space-y-4">
-                <li class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-bold text-blue-400">1</span>
-                    </div>
-                    <div>
-                        <p class="font-bold text-[15px]">Пишете мне в Telegram/WhatsApp</p>
-                        <p class="text-[13px] text-white/50 mt-0.5">Договариваемся о встрече или доставке.</p>
-                    </div>
-                </li>
-                <li class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-bold text-blue-400">2</span>
-                    </div>
-                    <div>
-                        <p class="font-bold text-[15px]">Встреча и проверка</p>
-                        <p class="text-[13px] text-white/50 mt-0.5">Вы спокойно проверяете устройство, пробиваете серийные номера.</p>
-                    </div>
-                </li>
-                <li class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-bold text-blue-400">3</span>
-                    </div>
-                    <div>
-                        <p class="font-bold text-[15px]">Оплата</p>
-                        <p class="text-[13px] text-white/50 mt-0.5">Наличными или переводом на карту.</p>
-                    </div>
-                </li>
-            </ul>
+    <!-- Блок Trade-In / Преимущества (Стиль Tesla: крупный текст, четкие смыслы) -->
+    <section class="px-6 py-20 bg-[#0a0a0a] border-y border-white/5">
+        <div class="max-w-4xl mx-auto text-center reveal">
+            <h2 class="text-4xl font-bold tracking-tighter mb-6">Trade-In. Без лишних слов.</h2>
+            <p class="text-lg text-[#86868b] mb-12 max-w-2xl mx-auto">
+                Обновите устройство за 15 минут. Я оцениваю ваш старый гаджет по рыночной стоимости. Разницу вы доплачиваете или получаете наличными.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="p-6 rounded-3xl bg-[#111]">
+                    <i class="fa-solid fa-magnifying-glass text-2xl text-white mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">Честная оценка</h3>
+                    <p class="text-sm text-[#86868b]">Никаких занижений цены на месте. Озвученная сумма в переписке — финальная, если описание совпадает.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-[#111]">
+                    <i class="fa-solid fa-shield-halved text-2xl text-white mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">Строго оригинал</h3>
+                    <p class="text-sm text-[#86868b]">Каждое устройство проходит проверку по 30+ пунктам. Никаких восстановленных или "китайских" плат.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-[#111]">
+                    <i class="fa-solid fa-bolt text-2xl text-white mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">Быстрая сделка</h3>
+                    <p class="text-sm text-[#86868b]">Экономим ваше время. Встречаемся, проверяете устройство, оплачиваете удобным способом.</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Плавающая нижняя панель с кнопками -->
-    <div class="fixed bottom-0 left-0 w-full p-4 pb-8 bg-gradient-to-t from-black via-black/90 to-transparent z-50 fade-in-up" style="animation-delay: 0.8s;">
-        <div class="flex gap-3 max-w-md mx-auto">
-            <!-- Кнопка "Оценить мой телефон" -->
-            <a href="https://t.me/YOUR_TELEGRAM" target="_blank" class="flex-1 btn-magic !px-2">
-                <i class="fa-solid fa-camera-rotate"></i>
-                <span class="text-[14px]">Оценить мой телефон</span>
-            </a>
-            <!-- Круглая кнопка WhatsApp -->
-            <a href="https://wa.me/YOUR_NUMBER" target="_blank" class="w-[56px] h-[56px] flex-shrink-0 rounded-[20px] bg-[#25D366] text-white flex items-center justify-center text-2xl shadow-[0_8px_24px_rgba(37,211,102,0.4)] active:scale-95 transition-transform">
+    <!-- Футер / Контакты -->
+    <footer class="px-6 py-12 max-w-6xl mx-auto text-center reveal">
+        <h2 class="text-2xl font-bold tracking-tight mb-8">Свяжитесь со мной</h2>
+        <div class="flex justify-center gap-4 mb-12">
+            <a href="https://wa.me/YOUR_NUMBER" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-2xl text-white hover:bg-white hover:text-black transition-colors">
                 <i class="fa-brands fa-whatsapp"></i>
             </a>
+            <a href="https://t.me/YOUR_TELEGRAM" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-2xl text-white hover:bg-white hover:text-black transition-colors">
+                <i class="fa-brands fa-telegram"></i>
+            </a>
+            <a href="tel:YOUR_NUMBER" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-xl text-white hover:bg-white hover:text-black transition-colors">
+                <i class="fa-solid fa-phone"></i>
+            </a>
         </div>
-    </div>
+        <p class="text-xs text-[#86868b]">© 2024 DeviceStore. Частная продажа и выкуп премиальной техники.</p>
+    </footer>
 
 </body>
 </html>
