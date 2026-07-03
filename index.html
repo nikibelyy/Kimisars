@@ -2,263 +2,316 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Premium Devices | Продажа и Выкуп</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- SEO Оптимизация -->
+    <meta name="description" content="Аварийный комиссар в Воронеже. Быстрое и грамотное оформление ДТП без ГИБДД. Выезд на место, помощь со страховой. Звоните: 89081343722. Офис: ул. Антонова-Овсиенко, 15Ак1.">
+    <meta name="keywords" content="аварийный комиссар воронеж, аварком воронеж, оформление дтп, комиссар дтп, вызов комиссара, антонова овсиенко, дтп воронеж помощь">
+    <meta name="author" content="Данила Аварком">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Аварийный комиссар Воронеж | Оформление ДТП | Данила</title>
+
+    <!-- Подключение современного шрифта -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
     <style>
-        /* Типографика Apple и Tesla */
-        body { 
-            background-color: #000000; 
-            color: #f5f5f7; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -webkit-tap-highlight-color: transparent;
+        /* Цветовая палитра "Спецслужба" */
+        :root {
+            --police-dark: #071324;
+            --police-blue: #132C52;
+            --police-red: #D90429;
+            --police-white: #EDF2F4;
+            --police-gold: #FFB703;
+        }
+
+        /* Базовые настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--police-white);
+            color: #333;
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* Цвета в стиле Apple */
-        :root {
-            --apple-gray: #86868b;
-            --apple-dark-gray: #1d1d1f;
-            --apple-light-gray: #f5f5f7;
-            --apple-blue: #2997ff;
+        /* Анимации */
+        @keyframes siren-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.7); }
+            50% { box-shadow: 0 0 20px 10px rgba(19, 44, 82, 0.7); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 4, 41, 0); }
         }
 
-        /* Навбар с эффектом матового стекла (Apple Glassmorphism) */
-        .glass-nav {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        /* Кнопки в стиле Tesla (строгие, полнотелые) и Apple (скругленные) */
-        .btn-primary {
-            background-color: #f5f5f7;
-            color: #000;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .btn-primary:active { transform: scale(0.96); background-color: #e5e5ea; }
-        
-        .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #f5f5f7;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .btn-secondary:active { transform: scale(0.96); background-color: rgba(255, 255, 255, 0.15); }
-
-        /* Карточки товаров */
-        .product-card {
-            background-color: #111111;
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 28px;
-            padding: 24px;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .product-card:active {
-            transform: scale(0.97);
-            background-color: #1a1a1a;
-        }
-
-        .hero-text {
-            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Плавное появление контента (Reveal) */
-        .reveal {
-            animation: revealUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        @keyframes revealUp {
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Скрытие скроллбара для горизонтальных списков */
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            animation: fade-in-up 0.8s forwards;
+        }
+
+        /* Шапка сайта */
+        header {
+            background: linear-gradient(90deg, var(--police-dark) 0%, var(--police-blue) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 4px solid var(--police-red);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--police-gold);
+        }
+
+        .header-contact {
+            text-align: right;
+        }
+
+        .phone-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Главный экран (Hero) */
+        .hero {
+            background: linear-gradient(rgba(7, 19, 36, 0.85), rgba(7, 19, 36, 0.95)), url('https://images.unsplash.com/photo-1562920618-12fb13809df6?auto=format&fit=crop&w=1920&q=80') center/cover;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 40px;
+            color: var(--police-white);
+        }
+
+        .btn-call {
+            background: var(--police-red);
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 2px solid white;
+            animation: siren-pulse 2s infinite;
+            transition: background 0.3s;
+        }
+
+        .btn-call:hover {
+            background: #b00320;
+        }
+
+        /* Преимущества / Услуги */
+        .services {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--police-blue);
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            font-weight: 900;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--police-red);
+            display: block;
+            margin: 15px auto 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 5px solid var(--police-blue);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-top: 5px solid var(--police-red);
+        }
+
+        .card h3 {
+            color: var(--police-dark);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Контакты */
+        .contacts {
+            background: var(--police-dark);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .contacts p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .contacts .address {
+            color: var(--police-gold);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 20px 0;
+        }
+
+        /* Футер */
+        footer {
+            background: #040a12;
+            color: #777;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность для телефонов */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero h2 { font-size: 1.1rem; }
+            .btn-call { font-size: 1.2rem; padding: 15px 30px; }
+            .header-contact p { display: none; }
+            .section-title { font-size: 2rem; }
+        }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <!-- Навигация (Navbar) -->
-    <nav class="fixed top-0 left-0 w-full z-50 glass-nav px-6 py-4 flex justify-between items-center transition-all">
-        <div class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <i class="fa-brands fa-apple text-white/90"></i>
-            <span>Device<span class="text-[#86868b]">Store</span></span>
+    <!-- Шапка -->
+    <header>
+        <div class="logo">
+            🛡️ АВАРКОМ <span>ВОРОНЕЖ</span>
         </div>
-        <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-medium text-[#2997ff] active:opacity-50 transition-opacity">
-            Связаться
-        </a>
-    </nav>
+        <div class="header-contact">
+            <p style="font-size: 0.8rem; color: #ccc;">Срочный выезд</p>
+            <a href="tel:+79081343722" class="phone-number">8 (908) 134-37-22</a>
+        </div>
+    </header>
 
-    <!-- Главный экран (Hero Section) в стиле Tesla -->
-    <section class="min-h-[85vh] flex flex-col items-center justify-center pt-24 px-6 text-center relative overflow-hidden">
-        <!-- Тонкий сфокусированный свет на фоне -->
-        <div class="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <!-- Главный экран -->
+    <section class="hero">
+        <h1 class="animate-on-scroll">Аварийный комиссар</h1>
+        <h2 class="animate-on-scroll">Быстрое и законное оформление ДТП в Воронеже.<br>Комиссар Данила.</h2>
+        <a href="tel:+79081343722" class="btn-call animate-on-scroll">🚨 Вызвать комиссара</a>
+    </section>
 
-        <div class="z-10 w-full max-w-2xl reveal" style="animation-delay: 0.1s;">
-            <p class="text-[13px] font-semibold tracking-widest uppercase text-[#86868b] mb-4">Выкуп • Trade-in • Продажа</p>
-            <h1 class="text-5xl md:text-7xl font-bold tracking-tighter mb-6 leading-tight text-white">
-                Абсолютное<br>качество.
-            </h1>
-            <p class="text-lg md:text-xl text-[#86868b] mb-10 max-w-md mx-auto font-medium">
-                Строго оригинальная техника Apple и Android. Идеальное состояние, гарантия честной сделки и любые проверки.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4">
-                <a href="#catalog" class="btn-primary w-full sm:w-auto px-8 py-3.5 text-center">
-                    Смотреть каталог
-                </a>
-                <a href="https://t.me/YOUR_TELEGRAM" class="btn-secondary w-full sm:w-auto px-8 py-3.5 text-center flex items-center justify-center gap-2">
-                    Оценить мой телефон
-                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                </a>
+    <!-- Услуги и преимущества -->
+    <section class="services">
+        <h2 class="section-title animate-on-scroll">Мои задачи</h2>
+        <div class="grid">
+            <div class="card animate-on-scroll">
+                <h3>🚔 Оперативный выезд</h3>
+                <p>Прибуду на место ДТП в кратчайшие сроки. Ограждение места аварии, фото- и видеофиксация всех деталей.</p>
+            </div>
+            <div class="card animate-on-scroll">
+                <h3>📝 Грамотное оформление</h3>
+                <p>Составление схемы ДТП, заполнение европротокола и всех необходимых документов для ГИБДД и страховой без ошибок.</p>
+            </div>
+            <div class="card animate-on-scroll">
+                <h3>🛡️ Защита ваших интересов</h3>
+                <p>Помощь в спорах на месте, психологическая поддержка, независимая оценка ситуации.</p>
             </div>
         </div>
     </section>
 
-    <!-- Фильтры -->
-    <section id="catalog" class="px-6 py-6 border-t border-white/10 sticky top-[60px] glass-nav z-40">
-        <div class="flex gap-3 overflow-x-auto hide-scroll justify-start md:justify-center">
-            <button class="px-6 py-2 rounded-full bg-white text-black font-semibold text-sm whitespace-nowrap">Все модели</button>
-            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">iPhone</button>
-            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">Samsung</button>
-            <button class="px-6 py-2 rounded-full text-[#86868b] hover:text-white font-semibold text-sm whitespace-nowrap transition-colors">Аксессуары</button>
+    <!-- Контакты -->
+    <section class="contacts">
+        <h2 class="section-title animate-on-scroll" style="color: white;">Контакты</h2>
+        <p class="animate-on-scroll">Нужна помощь прямо сейчас? Звоните в любое время!</p>
+        <a href="tel:+79081343722" class="phone-number animate-on-scroll" style="font-size: 2.5rem;">8 (908) 134-37-22</a>
+        <div class="address animate-on-scroll">
+            📍 Офис: г. Воронеж, ул. Антонова-Овсиенко, 15Ак1
         </div>
+        <p class="animate-on-scroll" style="color: #aaa; margin-top: 20px;">Ваш персональный аварийный комиссар — Данила.</p>
     </section>
 
-    <!-- Витрина (Каталог товаров) -->
-    <section class="px-6 py-12 max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold tracking-tight mb-8 pl-2 reveal" style="animation-delay: 0.2s;">В наличии. <span class="text-[#86868b]">Готовы к встрече.</span></h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <!-- Карточка 1 -->
-            <div class="product-card reveal" style="animation-delay: 0.3s;">
-                <div class="w-full flex justify-between items-start mb-6">
-                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Новый</span>
-                    <i class="fa-brands fa-apple text-xl text-white/50"></i>
-                </div>
-                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-gray-800 to-gray-600 rounded-3xl opacity-20 blur-xl"></div>
-                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold tracking-tight mb-1">iPhone 15 Pro Max</h3>
-                <p class="text-sm text-[#86868b] mb-6">256GB • Natural Titanium • Запечатан</p>
-                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                    <p class="text-lg font-semibold text-white">105 000 ₽</p>
-                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
-                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Карточка 2 -->
-            <div class="product-card reveal" style="animation-delay: 0.4s;">
-                <div class="w-full flex justify-between items-start mb-6">
-                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Идеал • Б/У</span>
-                    <i class="fa-brands fa-apple text-xl text-white/50"></i>
-                </div>
-                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-black rounded-3xl opacity-30 blur-xl"></div>
-                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold tracking-tight mb-1">iPhone 14 Pro</h3>
-                <p class="text-sm text-[#86868b] mb-6">128GB • Deep Purple • АКБ 98%</p>
-                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                    <p class="text-lg font-semibold text-white">72 000 ₽</p>
-                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
-                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Карточка 3 -->
-            <div class="product-card reveal" style="animation-delay: 0.5s;">
-                <div class="w-full flex justify-between items-start mb-6">
-                    <span class="text-xs font-bold px-3 py-1 bg-white/10 rounded-full text-white">Идеал • Б/У</span>
-                    <i class="fa-brands fa-android text-xl text-white/50"></i>
-                </div>
-                <div class="h-40 w-40 flex items-center justify-center mb-6 relative">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-green-900 to-black rounded-3xl opacity-20 blur-xl"></div>
-                    <i class="fa-solid fa-mobile-screen text-[80px] text-white/90 z-10 drop-shadow-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold tracking-tight mb-1">Samsung S23 Ultra</h3>
-                <p class="text-sm text-[#86868b] mb-6">512GB • Phantom Black • На гарантии</p>
-                <div class="w-full flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-                    <p class="text-lg font-semibold text-white">85 000 ₽</p>
-                    <a href="https://wa.me/YOUR_NUMBER" class="text-sm font-semibold text-[#2997ff] flex items-center gap-1 active:opacity-50">
-                        Купить <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Блок Trade-In / Преимущества (Стиль Tesla: крупный текст, четкие смыслы) -->
-    <section class="px-6 py-20 bg-[#0a0a0a] border-y border-white/5">
-        <div class="max-w-4xl mx-auto text-center reveal">
-            <h2 class="text-4xl font-bold tracking-tighter mb-6">Trade-In. Без лишних слов.</h2>
-            <p class="text-lg text-[#86868b] mb-12 max-w-2xl mx-auto">
-                Обновите устройство за 15 минут. Я оцениваю ваш старый гаджет по рыночной стоимости. Разницу вы доплачиваете или получаете наличными.
-            </p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                <div class="p-6 rounded-3xl bg-[#111]">
-                    <i class="fa-solid fa-magnifying-glass text-2xl text-white mb-4"></i>
-                    <h3 class="text-lg font-bold mb-2">Честная оценка</h3>
-                    <p class="text-sm text-[#86868b]">Никаких занижений цены на месте. Озвученная сумма в переписке — финальная, если описание совпадает.</p>
-                </div>
-                <div class="p-6 rounded-3xl bg-[#111]">
-                    <i class="fa-solid fa-shield-halved text-2xl text-white mb-4"></i>
-                    <h3 class="text-lg font-bold mb-2">Строго оригинал</h3>
-                    <p class="text-sm text-[#86868b]">Каждое устройство проходит проверку по 30+ пунктам. Никаких восстановленных или "китайских" плат.</p>
-                </div>
-                <div class="p-6 rounded-3xl bg-[#111]">
-                    <i class="fa-solid fa-bolt text-2xl text-white mb-4"></i>
-                    <h3 class="text-lg font-bold mb-2">Быстрая сделка</h3>
-                    <p class="text-sm text-[#86868b]">Экономим ваше время. Встречаемся, проверяете устройство, оплачиваете удобным способом.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Футер / Контакты -->
-    <footer class="px-6 py-12 max-w-6xl mx-auto text-center reveal">
-        <h2 class="text-2xl font-bold tracking-tight mb-8">Свяжитесь со мной</h2>
-        <div class="flex justify-center gap-4 mb-12">
-            <a href="https://wa.me/YOUR_NUMBER" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-2xl text-white hover:bg-white hover:text-black transition-colors">
-                <i class="fa-brands fa-whatsapp"></i>
-            </a>
-            <a href="https://t.me/YOUR_TELEGRAM" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-2xl text-white hover:bg-white hover:text-black transition-colors">
-                <i class="fa-brands fa-telegram"></i>
-            </a>
-            <a href="tel:YOUR_NUMBER" class="w-14 h-14 rounded-full bg-[#111] border border-white/10 flex items-center justify-center text-xl text-white hover:bg-white hover:text-black transition-colors">
-                <i class="fa-solid fa-phone"></i>
-            </a>
-        </div>
-        <p class="text-xs text-[#86868b]">© 2024 DeviceStore. Частная продажа и выкуп премиальной техники.</p>
+    <!-- Подвал -->
+    <footer>
+        <p>&copy; 2026 Аварийный комиссар Воронеж. Все права защищены.</p>
     </footer>
 
+    <!-- Скрипт для современных анимаций при прокрутке (появлении) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.animate-on-scroll').forEach((element) => {
+                observer.observe(element);
+            });
+        });
+    </script>
 </body>
 </html>
