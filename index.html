@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        *, ::before, ::after {
+            box-sizing: border-box;
+        }
+
         :root {
             --app-red: #FF3B30; /* Яркий iOS Красный */
             --app-red-hover: #E03027;
@@ -58,7 +62,7 @@
             100% { transform: translate(12%, 12%) scale(1.15); }
         }
 
-        /* Glassmorphism Карточки с красным акцентом при наведении */
+        /* Glassmorphism Карточки */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(24px);
@@ -75,6 +79,8 @@
         /* Поля ввода (Инпуты) */
         .ios-input {
             width: 100%;
+            max-width: 100%;
+            display: block;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 16px;
@@ -83,6 +89,7 @@
             font-size: 16px;
             outline: none;
             transition: all 0.25s ease;
+            -webkit-appearance: none;
         }
         .ios-input::placeholder { color: rgba(255, 255, 255, 0.35); }
         .ios-input:focus {
@@ -91,10 +98,19 @@
             box-shadow: 0 0 0 4px var(--app-red-glow);
         }
 
-        /* Кастомный стиль для выбора даты и времени */
+        /* Фикс ухода даты за поля на iPhone */
+        input[type="datetime-local"] {
+            min-height: 56px;
+            position: relative;
+        }
         input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
-            opacity: 0.5;
+            opacity: 0.6;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            scale: 1.2;
         }
 
         .input-plate {
@@ -158,12 +174,12 @@
             background: var(--app-red);
             border-color: var(--app-red);
         }
-        .max-btn {
+        .sms-btn {
             background: rgba(255, 59, 48, 0.1);
             color: #FF3B30;
             border: 1px solid rgba(255, 59, 48, 0.25);
         }
-        .max-btn:active {
+        .sms-btn:active {
             background: #FF3B30;
             color: #fff;
         }
@@ -258,7 +274,7 @@
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600/30 via-red-500 to-red-600/30"></div>
             
             <div class="space-y-3">
-                <div>
+                <div class="w-full">
                     <label class="block text-[11px] uppercase font-bold tracking-wider text-white/40 mb-1.5 pl-1">Дата и время осмотра</label>
                     <input type="datetime-local" id="inspectionDate" class="ios-input">
                 </div>
@@ -273,8 +289,8 @@
                 </div>
             </div>
             
-            <button onclick="saveAndSendInspection()" class="w-full btn-magic flex items-center justify-center gap-2 mt-2">
-                <i class="fa-solid fa-paper-plane text-sm"></i>
+            <button onclick="saveAndSendSMS()" class="w-full btn-magic flex items-center justify-center gap-2 mt-2">
+                <i class="fa-solid fa-comment-sms text-sm"></i>
                 Записать на осмотр
             </button>
         </div>
@@ -305,8 +321,8 @@
     <script>
         let inspections = JSON.parse(localStorage.getItem('dtp_inspections')) || [];
 
-        // Базовая ссылка на ваш чат в MAX
-        const MAX_CHAT_URL = "https://max.ru/u/f9LHodD0cOL-g4XO7F2NSq75f4U2DbiBqUa8MfmhkQVc3ov6UgrtQ7Gc19Y";
+        // Постоянный адрес осмотра
+        const INSPECTION_ADDRESS = "Карпинского 39";
 
         // Авто-форматирование телефона при вводе (+7 (999) 000-00-00)
         document.getElementById('phone').addEventListener('input', function (e) {
@@ -367,7 +383,7 @@
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3500);
+            }, 3000);
         }
 
         // Очистить строку поиска
@@ -389,8 +405,25 @@
             return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
         }
 
-        // Логика создания записи, копирования текста и отправки в MAX
-        function saveAndSendInspection() {
+        // Генерация красивого текста СМС
+        function generateSMSText(name, dateStr, car, plate) {
+            return `Здравствуйте, ${name}! Вы записаны на осмотр автомобиля после ДТП.\n\n📅 Дата/Время: ${formatDate(dateStr)}\n🚗 Авто: ${car}\n🔢 Номер: ${plate}\n📍 Адрес осмотра: ${INSPECTION_ADDRESS}\n\nПожалуйста, не опаздывайте. Ждем Вас!`;
+        }
+
+        // Открытие стандартного приложения СМС на iPhone
+        function triggerAppleSMS(phone, text) {
+            const cleanPhone = phone.replace(/\D/g, '');
+            // Корректный синтаксис iOS URL Scheme для СМС с текстом через &body=
+            const smsUrl = `sms:+${cleanPhone}&body=${encodeURIComponent(text)}`;
+            
+            showToast('Открываем SMS...', 'success');
+            setTimeout(() => {
+                window.location.href = smsUrl;
+            }, 600);
+        }
+
+        // Логика создания записи, сохранения и отправки СМС
+        function saveAndSendSMS() {
             const dateInput = document.getElementById('inspectionDate');
             const nameInput = document.getElementById('name');
             const phoneInput = document.getElementById('phone');
@@ -436,9 +469,8 @@
             inspections.unshift(newInspection);
             localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
             
-            // Формируем красивое текстовое сообщение для отправки
-            const formattedInspectionDate = formatDate(inspectionDate);
-            const messageText = `📋 НОВАЯ ЗАПИСЬ НА ОСМОТР:\n\n📅 Дата/Время: ${formattedInspectionDate}\n👤 ФИО: ${name}\n📞 Телефон: ${phone}\n🚗 Марка авто: ${car}\n🔢 Гос. номер: ${plate}`;
+            // Генерируем красивый текст сообщения
+            const smsMessage = generateSMSText(name, inspectionDate, car, plate);
 
             // Очистка полей ввода
             dateInput.value = '';
@@ -447,37 +479,19 @@
             carInput.value = '';
             plateInput.value = '';
             
-            // Копируем текст в буфер обмена (для гарантированной отправки)
-            navigator.clipboard.writeText(messageText).then(() => {
-                showToast('Данные скопированы. Открываем MAX...', 'success');
-                
-                // Перенаправление в мессенджер MAX с текстом в параметре
-                setTimeout(() => {
-                    const encodedText = encodeURIComponent(messageText);
-                    window.open(`${MAX_CHAT_URL}?text=${encodedText}`, '_blank');
-                }, 800);
-            }).catch(() => {
-                // Если буфер заблокирован браузером, просто открываем ссылку
-                const encodedText = encodeURIComponent(messageText);
-                window.open(`${MAX_CHAT_URL}?text=${encodedText}`, '_blank');
-            });
+            // Вызов СМС приложения
+            triggerAppleSMS(phone, smsMessage);
 
             render();
         }
 
-        // Функция повторной отправки готовой записи из списка
-        function resendToMax(id) {
+        // Функция повторной отправки СМС из списка сохраненных клиентов
+        function resendSMS(id) {
             const item = inspections.find(c => c.id === id);
             if(!item) return;
 
-            const messageText = `📋 ЗАПИСЬ НА ОСМОТР:\n\n📅 Дата/Время: ${formatDate(item.inspectionDate)}\n👤 ФИО: ${item.name}\n📞 Телефон: ${item.phone}\n🚗 Марка авто: ${item.car}\n🔢 Гос. номер: ${item.plate}`;
-            
-            navigator.clipboard.writeText(messageText).then(() => {
-                showToast('Запись скопирована! Открываем MAX...', 'success');
-                setTimeout(() => {
-                    window.open(`${MAX_CHAT_URL}?text=${encodeURIComponent(messageText)}`, '_blank');
-                }, 600);
-            });
+            const smsMessage = generateSMSText(item.name, item.inspectionDate, item.car, item.plate);
+            triggerAppleSMS(item.phone, smsMessage);
         }
 
         function render() {
@@ -517,7 +531,7 @@
                     <div class="flex justify-between items-start">
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-500/20 to-red-950/40 flex items-center justify-center text-red-400 font-bold flex-shrink-0 shadow-inner border border-red-500/20">
-                                <i class="fa-regular fa-clock text-xs"></i>
+                                <i class="fa-regular fa-envelope text-xs"></i>
                             </div>
                             <div class="min-w-0">
                                 <p class="text-xs text-red-400 font-bold uppercase tracking-wider mb-0.5">${formatDate(c.inspectionDate)}</p>
@@ -530,8 +544,8 @@
                             <a href="tel:${c.phone}" class="action-btn call-btn" title="Позвонить">
                                 <i class="fa-solid fa-phone"></i>
                             </a>
-                            <button onclick="resendToMax(${c.id})" class="action-btn max-btn" title="Переслать в MAX">
-                                <i class="fa-solid fa-paper-plane"></i>
+                            <button onclick="resendSMS(${c.id})" class="action-btn sms-btn" title="Отправить СМС">
+                                <i class="fa-solid fa-comment-sms"></i>
                             </button>
                             <button onclick="animateDelete(${c.id})" class="action-btn delete-btn" title="Удалить">
                                 <i class="fa-solid fa-trash-can"></i>
@@ -552,7 +566,7 @@
                         </div>
                         
                         <div class="text-white/20 text-[10px]">
-                            Создано: ${formatDate(c.createdAt)}
+                            📍 Карпинского 39
                         </div>
                     </div>
                 </div>
@@ -587,6 +601,7 @@
                 'Телефон': c.phone,
                 'Марка авто': c.car,
                 'Гос. номер': c.plate,
+                'Адрес осмотра': INSPECTION_ADDRESS,
                 'Дата создания записи': formatDate(c.createdAt)
             })));
             
