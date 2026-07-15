@@ -405,9 +405,9 @@
             return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
         }
 
-        // Генерация грамотного профессионального текста СМС
+        // Генерация строгого текста СМС БЕЗ ЭМОДЗИ И МАРКЕРОВ
         function generateSMSText(name, dateStr, car, plate) {
-            return `Здравствуйте, ${name}! Ваша запись на осмотр автомобиля после ДТП успешно подтверждена.\n\n▪️ Дата и время: ${formatDate(dateStr)}\n▪️ Автомобиль: ${car}\n▪️ Гос. номер: ${plate}\n▪️ Адрес проведения: ${INSPECTION_ADDRESS}\n\nПросим Вас приезжать к назначенному времени. Если Ваши планы изменятся, пожалуйста, сообщите нам заранее.`;
+            return `Здравствуйте, ${name}! Ваша запись на осмотр автомобиля после ДТП успешно подтверждена.\n\nДата и время: ${formatDate(dateStr)}\nАвтомобиль: ${car}\nГос. номер: ${plate}\nАдрес проведения: ${INSPECTION_ADDRESS}\n\nПросим Вас приезжать к назначенному времени. Если Ваши планы изменятся, пожалуйста, сообщите нам заранее.`;
         }
 
         // Открытие стандартного приложения СМС на iPhone
@@ -419,6 +419,25 @@
             setTimeout(() => {
                 window.location.href = smsUrl;
             }, 600);
+        }
+
+        // Логика переключения статуса приехал/нет
+        function cycleStatus(id) {
+            const index = inspections.findIndex(c => c.id === id);
+            if (index === -1) return;
+            
+            const currentStatus = inspections[index].status || 'pending';
+            let nextStatus = 'pending';
+            
+            if (currentStatus === 'pending') nextStatus = 'arrived';
+            else if (currentStatus === 'arrived') nextStatus = 'missed';
+            else if (currentStatus === 'missed') nextStatus = 'pending';
+            
+            inspections[index].status = nextStatus;
+            localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
+            
+            if (navigator.vibrate) navigator.vibrate(40);
+            render();
         }
 
         // Логика создания записи, сохранения и отправки СМС
@@ -462,13 +481,14 @@
                 phone, 
                 car, 
                 plate, 
+                status: 'pending',
                 createdAt: new Date().toISOString() 
             };
             
             inspections.unshift(newInspection);
             localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
             
-            // Генерируем красивый текст сообщения
+            // Генерируем текст сообщения
             const smsMessage = generateSMSText(name, inspectionDate, car, plate);
 
             // Очистка полей ввода
@@ -525,6 +545,21 @@
             }
 
             list.innerHTML = filtered.map((c, index) => {
+                // Настройка стилей для кнопки статуса
+                let statusClass = 'bg-white/5 text-white/60 border-white/10';
+                let statusIcon = 'fa-regular fa-clock';
+                let statusText = 'Ожидается';
+                
+                if (c.status === 'arrived') {
+                    statusClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                    statusIcon = 'fa-solid fa-circle-check';
+                    statusText = 'Приехал';
+                } else if (c.status === 'missed') {
+                    statusClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+                    statusIcon = 'fa-solid fa-circle-xmark';
+                    statusText = 'Не приехал';
+                }
+
                 return `
                 <div id="client-${c.id}" class="glass-card p-4 fade-in-up flex flex-col gap-4" style="animation-delay: ${Math.min(index * 0.05, 0.4)}s">
                     <div class="flex justify-between items-start">
@@ -553,9 +588,9 @@
                     </div>
                     
                     <div class="flex items-center justify-between border-t border-white/5 pt-3 text-[12px]">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
                             <i class="fa-solid fa-car-side text-white/30 text-[11px]"></i>
-                            <span class="text-white/60 font-medium truncate max-w-[120px]">${c.car}</span>
+                            <span class="text-white/60 font-medium truncate max-w-[110px]">${c.car}</span>
                             
                             ${c.plate !== '—' && c.plate !== '' ? `
                                 <div class="plate-badge ml-1">
@@ -564,9 +599,10 @@
                             ` : ''}
                         </div>
                         
-                        <div class="text-white/20 text-[10px]">
-                            📍 ул. Карпинского, д. 39
-                        </div>
+                        <button onclick="cycleStatus(${c.id})" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition-all active:scale-95 ${statusClass}">
+                            <i class="${statusIcon} text-[10px]"></i>
+                            <span>${statusText}</span>
+                        </button>
                     </div>
                 </div>
                 `;
@@ -594,15 +630,22 @@
         function exportExcel() {
             if (inspections.length === 0) return showToast('Нет данных для экспорта!');
 
-            const ws = XLSX.utils.json_to_sheet(inspections.map(c => ({
-                'Дата осмотра': formatDate(c.inspectionDate),
-                'ФИО клиента': c.name,
-                'Телефон': c.phone,
-                'Марка авто': c.car,
-                'Гос. номер': c.plate,
-                'Адрес осмотра': INSPECTION_ADDRESS,
-                'Дата создания записи': formatDate(c.createdAt)
-            })));
+            const ws = XLSX.utils.json_to_sheet(inspections.map(c => {
+                let statusText = 'Ожидается';
+                if (c.status === 'arrived') statusText = 'Приехал';
+                if (c.status === 'missed') statusText = 'Не приехал';
+                
+                return {
+                    'Дата осмотра': formatDate(c.inspectionDate),
+                    'ФИО клиента': c.name,
+                    'Телефон': c.phone,
+                    'Марка авто': c.car,
+                    'Гос. номер': c.plate,
+                    'Статус': statusText,
+                    'Адрес осмотра': INSPECTION_ADDRESS,
+                    'Дата создания записи': formatDate(c.createdAt)
+                };
+            }));
             
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Осмотры");
