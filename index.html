@@ -322,7 +322,7 @@
         let inspections = JSON.parse(localStorage.getItem('dtp_inspections')) || [];
 
         // Постоянный адрес осмотра
-        const INSPECTION_ADDRESS = "Карпинского 39";
+        const INSPECTION_ADDRESS = "ул. Карпинского, д. 39";
 
         // Авто-форматирование телефона при вводе (+7 (999) 000-00-00)
         document.getElementById('phone').addEventListener('input', function (e) {
@@ -405,15 +405,14 @@
             return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
         }
 
-        // Генерация красивого текста СМС
+        // Генерация грамотного профессионального текста СМС
         function generateSMSText(name, dateStr, car, plate) {
-            return `Здравствуйте, ${name}! Вы записаны на осмотр автомобиля после ДТП.\n\n📅 Дата/Время: ${formatDate(dateStr)}\n🚗 Авто: ${car}\n🔢 Номер: ${plate}\n📍 Адрес осмотра: ${INSPECTION_ADDRESS}\n\nПожалуйста, не опаздывайте. Ждем Вас!`;
+            return `Здравствуйте, ${name}! Ваша запись на осмотр автомобиля после ДТП успешно подтверждена.\n\n▪️ Дата и время: ${formatDate(dateStr)}\n▪️ Автомобиль: ${car}\n▪️ Гос. номер: ${plate}\n▪️ Адрес проведения: ${INSPECTION_ADDRESS}\n\nПросим Вас приезжать к назначенному времени. Если Ваши планы изменятся, пожалуйста, сообщите нам заранее.`;
         }
 
         // Открытие стандартного приложения СМС на iPhone
         function triggerAppleSMS(phone, text) {
             const cleanPhone = phone.replace(/\D/g, '');
-            // Корректный синтаксис iOS URL Scheme для СМС с текстом через &body=
             const smsUrl = `sms:+${cleanPhone}&body=${encodeURIComponent(text)}`;
             
             showToast('Открываем SMS...', 'success');
@@ -566,7 +565,7 @@
                         </div>
                         
                         <div class="text-white/20 text-[10px]">
-                            📍 Карпинского 39
+                            📍 ул. Карпинского, д. 39
                         </div>
                     </div>
                 </div>
