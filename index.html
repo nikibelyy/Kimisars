@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ДТП СЕРВИС — Осмотры</title>
+    <title>ДТП СЕРВИС PRO — Осмотры и Договоры</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ДТП СЕРВИС">
+    <meta name="apple-mobile-web-app-title" content="ДТП СЕРВИС PRO">
     <link class="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b5/1f/53/b51f536f-0c44-1d74-e4b1-ac6ed2352096/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,15 +15,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        *, ::before, ::after {
-            box-sizing: border-box;
-        }
+        *, ::before, ::after { box-sizing: border-box; }
 
         :root {
-            --app-red: #FF3B30; /* Яркий iOS Красный */
+            --app-red: #FF3B30;
             --app-red-hover: #E03027;
-            --app-red-glow: rgba(255, 59, 48, 0.2);
-            --glass-bg: rgba(18, 18, 18, 0.75);
+            --app-red-glow: rgba(255, 59, 48, 0.25);
+            --app-gold: #FFD700;
+            --glass-bg: rgba(18, 18, 18, 0.8);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-border-active: rgba(255, 59, 48, 0.4);
         }
@@ -35,10 +34,9 @@
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
             padding-bottom: calc(5rem + env(safe-area-inset-bottom));
-            padding-top: calc(2rem + env(safe-area-inset-top));
+            padding-top: calc(1rem + env(safe-area-inset-top));
         }
 
-        /* Анимированный фон (Aurora) в черно-красных тонах */
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -62,165 +60,103 @@
             100% { transform: translate(12%, 12%) scale(1.15); }
         }
 
-        /* Glassmorphism Карточки */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .glass-card:hover {
-            border-color: var(--glass-border-active);
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Поля ввода (Инпуты) */
-        .ios-input {
+        .ios-input, .ios-select {
             width: 100%;
-            max-width: 100%;
-            display: block;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px 16px;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
             transition: all 0.25s ease;
-            -webkit-appearance: none;
         }
-        .ios-input::placeholder { color: rgba(255, 255, 255, 0.35); }
-        .ios-input:focus {
+        .ios-input:focus, .ios-select:focus {
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 59, 48, 0.5);
-            box-shadow: 0 0 0 4px var(--app-red-glow);
+            border-color: var(--app-red);
+            box-shadow: 0 0 0 3px var(--app-red-glow);
         }
 
-        /* Фикс ухода даты за поля на iPhone */
-        input[type="datetime-local"] {
-            min-height: 56px;
-            position: relative;
-        }
         input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             opacity: 0.6;
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            scale: 1.2;
         }
 
-        .input-plate {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        /* Кнопка отправки записи */
         .btn-magic {
             background: linear-gradient(135deg, var(--app-red), #990000);
             color: white;
-            padding: 16px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 16px;
-            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.25);
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 6px 20px rgba(255, 59, 48, 0.3);
             transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            border: none;
         }
-        .btn-magic::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent);
-            transform: skewX(-20deg);
-            animation: shimmer 5s infinite;
-        }
-        @keyframes shimmer {
-            0% { left: -100%; }
-            15% { left: 200%; }
-            100% { left: 200%; }
-        }
-        .btn-magic:active {
-            transform: scale(0.97);
-            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.15);
+        .btn-magic:active { transform: scale(0.98); }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #FFD700, #B8860B);
+            color: #000;
+            font-weight: 800;
         }
 
-        /* Кнопки быстрых действий на карточке */
         .action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 13px;
             transition: all 0.2s ease;
-            font-size: 14px;
         }
-        .action-btn:active {
-            transform: scale(0.9);
-        }
-        .call-btn {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .call-btn:active {
-            background: var(--app-red);
-            border-color: var(--app-red);
-        }
-        .sms-btn {
-            background: rgba(255, 59, 48, 0.1);
-            color: #FF3B30;
-            border: 1px solid rgba(255, 59, 48, 0.25);
-        }
-        .sms-btn:active {
-            background: #FF3B30;
-            color: #fff;
-        }
-        .delete-btn {
-            background: rgba(255, 59, 48, 0.08);
-            color: var(--app-red);
-            border: 1px solid rgba(255, 59, 48, 0.15);
-        }
-        .delete-btn:active {
-            background: var(--app-red);
-            color: #fff;
-        }
+        .call-btn { background: rgba(255, 255, 255, 0.08); color: #fff; }
+        .sms-btn { background: rgba(255, 59, 48, 0.15); color: #FF3B30; }
+        .wa-btn { background: rgba(37, 211, 102, 0.15); color: #25D366; }
+        .delete-btn { background: rgba(255, 59, 48, 0.08); color: var(--app-red); }
 
-        /* Российский госномер стиль */
         .plate-badge {
-            background: #f5f5f5;
+            background: #fff;
             color: #000;
-            border: 1.5px solid #111;
-            box-shadow: inset 0 1px 1px #fff, 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid #000;
             border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 1px 6px;
-            display: inline-flex;
-            align-items: center;
+            font-family: monospace;
+            padding: 0px 5px;
+            font-weight: bold;
         }
 
-        /* Анимации */
         .fade-in-up {
-            animation: fadeInUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: fadeInUp 0.4s ease forwards;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(10px);
         }
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        .swipe-out {
-            animation: swipeOutLeft 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+        /* Кастомный красивый слайдер */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            height: 6px;
+            border-radius: 3px;
         }
-        @keyframes swipeOutLeft {
-            to { opacity: 0; transform: translateX(-100%); }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--app-red);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,59,48,0.5);
         }
     </style>
 </head>
@@ -232,430 +168,426 @@
         <div class="ambient-blob blob-3"></div>
     </div>
 
-    <header class="px-2 mb-6 mt-4 fade-in-up" style="animation-delay: 0.1s;">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-900 flex items-center justify-center shadow-lg shadow-red-600/20">
-                <i class="fa-solid fa-calendar-check text-white text-lg"></i>
-            </div>
-            <div>
-                <h1 class="text-[28px] font-extrabold tracking-tight text-white/95">ДТП СЕРВИС</h1>
-                <p class="text-white/40 text-xs font-semibold uppercase tracking-widest mt-0.5">Запись на осмотр</p>
-            </div>
+    <!-- Верхний бар подписки -->
+    <div id="sub-bar" class="mb-4 mt-2 p-2.5 glass-card flex items-center justify-between border-yellow-500/30">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-crown text-yellow-400 text-sm"></i>
+            <span id="sub-status-text" class="text-xs font-semibold text-yellow-200">Тариф: FREE (Лимит 3 клиента)</span>
         </div>
-    </header>
-
-    <div class="grid grid-cols-2 gap-3 mb-6 fade-in-up" style="animation-delay: 0.15s;">
-        <div class="glass-card p-4 flex flex-col justify-between">
-            <p class="text-white/30 text-[10px] uppercase font-bold tracking-wider mb-2">Статистика записей</p>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[9px] text-white/40 uppercase">Всего</p>
-                    <p class="text-2xl font-bold tracking-tight text-white" id="count-all">0</p>
-                </div>
-                <div class="h-8 w-[1px] bg-white/10"></div>
-                <div>
-                    <p class="text-[9px] text-red-400 uppercase">Сегодня</p>
-                    <p class="text-2xl font-bold tracking-tight text-red-500" id="count-today">0</p>
-                </div>
-            </div>
-        </div>
-        
-        <button onclick="exportExcel()" class="glass-card p-4 flex flex-col items-center justify-center active:scale-95 transition-transform group relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center mb-1 group-active:bg-red-500/30 transition-colors border border-red-500/20">
-                <i class="fa-solid fa-arrow-up-right-from-square text-red-400 text-sm"></i>
-            </div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-red-400">Экспорт Excel</span>
-        </button>
+        <button onclick="openPaywall()" class="px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-lg shadow-lg">PRO Доступ</button>
     </div>
 
-    <section class="mb-6 fade-in-up" style="animation-delay: 0.2s;">
-        <div class="glass-card p-5 space-y-3 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600/30 via-red-500 to-red-600/30"></div>
+    <!-- Шапка -->
+    <header class="px-1 mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-900 flex items-center justify-center shadow-lg shadow-red-600/30">
+                <i class="fa-solid fa-car-burst text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tight text-white">ДТП СЕРВИС <span class="text-red-500 text-xs">PRO</span></h1>
+                <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">Учет осмотров и договоров</p>
+            </div>
+        </div>
+        <button onclick="exportExcel()" class="action-btn call-btn !w-10 !h-10 border border-white/10" title="Экспорт Excel">
+            <i class="fa-solid fa-file-excel text-green-400"></i>
+        </button>
+    </header>
+
+    <!-- Финансовая статистика -->
+    <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="glass-card p-3 text-center">
+            <p class="text-white/40 text-[9px] uppercase font-bold">Осмотров</p>
+            <p class="text-lg font-bold text-white mt-0.5" id="stat-count">0</p>
+        </div>
+        <div class="glass-card p-3 text-center">
+            <p class="text-white/40 text-[9px] uppercase font-bold">Портфель</p>
+            <p class="text-xs font-bold text-emerald-400 mt-1" id="stat-volume">0 ₽</p>
+        </div>
+        <div class="glass-card p-3 text-center">
+            <p class="text-white/40 text-[9px] uppercase font-bold">Доход комиссии</p>
+            <p class="text-xs font-bold text-red-400 mt-1" id="stat-revenue">0 ₽</p>
+        </div>
+    </div>
+
+    <!-- Форма записи клиента -->
+    <section class="mb-5">
+        <div class="glass-card p-4 space-y-3 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-red-400 to-red-600"></div>
             
-            <div class="space-y-3">
-                <div class="w-full">
-                    <label class="block text-[11px] uppercase font-bold tracking-wider text-white/40 mb-1.5 pl-1">Дата и время осмотра</label>
-                    <input type="datetime-local" id="inspectionDate" class="ios-input">
+            <div>
+                <label class="block text-[10px] uppercase font-bold tracking-wider text-white/40 mb-1">Дата и время осмотра</label>
+                <input type="datetime-local" id="inspectionDate" class="ios-input !py-2.5">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <input type="text" id="name" placeholder="ФИО клиента" class="ios-input !text-xs">
+                <input type="tel" id="phone" placeholder="+7 (999) 000-00-00" class="ios-input !text-xs">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <input type="text" id="carMake" placeholder="Марка авто" class="ios-input !text-xs">
+                <input type="text" id="plate" placeholder="Гос. номер" class="ios-input !text-xs uppercase">
+            </div>
+
+            <!-- Раздел Договора и Комиссии (PRO Фича) -->
+            <div class="p-3 bg-white/5 rounded-xl border border-white/10 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-red-400 uppercase tracking-wider"><i class="fa-solid fa-file-contract mr-1"></i> Тип договора</span>
+                    <select id="dealType" onchange="toggleDealFields()" class="ios-select !w-auto !py-1 !px-2 !text-xs">
+                        <option value="none">Без договора (Только осмотр)</option>
+                        <option value="cession">Цессия (Выкуп права)</option>
+                        <option value="agency">Агентский договор</option>
+                    </select>
                 </div>
 
-                <input type="text" id="name" placeholder="ФИО клиента" class="ios-input">
-                
-                <input type="tel" id="phone" placeholder="+7 (999) 000-00-00" class="ios-input">
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="carMake" placeholder="Марка авто" class="ios-input !text-[14px] !p-3.5">
-                    <input type="text" id="plate" placeholder="Гос. номер авто" class="ios-input input-plate !text-[14px] !p-3.5">
+                <div id="deal-calculator" class="hidden space-y-3 pt-2 border-t border-white/5">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-white/60">Размер комиссии:</span>
+                            <span class="font-bold text-red-400" id="commissionValue">20%</span>
+                        </div>
+                        <input type="range" id="commissionRate" min="15" max="30" value="20" oninput="updateCalculations()" class="w-full">
+                    </div>
+
+                    <div>
+                        <input type="number" id="claimAmount" oninput="updateCalculations()" placeholder="Оценочная сумма ущерба (₽)" class="ios-input !text-xs">
+                    </div>
+
+                    <div class="p-2.5 bg-black/40 rounded-lg text-xs flex justify-between items-center font-mono">
+                        <div>
+                            <span class="text-white/40 block text-[9px]">ВЫПЛАТА КЛИЕНТУ:</span>
+                            <span class="text-emerald-400 font-bold" id="clientPayout">0 ₽</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-white/40 block text-[9px]">ДОХОД СЕРВИСА:</span>
+                            <span class="text-red-400 font-bold" id="companyRevenue">0 ₽</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <button onclick="saveAndSendSMS()" class="w-full btn-magic flex items-center justify-center gap-2 mt-2">
-                <i class="fa-solid fa-comment-sms text-sm"></i>
-                Записать на осмотр
+            <button onclick="saveClient()" class="w-full btn-magic flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus-circle"></i>
+                Записать & Сформировать SMS
             </button>
         </div>
     </section>
 
-    <div class="mb-5 fade-in-up" style="animation-delay: 0.25s;">
+    <!-- Фильтры и поиск -->
+    <div class="mb-3 space-y-2">
         <div class="relative">
-            <input type="text" id="search-input" oninput="render()" placeholder="Быстрый поиск записи..." class="ios-input pl-12 pr-10 !py-3.5">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm"></i>
-            <button onclick="clearSearch()" id="clear-search-btn" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-white/40 active:text-white">
-                <i class="fa-solid fa-circle-xmark"></i>
-            </button>
+            <input type="text" id="search-input" oninput="render()" placeholder="Поиск по ФИО, номеру или авто..." class="ios-input pl-10 pr-4 !py-2.5 !text-xs">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 text-xs"></i>
+        </div>
+
+        <div class="flex gap-1 overflow-x-auto pb-1 text-[11px]">
+            <button onclick="setFilter('all')" class="filter-btn active px-3 py-1.5 rounded-lg bg-red-600 text-white font-semibold">Все</button>
+            <button onclick="setFilter('cession')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Цессия</button>
+            <button onclick="setFilter('agency')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Агентские</button>
+            <button onclick="setFilter('none')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Осмотры</button>
         </div>
     </div>
 
-    <div class="mb-3 flex items-center justify-between fade-in-up" style="animation-delay: 0.3s;">
-        <h2 class="text-md font-bold tracking-tight text-white/60 uppercase text-xs tracking-widest pl-1">Предстоящие осмотры</h2>
-    </div>
-    
-    <div id="clients-list" class="space-y-3">
-        </div>
+    <!-- Список клиентов -->
+    <div id="clients-list" class="space-y-3"></div>
 
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3.5 rounded-2xl shadow-xl font-semibold text-sm transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2.5 w-[90%] max-w-xs text-center justify-center">
+    <!-- МОДАЛЬНОЕ ОКНО ОПЛАТЫ / PRO ПОДПИСКА -->
+    <div id="paywall-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 w-full max-w-sm text-center relative border-yellow-500/40">
+            <button onclick="closePaywall()" class="absolute top-4 right-4 text-white/40 active:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-500 to-amber-300 mx-auto flex items-center justify-center text-black text-2xl font-bold mb-3 shadow-lg shadow-yellow-500/20">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+
+            <h3 class="text-xl font-black text-white">Перейдите на PRO</h3>
+            <p class="text-xs text-white/60 mt-1 mb-4">Разблокируйте неограниченный учет договоров Цессии и Агентских комиссий от 15% до 30%.</p>
+
+            <div class="space-y-2 text-left text-xs mb-5">
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Безлимитное добавление клиентов</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Калькулятор Цессии и Агентского договора (15-30%)</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Отправка КП в WhatsApp в 1 клик</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Полный финансовый экспорт в Excel</div>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="activateProDemo()" class="w-full btn-magic btn-gold py-3">
+                    Активировать PRO (Тестовый доступ)
+                </button>
+                <p class="text-[9px] text-white/30">Нажмите для бесплатной активации в демо-режиме</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast уведомления -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-5 py-3 rounded-xl shadow-2xl font-semibold text-xs transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2">
         <i id="toast-icon" class="fa-solid fa-circle-exclamation"></i>
         <span id="toast-message">Ошибка</span>
     </div>
 
     <script>
-        let inspections = JSON.parse(localStorage.getItem('dtp_inspections')) || [];
+        // Состояние приложения
+        let inspections = JSON.parse(localStorage.getItem('dtp_pro_inspections')) || [];
+        let isProStatus = localStorage.getItem('dtp_pro_status') === 'true';
+        let currentFilter = 'all';
 
-        // Постоянный адрес осмотра
         const INSPECTION_ADDRESS = "ул. Карпинского, д. 39";
 
-        // Авто-форматирование телефона при вводе (+7 (999) 000-00-00)
+        // Форматирование телефона
         document.getElementById('phone').addEventListener('input', function (e) {
             let input = e.target.value.replace(/\D/g, '');
-            if (!input) {
-                e.target.value = '';
-                return;
-            }
-            if (input.startsWith('7') || input.startsWith('8')) {
-                input = input.substring(1);
-            }
+            if (!input) { e.target.value = ''; return; }
+            if (input.startsWith('7') || input.startsWith('8')) input = input.substring(1);
             input = input.substring(0, 10);
-            
             let formatted = '+7';
-            if (input.length > 0) {
-                formatted += ' (' + input.substring(0, 3);
-            }
-            if (input.length >= 4) {
-                formatted += ') ' + input.substring(3, 6);
-            }
-            if (input.length >= 7) {
-                formatted += '-' + input.substring(6, 8);
-            }
-            if (input.length >= 9) {
-                formatted += '-' + input.substring(8, 10);
-            }
+            if (input.length > 0) formatted += ' (' + input.substring(0, 3);
+            if (input.length >= 4) formatted += ') ' + input.substring(3, 6);
+            if (input.length >= 7) formatted += '-' + input.substring(6, 8);
+            if (input.length >= 9) formatted += '-' + input.substring(8, 10);
             e.target.value = formatted;
         });
 
-        // Форсирование верхнего регистра на госномере
-        document.getElementById('plate').addEventListener('input', function(e) {
-            e.target.value = e.target.value.toUpperCase();
-        });
-
-        // Красивое кастомное уведомление (Toast)
         function showToast(message, type = 'error') {
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-            
-            toastMsg.innerText = message;
-            
-            if (type === 'success') {
-                toast.classList.remove('bg-red-600');
-                toast.classList.add('bg-emerald-600');
-                toastIcon.className = 'fa-solid fa-circle-check';
+            document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-2xl font-semibold text-xs transition-all duration-300 transform translate-y-0 opacity-100 z-50 flex items-center gap-2`;
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 2500);
+        }
+
+        // Подписка & PRO Логика
+        function updateSubUI() {
+            const statusText = document.getElementById('sub-status-text');
+            if (isProStatus) {
+                statusText.innerText = "Тариф: PRO Пакет (Безлимит)";
+                statusText.className = "text-xs font-semibold text-emerald-400";
             } else {
-                toast.classList.remove('bg-emerald-600');
-                toast.classList.add('bg-red-600');
-                toastIcon.className = 'fa-solid fa-circle-exclamation';
+                statusText.innerText = `Тариф: FREE (${inspections.length}/3 клиентов)`;
+                statusText.className = "text-xs font-semibold text-yellow-200";
             }
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
-            if (navigator.vibrate) navigator.vibrate([70, 40]);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
         }
 
-        // Очистить строку поиска
-        function clearSearch() {
-            document.getElementById('search-input').value = '';
-            render();
+        function openPaywall() { document.getElementById('paywall-modal').classList.remove('hidden'); }
+        function closePaywall() { document.getElementById('paywall-modal').classList.add('hidden'); }
+        
+        function activateProDemo() {
+            isProStatus = true;
+            localStorage.setItem('dtp_pro_status', 'true');
+            updateSubUI();
+            closePaywall();
+            showToast('PRO Доступ успешно активирован!', 'success');
         }
 
-        // Подсчет добавленных сегодня записей
-        function getTodayCount() {
-            const todayStr = new Date().toDateString();
-            return inspections.filter(c => new Date(c.createdAt).toDateString() === todayStr).length;
+        // Переключение полей договора
+        function toggleDealFields() {
+            const type = document.getElementById('dealType').value;
+            const calcBox = document.getElementById('deal-calculator');
+            if (type === 'none') {
+                calcBox.classList.add('hidden');
+            } else {
+                calcBox.classList.remove('hidden');
+                updateCalculations();
+            }
         }
 
-        // Красивый вывод даты для интерфейса
-        function formatDate(isoString) {
-            if(!isoString) return 'Не указана';
-            const date = new Date(isoString);
-            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        function updateCalculations() {
+            const rate = document.getElementById('commissionRate').value;
+            const claim = parseFloat(document.getElementById('claimAmount').value) || 0;
+            
+            document.getElementById('commissionValue').innerText = rate + '%';
+            
+            const companyRev = (claim * (rate / 100));
+            const clientPay = claim - companyRev;
+
+            document.getElementById('companyRevenue').innerText = companyRev.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('clientPayout').innerText = clientPay.toLocaleString('ru-RU') + ' ₽';
         }
 
-        // Генерация строгого текста СМС БЕЗ ЭМОДЗИ И МАРКЕРОВ
-        function generateSMSText(name, dateStr, car, plate) {
-            return `Здравствуйте, ${name}! Ваша запись на осмотр автомобиля после ДТП успешно подтверждена.\n\nДата и время: ${formatDate(dateStr)}\nАвтомобиль: ${car}\nГос. номер: ${plate}\nАдрес проведения: ${INSPECTION_ADDRESS}\n\nПросим Вас приезжать к назначенному времени. Если Ваши планы изменятся, пожалуйста, сообщите нам заранее.`;
-        }
-
-        // Открытие стандартного приложения СМС на iPhone
-        function triggerAppleSMS(phone, text) {
-            const cleanPhone = phone.replace(/\D/g, '');
-            const smsUrl = `sms:+${cleanPhone}&body=${encodeURIComponent(text)}`;
-            
-            showToast('Открываем SMS...', 'success');
-            setTimeout(() => {
-                window.location.href = smsUrl;
-            }, 600);
-        }
-
-        // Логика переключения статуса приехал/нет
-        function cycleStatus(id) {
-            const index = inspections.findIndex(c => c.id === id);
-            if (index === -1) return;
-            
-            const currentStatus = inspections[index].status || 'pending';
-            let nextStatus = 'pending';
-            
-            if (currentStatus === 'pending') nextStatus = 'arrived';
-            else if (currentStatus === 'arrived') nextStatus = 'missed';
-            else if (currentStatus === 'missed') nextStatus = 'pending';
-            
-            inspections[index].status = nextStatus;
-            localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
-            
-            if (navigator.vibrate) navigator.vibrate(40);
-            render();
-        }
-
-        // Логика создания записи, сохранения и отправки СМС
-        function saveAndSendSMS() {
-            const dateInput = document.getElementById('inspectionDate');
-            const nameInput = document.getElementById('name');
-            const phoneInput = document.getElementById('phone');
-            const carInput = document.getElementById('carMake');
-            const plateInput = document.getElementById('plate');
-            
-            const inspectionDate = dateInput.value;
-            const name = nameInput.value.trim();
-            const phone = phoneInput.value.trim();
-            const car = carInput.value.trim() || 'Не указана';
-            const plate = plateInput.value.trim().toUpperCase() || '—';
-            
-            if(!inspectionDate || !name || !phone) {
-                const card = nameInput.closest('.glass-card');
-                card.style.transform = 'translateX(-10px)';
-                setTimeout(() => card.style.transform = 'translateX(10px)', 50);
-                setTimeout(() => card.style.transform = 'translateX(0)', 100);
-                
-                if(!inspectionDate) {
-                    dateInput.focus();
-                    showToast('Укажите дату осмотра!');
-                } else if(!name) {
-                    nameInput.focus();
-                    showToast('Заполните ФИО клиента!');
-                } else {
-                    phoneInput.focus();
-                    showToast('Заполните номер телефона!');
-                }
+        function saveClient() {
+            // Проверка подписки
+            if (!isProStatus && inspections.length >= 3) {
+                openPaywall();
                 return;
             }
+
+            const date = document.getElementById('inspectionDate').value;
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const car = document.getElementById('carMake').value.trim() || 'Не указано';
+            const plate = document.getElementById('plate').value.trim().toUpperCase() || '—';
             
-            // Формируем новую запись для базы данных
-            const newInspection = { 
-                id: Date.now(), 
-                inspectionDate,
-                name, 
-                phone, 
-                car, 
-                plate, 
+            const dealType = document.getElementById('dealType').value;
+            const commissionRate = parseInt(document.getElementById('commissionRate').value);
+            const claimAmount = parseFloat(document.getElementById('claimAmount').value) || 0;
+
+            if (!date || !name || !phone) {
+                showToast('Заполните дату, ФИО и телефон!');
+                return;
+            }
+
+            const newClient = {
+                id: Date.now(),
+                date, name, phone, car, plate,
+                dealType, commissionRate, claimAmount,
                 status: 'pending',
-                createdAt: new Date().toISOString() 
+                createdAt: new Date().toISOString()
             };
-            
-            inspections.unshift(newInspection);
-            localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
-            
-            // Генерируем текст сообщения
-            const smsMessage = generateSMSText(name, inspectionDate, car, plate);
 
-            // Очистка полей ввода
-            dateInput.value = '';
-            nameInput.value = '';
-            phoneInput.value = '';
-            carInput.value = '';
-            plateInput.value = '';
-            
-            // Вызов СМС приложения
-            triggerAppleSMS(phone, smsMessage);
+            inspections.unshift(newClient);
+            localStorage.setItem('dtp_pro_inspections', JSON.stringify(inspections));
 
+            // Очистить форму
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('carMake').value = '';
+            document.getElementById('plate').value = '';
+            document.getElementById('claimAmount').value = '';
+
+            // Отправка SMS
+            sendSMS(newClient);
+            render();
+            updateSubUI();
+        }
+
+        function sendSMS(c) {
+            const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            let msg = `Здравствуйте, ${c.name}! Осмотр авто ${c.car} (${c.plate}) назначен на ${dateStr}. Адрес: ${INSPECTION_ADDRESS}.`;
+            
+            if (c.dealType === 'cession') msg += ` Вариант оформления: Выкуп прав (Цессия).`;
+            if (c.dealType === 'agency') msg += ` Вариант: Агентское сопровождение (${c.commissionRate}%).`;
+
+            window.location.href = `sms:${c.phone.replace(/\D/g, '')}&body=${encodeURIComponent(msg)}`;
+        }
+
+        function sendWhatsApp(id) {
+            const c = inspections.find(item => item.id === id);
+            if (!c) return;
+            const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            
+            let text = `Добрый день, ${c.name}!\nПодтверждаем запись на осмотр ТС ${c.car} (${c.plate})\n📅 Дата/время: ${dateStr}\n📍 Адрес: ${INSPECTION_ADDRESS}`;
+            
+            if (c.dealType !== 'none') {
+                const companyRev = (c.claimAmount * (c.commissionRate / 100));
+                const clientPay = c.claimAmount - companyRev;
+                text += `\n\nУсловия договора (${c.dealType === 'cession' ? 'Цессия' : 'Агентский'}):\n- Сумма ущерба: ${c.claimAmount.toLocaleString()} ₽\n- Выплата вам: ${clientPay.toLocaleString()} ₽\n- Комиссия: ${c.commissionRate}%`;
+            }
+
+            window.open(`https://wa.me/${c.phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10';
+            });
+            event.target.className = 'filter-btn active px-3 py-1.5 rounded-lg bg-red-600 text-white font-semibold';
             render();
         }
 
-        // Функция повторной отправки СМС из списка сохраненных клиентов
-        function resendSMS(id) {
-            const item = inspections.find(c => c.id === id);
-            if(!item) return;
-
-            const smsMessage = generateSMSText(item.name, item.inspectionDate, item.car, item.plate);
-            triggerAppleSMS(item.phone, smsMessage);
+        function deleteClient(id) {
+            inspections = inspections.filter(c => c.id !== id);
+            localStorage.setItem('dtp_pro_inspections', JSON.stringify(inspections));
+            render();
+            updateSubUI();
+            showToast('Запись удалена', 'success');
         }
 
         function render() {
             const list = document.getElementById('clients-list');
-            const searchInput = document.getElementById('search-input');
-            const clearBtn = document.getElementById('clear-search-btn');
-            const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            const search = document.getElementById('search-input').value.toLowerCase();
 
-            if (query) {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
-
-            // Фильтрация поиска
-            const filtered = inspections.filter(c => {
-                return c.name.toLowerCase().includes(query) || 
-                       c.phone.includes(query) || 
-                       c.car.toLowerCase().includes(query) || 
-                       c.plate.toLowerCase().includes(query);
+            let filtered = inspections.filter(c => {
+                const matchSearch = c.name.toLowerCase().includes(search) || c.phone.includes(search) || c.car.toLowerCase().includes(search);
+                const matchFilter = currentFilter === 'all' || c.dealType === currentFilter;
+                return matchSearch && matchFilter;
             });
-            
-            // Обновление цифр статистики
-            document.getElementById('count-all').innerText = inspections.length;
-            document.getElementById('count-today').innerText = getTodayCount();
+
+            // Расчет статистики
+            let totalVolume = 0;
+            let totalRevenue = 0;
+            inspections.forEach(c => {
+                if (c.dealType !== 'none') {
+                    totalVolume += c.claimAmount;
+                    totalRevenue += (c.claimAmount * (c.commissionRate / 100));
+                }
+            });
+
+            document.getElementById('stat-count').innerText = inspections.length;
+            document.getElementById('stat-volume').innerText = totalVolume.toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('ru-RU') + ' ₽';
 
             if (filtered.length === 0) {
-                list.innerHTML = `<p class="text-center text-white/20 text-sm py-10 fade-in-up">
-                    ${query ? 'Ничего не найдено' : 'Записей на осмотр нет'}
-                </p>`;
+                list.innerHTML = `<p class="text-center text-white/30 text-xs py-8">Клиенты не найдены</p>`;
                 return;
             }
 
-            list.innerHTML = filtered.map((c, index) => {
-                // Настройка стилей для кнопки статуса
-                let statusClass = 'bg-white/5 text-white/60 border-white/10';
-                let statusIcon = 'fa-regular fa-clock';
-                let statusText = 'Ожидается';
+            list.innerHTML = filtered.map((c, i) => {
+                const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
                 
-                if (c.status === 'arrived') {
-                    statusClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-                    statusIcon = 'fa-solid fa-circle-check';
-                    statusText = 'Приехал';
-                } else if (c.status === 'missed') {
-                    statusClass = 'bg-red-500/10 text-red-400 border-red-500/20';
-                    statusIcon = 'fa-solid fa-circle-xmark';
-                    statusText = 'Не приехал';
-                }
+                let dealBadge = '<span class="px-2 py-0.5 rounded bg-white/10 text-white/50 text-[9px]">Без договора</span>';
+                if (c.dealType === 'cession') dealBadge = `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">Цессия (${c.commissionRate}%)</span>`;
+                if (c.dealType === 'agency') dealBadge = `<span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[9px] font-bold">Агентский (${c.commissionRate}%)</span>`;
+
+                const companyRev = (c.claimAmount * (c.commissionRate / 100));
 
                 return `
-                <div id="client-${c.id}" class="glass-card p-4 fade-in-up flex flex-col gap-4" style="animation-delay: ${Math.min(index * 0.05, 0.4)}s">
+                <div class="glass-card p-3.5 fade-in-up space-y-2">
                     <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-500/20 to-red-950/40 flex items-center justify-center text-red-400 font-bold flex-shrink-0 shadow-inner border border-red-500/20">
-                                <i class="fa-regular fa-envelope text-xs"></i>
+                        <div>
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-bold text-red-400">${dateStr}</span>
+                                ${dealBadge}
                             </div>
-                            <div class="min-w-0">
-                                <p class="text-xs text-red-400 font-bold uppercase tracking-wider mb-0.5">${formatDate(c.inspectionDate)}</p>
-                                <p class="font-bold text-[16px] text-white truncate pr-2">${c.name}</p>
-                                <a href="tel:${c.phone}" class="text-xs text-white/50 font-medium hover:underline transition-all block mt-0.5">${c.phone}</a>
-                            </div>
+                            <h4 class="font-bold text-sm text-white">${c.name}</h4>
+                            <a href="tel:${c.phone}" class="text-xs text-white/50 font-mono">${c.phone}</a>
                         </div>
-                        
-                        <div class="flex items-center gap-1.5 flex-shrink-0">
-                            <a href="tel:${c.phone}" class="action-btn call-btn" title="Позвонить">
-                                <i class="fa-solid fa-phone"></i>
-                            </a>
-                            <button onclick="resendSMS(${c.id})" class="action-btn sms-btn" title="Отправить СМС">
-                                <i class="fa-solid fa-comment-sms"></i>
-                            </button>
-                            <button onclick="animateDelete(${c.id})" class="action-btn delete-btn" title="Удалить">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                        <div class="flex items-center gap-1">
+                            <button onclick="sendWhatsApp(${c.id})" class="action-btn wa-btn" title="Написать в WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button onclick="sendSMS(inspections.find(x=>x.id===${c.id}))" class="action-btn sms-btn" title="Отправить SMS"><i class="fa-solid fa-comment-sms"></i></button>
+                            <button onclick="deleteClient(${c.id})" class="action-btn delete-btn"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center justify-between border-t border-white/5 pt-3 text-[12px]">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <i class="fa-solid fa-car-side text-white/30 text-[11px]"></i>
-                            <span class="text-white/60 font-medium truncate max-w-[110px]">${c.car}</span>
-                            
-                            ${c.plate !== '—' && c.plate !== '' ? `
-                                <div class="plate-badge ml-1">
-                                    <span class="text-[9px] font-bold tracking-wider">${c.plate}</span>
-                                </div>
-                            ` : ''}
+
+                    <div class="flex justify-between items-center text-xs pt-2 border-t border-white/5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-white/60">${c.car}</span>
+                            ${c.plate !== '—' ? `<span class="plate-badge text-[10px]">${c.plate}</span>` : ''}
                         </div>
-                        
-                        <button onclick="cycleStatus(${c.id})" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition-all active:scale-95 ${statusClass}">
-                            <i class="${statusIcon} text-[10px]"></i>
-                            <span>${statusText}</span>
-                        </button>
+                        ${c.dealType !== 'none' ? `
+                            <div class="text-right font-mono text-[11px]">
+                                <span class="text-white/40">Доход:</span>
+                                <span class="text-emerald-400 font-bold">${companyRev.toLocaleString()} ₽</span>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
                 `;
             }).join('');
         }
 
-        // Анимация удаления
-        function animateDelete(id) {
-            if (navigator.vibrate) navigator.vibrate(60);
-            
-            const card = document.getElementById(`client-${id}`);
-            if(card) {
-                card.classList.add('swipe-out');
-                
-                setTimeout(() => {
-                    inspections = inspections.filter(c => c.id !== id);
-                    localStorage.setItem('dtp_inspections', JSON.stringify(inspections));
-                    showToast('Запись удалена', 'success');
-                    render();
-                }, 300);
-            }
-        }
-
-        // Экспорт таблицы Excel
         function exportExcel() {
-            if (inspections.length === 0) return showToast('Нет данных для экспорта!');
-
-            const ws = XLSX.utils.json_to_sheet(inspections.map(c => {
-                let statusText = 'Ожидается';
-                if (c.status === 'arrived') statusText = 'Приехал';
-                if (c.status === 'missed') statusText = 'Не приехал';
-                
-                return {
-                    'Дата осмотра': formatDate(c.inspectionDate),
-                    'ФИО клиента': c.name,
-                    'Телефон': c.phone,
-                    'Марка авто': c.car,
-                    'Гос. номер': c.plate,
-                    'Статус': statusText,
-                    'Адрес осмотра': INSPECTION_ADDRESS,
-                    'Дата создания записи': formatDate(c.createdAt)
-                };
+            if (inspections.length === 0) return showToast('Нет данных!');
+            const data = inspections.map(c => ({
+                'Дата осмотра': c.date,
+                'Клиент': c.name,
+                'Телефон': c.phone,
+                'Автомобиль': c.car,
+                'Гос. номер': c.plate,
+                'Тип договора': c.dealType,
+                'Комиссия %': c.commissionRate,
+                'Сумма ущерба': c.claimAmount,
+                'Выплата клиенту': c.claimAmount - (c.claimAmount * (c.commissionRate / 100)),
+                'Доход сервиса': (c.claimAmount * (c.commissionRate / 100))
             }));
-            
+            const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Осмотры");
-            
-            const currentMonthName = new Date().toLocaleString('ru-RU', { month: 'long' });
-            XLSX.writeFile(wb, `График_Осмотров_за_${currentMonthName}.xlsx`);
-            showToast('Файл Excel скачан!', 'success');
+            XLSX.utils.book_append_sheet(wb, ws, "Договоры и Осмотры");
+            XLSX.writeFile(wb, `Отчет_ДТП_Сервис_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast('Excel сгенерирован!', 'success');
         }
 
-        // Инициализация при старте
+        // Старт
+        updateSubUI();
         render();
     </script>
 </body>
