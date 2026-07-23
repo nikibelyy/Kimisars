@@ -1,296 +1,307 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Базовые мета-теги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Аварийный комиссар Воронеж | Оформление ДТП | вызовдтп.рф</title>
-    <meta name="description" content="Вызов аварийного комиссара в Воронеже. Быстрое оформление ДТП до 400 тыс. рублей (Госуслуги). Полное юридическое сопровождение, помощь с выплатами, без цессий. Приезд от 15 минут!">
     
-    <!-- Шрифты -->
+    <title>Аварийный комиссар Воронеж | Высший класс оформления ДТП</title>
+    <meta name="description" content="Премиальный сервис оформления ДТП в Воронеже. Выезд за 15 минут, Европротокол до 400 тыс. руб., защита от мошенников и гарантия выплат.">
+    
+    <!-- Шрифты: Использование премиального Onest или Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@900&display=swap" rel="stylesheet">
     
     <style>
-        /* Современная палитра и переменные */
         :root {
-            --bg-color: #050507;
-            --surface: rgba(20, 20, 25, 0.6);
-            --surface-hover: rgba(30, 30, 38, 0.8);
-            --border: rgba(255, 255, 255, 0.08);
+            --bg-base: #030305;
+            --surface-color: rgba(20, 20, 24, 0.4);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 30, 70, 0.3);
             
-            --primary: #ff1e46;
-            --primary-dark: #cc1030;
-            --primary-glow: rgba(255, 30, 70, 0.5);
-            --primary-gradient: linear-gradient(135deg, #ff1e46, #ff6b3d);
+            --brand-red: #ff1e46;
+            --brand-orange: #ff5e00;
+            --brand-glow: rgba(255, 30, 70, 0.6);
             
-            --text-main: #ffffff;
-            --text-muted: #9ba0aa;
+            --text-main: #f5f5f7;
+            --text-muted: #868695;
             
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --gradient-neon: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
+            --easing: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
+            margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
 
-        html { scroll-behavior: smooth; }
-
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-base);
             color: var(--text-main);
+            font-family: 'Manrope', sans-serif;
+            line-height: 1.5;
             overflow-x: hidden;
-            line-height: 1.6;
             position: relative;
         }
 
-        /* АНИМИРОВАННЫЙ ФОН */
-        .ambient-bg {
+        /* 1. КИНЕМАТОГРАФИЧЕСКИЙ ШУМ (Noise) */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9999; opacity: 0.04;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        /* 2. АБСТРАКТНЫЙ ФОН */
+        .glow-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
         }
-        .orb {
-            position: absolute; border-radius: 50%;
-            filter: blur(120px); opacity: 0.4;
-            animation: float 20s ease-in-out infinite alternate;
+        .glow-bg::after {
+            content: ''; position: absolute; top: -20%; right: -10%;
+            width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(255,30,70,0.15) 0%, transparent 60%);
+            filter: blur(80px);
         }
-        .orb-1 {
-            width: 40vw; height: 40vw; background: var(--primary);
-            top: -10%; left: -10%; animation-duration: 25s;
-        }
-        .orb-2 {
-            width: 30vw; height: 30vw; background: #2a0845;
-            bottom: -10%; right: -10%; animation-duration: 20s; animation-direction: alternate-reverse;
-        }
-        .orb-3 {
-            width: 25vw; height: 25vw; background: #640d24;
-            top: 40%; left: 50%; animation-duration: 30s;
-        }
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(10%, 15%) scale(1.1); }
-            100% { transform: translate(-10%, -5%) scale(0.9); }
+        .glow-bg::before {
+            content: ''; position: absolute; bottom: -20%; left: -10%;
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(255,94,0,0.1) 0%, transparent 60%);
+            filter: blur(80px);
         }
 
-        /* ШАПКА */
+        /* 3. ПАРЯЩАЯ ШАПКА (Pill Header) */
         header {
-            position: fixed; width: 100%; top: 0; z-index: 100;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 1200px; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%;
-            background: rgba(5, 5, 7, 0.7);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            transition: var(--transition);
+            padding: 12px 25px; border-radius: 100px;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s var(--easing);
         }
-        header.scrolled { padding: 15px 5%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        header.scrolled {
+            top: 10px; padding: 10px 25px;
+            background: rgba(10, 10, 15, 0.85); box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
 
         .logo {
-            font-size: clamp(22px, 3vw, 28px); font-weight: 900;
-            letter-spacing: -0.5px; display: flex; align-items: center; gap: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px; font-weight: 900; letter-spacing: -0.5px;
+            text-transform: uppercase;
         }
-        .logo span {
-            background: var(--primary-gradient);
+        .text-gradient {
+            background: var(--gradient-neon);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         .header-phone {
-            font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;
-            text-decoration: none; color: var(--text-main); transition: var(--transition);
+            font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+            text-decoration: none; color: #fff;
+            padding: 8px 20px; border-radius: 100px; background: rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
         }
-        .header-phone:hover { color: var(--primary); transform: scale(1.05); }
-        .header-phone svg { width: 20px; height: 20px; fill: currentColor; }
+        .header-phone:hover { background: var(--gradient-neon); box-shadow: 0 0 20px var(--brand-glow); }
 
         /* КНОПКИ */
         .btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 18px 36px; border-radius: 16px;
-            font-weight: 700; font-size: 16px;
-            cursor: pointer; transition: var(--transition);
-            text-decoration: none; border: none; position: relative;
-            overflow: hidden; gap: 10px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 16px 32px; border-radius: 100px; font-weight: 700; font-size: 16px;
+            cursor: pointer; text-decoration: none; transition: all 0.4s var(--easing);
+            position: relative; overflow: hidden; border: none; z-index: 1;
         }
-        
         .btn-primary {
-            background: var(--primary-gradient); color: #fff;
-            box-shadow: 0 10px 25px rgba(255, 30, 70, 0.3), inset 0 2px 0 rgba(255,255,255,0.2);
-        }
-        .btn-primary::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: rotate(45deg) translateX(-100%); transition: 0.6s;
+            background: var(--text-main); color: var(--bg-base);
         }
         .btn-primary:hover {
-            transform: translateY(-4px); box-shadow: 0 15px 35px var(--primary-glow);
+            transform: scale(1.05); box-shadow: 0 10px 30px rgba(255,255,255,0.2);
         }
-        .btn-primary:hover::after { transform: rotate(45deg) translateX(100%); }
+        .btn-neon {
+            background: var(--gradient-neon); color: #fff;
+        }
+        .btn-neon::before {
+            content: ''; position: absolute; inset: 0; background: inherit; filter: blur(15px); z-index: -1; opacity: 0.6; transition: 0.4s;
+        }
+        .btn-neon:hover { transform: scale(1.05); }
+        .btn-neon:hover::before { opacity: 1; filter: blur(25px); }
 
-        .btn-glass {
-            background: var(--surface); color: #fff;
-            border: 1px solid var(--border); backdrop-filter: blur(10px);
-        }
-        .btn-glass:hover {
-            background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-4px);
-        }
-
-        /* ГЛАВНЫЙ ЭКРАН */
+        /* 4. ГЛАВНЫЙ ЭКРАН */
         .hero {
-            min-height: 100vh; display: flex; align-items: center;
-            padding: 120px 5% 80px; position: relative; z-index: 2;
+            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            padding: 150px 5% 100px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;
         }
-        .hero-content { max-width: 900px; }
-        .badge {
-            display: inline-block; padding: 8px 16px; border-radius: 30px;
-            background: rgba(255, 30, 70, 0.1); color: var(--primary);
-            border: 1px solid rgba(255, 30, 70, 0.3);
-            font-size: 14px; font-weight: 600; margin-bottom: 24px;
-            letter-spacing: 1px; text-transform: uppercase;
+        .tagline {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 100px; background: rgba(255, 30, 70, 0.1);
+            border: 1px solid rgba(255, 30, 70, 0.2); color: var(--brand-red);
+            font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 30px;
         }
+        .tagline .pulse {
+            width: 8px; height: 8px; background: var(--brand-red); border-radius: 50%;
+            box-shadow: 0 0 10px var(--brand-red); animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
+
         .hero h1 {
-            font-size: clamp(36px, 6vw, 72px); font-weight: 900;
-            line-height: 1.05; margin-bottom: 30px; letter-spacing: -1px;
-        }
-        .text-gradient {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            display: inline-block; filter: drop-shadow(0 0 15px rgba(255,30,70,0.3));
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(40px, 7vw, 85px); font-weight: 900;
+            line-height: 1.05; letter-spacing: -2px; margin-bottom: 30px;
         }
         .hero p {
-            font-size: clamp(16px, 2vw, 20px); color: var(--text-muted);
-            margin-bottom: 45px; max-width: 650px; line-height: 1.8; font-weight: 500;
+            font-size: clamp(16px, 2vw, 22px); color: var(--text-muted);
+            max-width: 600px; line-height: 1.6; margin-bottom: 50px; font-weight: 500;
         }
-        .btn-group { display: flex; gap: 20px; flex-wrap: wrap; }
+        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; }
 
-        /* УСЛУГИ (СЕТКА) */
-        .section { padding: 100px 5%; position: relative; z-index: 2; }
-        .section-header { text-align: center; margin-bottom: 70px; }
+        /* 5. БЕГУЩАЯ СТРОКА (Marquee) */
+        .marquee-wrapper {
+            position: relative; width: 100vw; margin-left: calc(-50vw + 50%); overflow: hidden;
+            background: var(--gradient-neon); padding: 20px 0;
+            transform: rotate(-2deg) scale(1.05); z-index: 10;
+            box-shadow: 0 20px 50px rgba(255, 30, 70, 0.2);
+        }
+        .marquee {
+            display: flex; white-space: nowrap; width: 200%;
+            animation: marqueeText 20s linear infinite;
+        }
+        .marquee span {
+            font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900;
+            color: #fff; text-transform: uppercase; letter-spacing: 2px;
+            padding: 0 2vw; display: inline-flex; align-items: center; gap: 2vw;
+        }
+        @keyframes marqueeText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ОБЩИЕ СТИЛИ СЕКЦИЙ */
+        .section { padding: 120px 5%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
         .section-title {
-            font-size: clamp(30px, 5vw, 48px); font-weight: 900;
-            margin-bottom: 20px; letter-spacing: -1px;
-        }
-        .section-subtitle {
-            color: var(--text-muted); font-size: clamp(16px, 2vw, 18px);
-            max-width: 700px; margin: 0 auto; line-height: 1.7;
+            font-family: 'Montserrat', sans-serif; font-size: clamp(32px, 5vw, 55px);
+            font-weight: 900; letter-spacing: -1px; margin-bottom: 60px; line-height: 1.1;
         }
 
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;
+        /* 6. СЕТКА БЕНТО (Bento Grid) */
+        .bento-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px;
         }
-        .card {
-            background: var(--surface); border: 1px solid var(--border);
-            padding: 45px 35px; border-radius: 28px; backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px); transition: var(--transition);
-            position: relative; overflow: hidden;
+        .bento-card {
+            background: var(--surface-color); border: 1px solid var(--border-color);
+            border-radius: 32px; padding: 40px; backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); position: relative; overflow: hidden;
+            transition: all 0.5s var(--easing); display: flex; flex-direction: column; justify-content: space-between;
         }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at top right, rgba(255,30,70,0.15), transparent 60%);
-            opacity: 0; transition: var(--transition);
-        }
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(255, 30, 70, 0.4);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,30,70,0.15);
-        }
-        .card:hover::before { opacity: 1; }
+        
+        /* Размеры карточек в сетке */
+        .card-large { grid-column: span 8; min-height: 350px; background: linear-gradient(145deg, rgba(30,30,35,0.6), rgba(15,15,20,0.8)); }
+        .card-small { grid-column: span 4; }
+        .card-medium { grid-column: span 5; }
+        .card-wide { grid-column: span 7; }
 
-        .card-icon-wrapper {
-            width: 70px; height: 70px; border-radius: 20px;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 25px; transition: var(--transition);
+        .bento-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
         }
-        .card:hover .card-icon-wrapper {
-            background: var(--primary-gradient); border-color: transparent;
-            box-shadow: 0 10px 20px rgba(255, 30, 70, 0.3);
-        }
-        .card-icon-wrapper svg {
-            width: 32px; height: 32px; fill: var(--primary); transition: var(--transition);
-        }
-        .card:hover .card-icon-wrapper svg { fill: #fff; }
+        .bento-card:hover { border-color: var(--border-hover); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .bento-card:hover::before { opacity: 1; }
 
-        .card h3 { font-size: 22px; font-weight: 800; margin-bottom: 15px; position: relative; z-index: 1; }
-        .card p { color: var(--text-muted); font-size: 16px; line-height: 1.7; position: relative; z-index: 1; }
-        .highlight { color: #fff; font-weight: 700; }
+        .icon-box {
+            width: 60px; height: 60px; border-radius: 20px; background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .icon-box svg { width: 28px; height: 28px; fill: var(--brand-red); }
+
+        .bento-card h3 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 800; margin-bottom: 15px; }
+        .bento-card p { color: var(--text-muted); font-size: 16px; line-height: 1.6; }
+        .card-large h3 { font-size: clamp(28px, 4vw, 36px); }
+        .amount-tag {
+            display: inline-block; background: var(--brand-red); color: #fff;
+            padding: 4px 12px; border-radius: 8px; font-weight: 800; transform: rotate(-3deg);
+        }
+
+        /* 7. ШАГИ (Таймлайн) */
+        .steps-container {
+            display: flex; flex-direction: column; gap: 40px; position: relative;
+        }
+        .steps-container::before {
+            content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px;
+            background: linear-gradient(to bottom, var(--brand-red) 0%, rgba(255,30,70,0) 100%);
+        }
+        .step { display: flex; gap: 30px; align-items: flex-start; position: relative; }
+        .step-num {
+            width: 50px; height: 50px; border-radius: 50%; background: var(--bg-base);
+            border: 2px solid var(--brand-red); display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 900; color: var(--brand-red); flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(255,30,70,0.3); z-index: 2;
+        }
+        .step-content h3 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .step-content p { color: var(--text-muted); font-size: 16px; }
 
         /* ПОДВАЛ */
         footer {
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px);
-            padding: 100px 5% 50px; text-align: center; border-top: 1px solid var(--border);
-            position: relative; z-index: 2; padding-bottom: 120px; /* Для мобильного дока */
+            padding: 100px 5% 150px; text-align: center; border-top: 1px solid var(--border-color);
+            background: radial-gradient(circle at bottom center, rgba(255,30,70,0.1) 0%, transparent 60%);
         }
-        .footer-title { font-size: clamp(28px, 4vw, 40px); font-weight: 900; margin-bottom: 15px; }
-        .footer-phone {
-            font-size: clamp(40px, 6vw, 70px); font-weight: 900; display: inline-block;
-            margin: 30px 0; background: var(--text-main);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            transition: var(--transition); position: relative; text-decoration: none;
+        .footer-cta { font-family: 'Montserrat', sans-serif; font-size: clamp(30px, 5vw, 60px); font-weight: 900; margin-bottom: 20px; }
+        .massive-phone {
+            font-family: 'Montserrat', sans-serif; font-size: clamp(40px, 8vw, 90px); font-weight: 900;
+            display: inline-block; margin-bottom: 20px; text-decoration: none;
+            background: #fff; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: all 0.3s;
         }
-        .footer-phone:hover { background: var(--primary-gradient); -webkit-background-clip: text; transform: scale(1.02); }
-        .copyright { color: #555; font-size: 14px; font-weight: 500; margin-top: 50px; }
+        .massive-phone:hover { background: var(--gradient-neon); -webkit-background-clip: text; transform: scale(1.02); }
 
-        /* АНИМАЦИИ ПОЯВЛЕНИЯ (SCROLL REVEAL) */
-        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        /* Задержки для сетки */
-        .grid .card:nth-child(1) { transition-delay: 0.1s; }
-        .grid .card:nth-child(2) { transition-delay: 0.2s; }
-        .grid .card:nth-child(3) { transition-delay: 0.3s; }
-        .grid .card:nth-child(4) { transition-delay: 0.4s; }
+        /* АНИМАЦИИ (SCROLL REVEAL) */
+        .reveal { opacity: 0; transform: translateY(50px) scale(0.95); transition: 0.8s var(--easing); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
 
-        /* МОБИЛЬНЫЙ ДОК (iOS Style) */
+        /* 8. МОБИЛЬНЫЙ ДОК (iOS Style) */
         .mobile-dock { display: none; }
 
+        @media (max-width: 900px) {
+            .bento-card { grid-column: span 12 !important; min-height: auto; }
+            .card-large h3 { font-size: 24px; }
+        }
+
         @media (max-width: 768px) {
-            .header-phone { display: none; }
-            .btn-group { flex-direction: column; width: 100%; }
-            .btn { width: 100%; }
+            .header-phone { display: none; } /* Скрываем кнопку в шапке */
+            header { padding: 15px 20px; }
+            .btn { width: 100%; justify-content: center; }
             .section { padding: 80px 5%; }
-            .card { padding: 35px 25px; }
+            .bento-card { padding: 30px 25px; border-radius: 24px; }
             
-            /* Плавающий док снизу */
+            /* Плавающий док */
             .mobile-dock {
                 display: flex; position: fixed; bottom: 20px; left: 5%; width: 90%;
-                background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                padding: 8px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
-                box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(255, 30, 70, 0.15);
-                gap: 8px; z-index: 1000;
-                /* Анимация всплытия дока */
-                animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                background: rgba(15, 15, 18, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+                padding: 10px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(255, 30, 70, 0.2);
+                gap: 10px; z-index: 1000;
+                animation: slideUpDock 1s var(--easing) forwards;
             }
-            @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes slideUpDock { from { transform: translateY(150px); } to { transform: translateY(0); } }
             
-            .mobile-dock .btn {
-                flex: 1; padding: 14px 10px; font-size: 14px; border-radius: 18px;
+            .dock-btn {
+                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                gap: 5px; padding: 12px 0; border-radius: 16px; font-size: 13px; font-weight: 700;
+                text-decoration: none; color: #fff; background: rgba(255,255,255,0.05);
             }
-            .mobile-dock svg { width: 18px; height: 18px; fill: currentColor; }
-            
-            /* Фикс hover для тач-скринов */
-            .card:hover { transform: none; box-shadow: none; border-color: var(--border); }
-            .card:active { transform: scale(0.97); border-color: var(--primary); }
+            .dock-btn.accent { background: var(--gradient-neon); }
+            .dock-btn svg { width: 22px; height: 22px; fill: currentColor; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Фоновые частицы/сферы -->
-    <div class="ambient-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
+    <!-- Шум и Фон -->
+    <div class="noise"></div>
+    <div class="glow-bg"></div>
 
-    <!-- Шапка -->
+    <!-- Парящая Шапка -->
     <header id="header">
-        <div class="logo">Вызов<span class="text-gradient">ДТП</span>.рф</div>
+        <div class="logo">Вызов<span class="text-gradient">ДТП</span></div>
         <a href="tel:+79518703934" class="header-phone">
-            <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
             +7 (951) 870-39-34
         </a>
     </header>
@@ -298,70 +309,102 @@
     <main>
         <!-- Главный экран -->
         <section class="hero">
-            <div class="hero-content reveal">
-                <div class="badge">Приезд от 15 минут</div>
-                <h1>Оформление ДТП <br><span class="text-gradient">без участия ГИБДД</span></h1>
-                <p>Грамотно оформлю документы, защищу от мошенников и помогу получить максимальную выплату от страховой. Полное юридическое сопровождение под ключ в Воронеже.</p>
+            <div class="reveal">
+                <div class="tagline"><span class="pulse"></span> Дежурный экипаж 24/7</div>
+                <h1>Оформление ДТП <br>без участия <span class="text-gradient">ГИБДД</span></h1>
+                <p>Приедем за 15 минут в любой район Воронежа. Защитим от автоподстав, правильно оформим документы и добьемся 100% выплаты от страховой.</p>
                 <div class="btn-group">
-                    <a href="tel:+79518703934" class="btn btn-primary">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
-                        Вызвать комиссара
-                    </a>
-                    <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-glass">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h2v2H7zm8 0h2v2h-2zm-4 0h2v2h-2z"/></svg>
-                        Написать в чат
-                    </a>
+                    <a href="tel:+79518703934" class="btn btn-neon">Вызвать комиссара</a>
+                    <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-primary">Написать в Чат</a>
                 </div>
             </div>
         </section>
 
-        <!-- Услуги -->
-        <section class="section">
-            <div class="section-header reveal">
-                <h2 class="section-title">Работаем на <span class="text-gradient">ваш результат</span></h2>
-                <p class="section-subtitle">Мы не просто рисуем схему. Мы комплексно решаем проблему, защищаем от ошибок и гарантируем правильность оформления для страховой.</p>
+        <!-- Неоновая бегущая строка -->
+        <div class="marquee-wrapper">
+            <div class="marquee">
+                <span>Приезд от 15 минут</span> • <span>Гарантия выплат</span> • <span>Без цессий</span> • <span>Европротокол</span> • <span>Юридическая защита</span> • 
+                <span>Приезд от 15 минут</span> • <span>Гарантия выплат</span> • <span>Без цессий</span> • <span>Европротокол</span> • <span>Юридическая защита</span>
             </div>
+        </div>
+
+        <!-- Премиум Сетка Услуг (Bento) -->
+        <section class="section">
+            <h2 class="section-title reveal">Мы работаем на <br><span class="text-gradient">ваш результат</span></h2>
             
-            <div class="grid">
-                <!-- Карточка 1 -->
-                <article class="card reveal">
-                    <div class="card-icon-wrapper">
-                        <!-- Иконка Документ -->
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <div class="bento-grid">
+                <!-- Большая карточка (Акцент на деньги) -->
+                <article class="bento-card card-large reveal">
+                    <div>
+                        <div class="icon-box">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        </div>
+                        <h3>Расширенный <br>Европротокол</h3>
+                        <p>Оформляем ДТП с базовым лимитом до 100 000 ₽. Проводим профессиональную фотофиксацию и оформляем электронный протокол через Госуслуги, что увеличивает лимит выплат до <span class="amount-tag">400 000 ₽</span>.</p>
                     </div>
-                    <h3>Европротокол</h3>
-                    <p>Оформляем ДТП с лимитом <span class="highlight">до 100 000 ₽</span>. Делаем фотофиксацию и оформляем протокол через Госуслуги с лимитом <span class="highlight">до 400 000 ₽</span>.</p>
                 </article>
-                
-                <!-- Карточка 2 -->
-                <article class="card reveal">
-                    <div class="card-icon-wrapper">
-                        <!-- Иконка Деньги/Щит -->
-                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                    </div>
-                    <h3>Помощь с выплатами</h3>
-                    <p>Помогаем подать документы в страховую так, чтобы вы получили <span class="highlight">реальную сумму</span> на ремонт без искусственных занижений.</p>
-                </article>
-                
-                <!-- Карточка 3 -->
-                <article class="card reveal">
-                    <div class="card-icon-wrapper">
-                        <!-- Иконка Поддержка/Звезда -->
+
+                <!-- Маленькая 1 -->
+                <article class="bento-card card-small reveal" style="transition-delay: 0.1s;">
+                    <div class="icon-box">
                         <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                     </div>
-                    <h3>Полное сопровождение</h3>
-                    <p>Берем на себя всю бюрократию. Ведем дело от звонка с дороги до момента, когда деньги поступят на счет. Никаких очередей.</p>
+                    <h3>Экономия времени</h3>
+                    <p>Никаких очередей в ГИБДД. Всё решается прямо на месте аварии максимально быстро.</p>
                 </article>
-                
-                <!-- Карточка 4 -->
-                <article class="card reveal">
-                    <div class="card-icon-wrapper">
-                        <!-- Иконка Рукопожатие/Честность -->
+
+                <!-- Средняя 1 -->
+                <article class="bento-card card-medium reveal" style="transition-delay: 0.2s;">
+                    <div class="icon-box">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <h3>Оценка ущерба</h3>
+                    <p>Грамотно фиксируем все скрытые повреждения, чтобы страховая не смогла занизить сумму ремонта.</p>
+                </article>
+
+                <!-- Широкая (Акцент на честность) -->
+                <article class="bento-card card-wide reveal" style="transition-delay: 0.3s;">
+                    <div class="icon-box">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                     </div>
-                    <h3>Без цессий</h3>
-                    <p>Работаем в ваших интересах. Мы принципиально <span class="highlight">не выкупаем долги</span> за копейки. Наша цель — чтобы всю сумму получили вы.</p>
+                    <h3>Честно. Без цессий</h3>
+                    <p>Мы принципиально <strong>не выкупаем долги</strong> за копейки. Наша цель — полное юридическое сопровождение, чтобы всю положенную по закону сумму получили именно вы.</p>
                 </article>
+            </div>
+        </section>
+
+        <!-- Шаги работы -->
+        <section class="section">
+            <h2 class="section-title reveal">Как мы <span class="text-gradient">помогаем</span></h2>
+            <div class="steps-container">
+                <div class="step reveal">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h3>Вызов и приезд</h3>
+                        <p>Вы звоните нам. Экипаж выезжает немедленно и прибывает на место ДТП в среднем за 15–20 минут.</p>
+                    </div>
+                </div>
+                <div class="step reveal" style="transition-delay: 0.1s;">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h3>Защита и фиксация</h3>
+                        <p>Ограждаем место аварии, помогаем успокоиться. Делаем точные замеры и детальную фотофиксацию всех повреждений.</p>
+                    </div>
+                </div>
+                <div class="step reveal" style="transition-delay: 0.2s;">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h3>Оформление бумаг</h3>
+                        <p>Заполняем извещение о ДТП (Европротокол) без единой ошибки, чтобы у страховой не было повода для отказа.</p>
+                    </div>
+                </div>
+                <div class="step reveal" style="transition-delay: 0.3s;">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <h3>Получение денег</h3>
+                        <p>Консультируем по дальнейшим действиям. При необходимости предоставляем автоюриста для споров со страховой.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -369,30 +412,30 @@
     <!-- Подвал -->
     <footer>
         <div class="reveal">
-            <h2 class="footer-title">Попали в ДТП? Звоните прямо сейчас</h2>
-            <p style="color: var(--text-muted); font-size: 18px; margin-top: 10px;">Работаем 24/7. Приедем в любой район Воронежа.</p>
-            <a href="tel:+79518703934" class="footer-phone">+7 (951) 870-39-34</a>
-            <p class="copyright">© 2026 вызовдтп.рф — Аварийный комиссар Воронеж. Все права защищены.</p>
+            <div class="footer-cta">Попали в ДТП?</div>
+            <p style="color: var(--text-muted); font-size: 20px; margin-bottom: 30px;">Звоните, дежурный комиссар уже на связи.</p>
+            <a href="tel:+79518703934" class="massive-phone">+7 (951) 870-39-34</a>
+            <p style="color: #555; font-size: 14px; margin-top: 50px;">© 2026 вызовдтп.рф — Аварийный комиссар Воронеж.<br>Профессиональное оформление ДТП.</p>
         </div>
     </footer>
 
-    <!-- Плавающий мобильный док (Floating Action Bar) -->
+    <!-- Плавающий мобильный док (Только на телефонах) -->
     <div class="mobile-dock">
-        <a href="tel:+79518703934" class="btn btn-primary">
+        <a href="tel:+79518703934" class="dock-btn accent">
             <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
-            Вызвать
+            Позвонить
         </a>
-        <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-glass">
+        <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="dock-btn">
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h2v2H7zm8 0h2v2h-2zm-4 0h2v2h-2z"/></svg>
-            Чат
+            Чат MAX
         </a>
     </div>
 
-    <!-- Скрипты (Scroll Reveal + Изменение шапки при скролле) -->
+    <!-- Скрипты -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Эффект появления (Reveal)
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            // Эффект появления при скролле (Scroll Reveal)
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
             const observer = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -404,7 +447,7 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Изменение шапки при скролле
+            // Эффект сжатия шапки при скролле
             const header = document.getElementById('header');
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
@@ -412,6 +455,17 @@
                 } else {
                     header.classList.remove('scrolled');
                 }
+            });
+
+            // Эффект "подсветки" карточек при наведении мышкой (Glow effect)
+            document.querySelectorAll('.bento-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
             });
         });
     </script>
