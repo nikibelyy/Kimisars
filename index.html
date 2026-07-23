@@ -1,594 +1,419 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Базовые мета-теги -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ДТП СЕРВИС PRO — Осмотры и Договоры</title>
+    <title>Аварийный комиссар Воронеж | Оформление ДТП | вызовдтп.рф</title>
+    <meta name="description" content="Вызов аварийного комиссара в Воронеже. Быстрое оформление ДТП до 400 тыс. рублей (Госуслуги). Полное юридическое сопровождение, помощь с выплатами, без цессий. Приезд от 15 минут!">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ДТП СЕРВИС PRO">
-    <link class="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b5/1f/53/b51f536f-0c44-1d74-e4b1-ac6ed2352096/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        *, ::before, ::after { box-sizing: border-box; }
-
+        /* Современная палитра и переменные */
         :root {
-            --app-red: #FF3B30;
-            --app-red-hover: #E03027;
-            --app-red-glow: rgba(255, 59, 48, 0.25);
-            --app-gold: #FFD700;
-            --glass-bg: rgba(18, 18, 18, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-active: rgba(255, 59, 48, 0.4);
+            --bg-color: #050507;
+            --surface: rgba(20, 20, 25, 0.6);
+            --surface-hover: rgba(30, 30, 38, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            
+            --primary: #ff1e46;
+            --primary-dark: #cc1030;
+            --primary-glow: rgba(255, 30, 70, 0.5);
+            --primary-gradient: linear-gradient(135deg, #ff1e46, #ff6b3d);
+            
+            --text-main: #ffffff;
+            --text-muted: #9ba0aa;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            overflow-x: hidden;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            padding-bottom: calc(5rem + env(safe-area-inset-bottom));
-            padding-top: calc(1rem + env(safe-area-inset-top));
         }
 
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* АНИМИРОВАННЫЙ ФОН */
         .ambient-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            background: #000;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
         }
-        .ambient-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.25;
-            animation: float 14s infinite ease-in-out alternate;
+        .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(120px); opacity: 0.4;
+            animation: float 20s ease-in-out infinite alternate;
         }
-        .blob-1 { top: -10%; left: -10%; width: 60vw; height: 60vw; background: var(--app-red); }
-        .blob-2 { bottom: 5%; right: -10%; width: 70vw; height: 70vw; background: #660000; animation-delay: -4s; }
-        .blob-3 { top: 35%; left: 25%; width: 45vw; height: 45vw; background: #2b0000; animation-delay: -8s; }
-
+        .orb-1 {
+            width: 40vw; height: 40vw; background: var(--primary);
+            top: -10%; left: -10%; animation-duration: 25s;
+        }
+        .orb-2 {
+            width: 30vw; height: 30vw; background: #2a0845;
+            bottom: -10%; right: -10%; animation-duration: 20s; animation-direction: alternate-reverse;
+        }
+        .orb-3 {
+            width: 25vw; height: 25vw; background: #640d24;
+            top: 40%; left: 50%; animation-duration: 30s;
+        }
         @keyframes float {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(12%, 12%) scale(1.15); }
+            50% { transform: translate(10%, 15%) scale(1.1); }
+            100% { transform: translate(-10%, -5%) scale(0.9); }
         }
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        /* ШАПКА */
+        header {
+            position: fixed; width: 100%; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%;
+            background: rgba(5, 5, 7, 0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        header.scrolled { padding: 15px 5%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        .logo {
+            font-size: clamp(22px, 3vw, 28px); font-weight: 900;
+            letter-spacing: -0.5px; display: flex; align-items: center; gap: 5px;
+        }
+        .logo span {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .ios-input, .ios-select {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 12px 16px;
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.25s ease;
+        .header-phone {
+            font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;
+            text-decoration: none; color: var(--text-main); transition: var(--transition);
         }
-        .ios-input:focus, .ios-select:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--app-red);
-            box-shadow: 0 0 0 3px var(--app-red-glow);
+        .header-phone:hover { color: var(--primary); transform: scale(1.05); }
+        .header-phone svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* КНОПКИ */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 18px 36px; border-radius: 16px;
+            font-weight: 700; font-size: 16px;
+            cursor: pointer; transition: var(--transition);
+            text-decoration: none; border: none; position: relative;
+            overflow: hidden; gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient); color: #fff;
+            box-shadow: 0 10px 25px rgba(255, 30, 70, 0.3), inset 0 2px 0 rgba(255,255,255,0.2);
+        }
+        .btn-primary::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg) translateX(-100%); transition: 0.6s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px); box-shadow: 0 15px 35px var(--primary-glow);
+        }
+        .btn-primary:hover::after { transform: rotate(45deg) translateX(100%); }
+
+        .btn-glass {
+            background: var(--surface); color: #fff;
+            border: 1px solid var(--border); backdrop-filter: blur(10px);
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
         }
 
-        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 0.6;
+        /* ГЛАВНЫЙ ЭКРАН */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center;
+            padding: 120px 5% 80px; position: relative; z-index: 2;
+        }
+        .hero-content { max-width: 900px; }
+        .badge {
+            display: inline-block; padding: 8px 16px; border-radius: 30px;
+            background: rgba(255, 30, 70, 0.1); color: var(--primary);
+            border: 1px solid rgba(255, 30, 70, 0.3);
+            font-size: 14px; font-weight: 600; margin-bottom: 24px;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 72px); font-weight: 900;
+            line-height: 1.05; margin-bottom: 30px; letter-spacing: -1px;
+        }
+        .text-gradient {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: inline-block; filter: drop-shadow(0 0 15px rgba(255,30,70,0.3));
+        }
+        .hero p {
+            font-size: clamp(16px, 2vw, 20px); color: var(--text-muted);
+            margin-bottom: 45px; max-width: 650px; line-height: 1.8; font-weight: 500;
+        }
+        .btn-group { display: flex; gap: 20px; flex-wrap: wrap; }
+
+        /* УСЛУГИ (СЕТКА) */
+        .section { padding: 100px 5%; position: relative; z-index: 2; }
+        .section-header { text-align: center; margin-bottom: 70px; }
+        .section-title {
+            font-size: clamp(30px, 5vw, 48px); font-weight: 900;
+            margin-bottom: 20px; letter-spacing: -1px;
+        }
+        .section-subtitle {
+            color: var(--text-muted); font-size: clamp(16px, 2vw, 18px);
+            max-width: 700px; margin: 0 auto; line-height: 1.7;
         }
 
-        .btn-magic {
-            background: linear-gradient(135deg, var(--app-red), #990000);
-            color: white;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 15px;
-            box-shadow: 0 6px 20px rgba(255, 59, 48, 0.3);
-            transition: all 0.2s ease;
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;
         }
-        .btn-magic:active { transform: scale(0.98); }
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 45px 35px; border-radius: 28px; backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,30,70,0.15), transparent 60%);
+            opacity: 0; transition: var(--transition);
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 30, 70, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,30,70,0.15);
+        }
+        .card:hover::before { opacity: 1; }
 
-        .btn-gold {
-            background: linear-gradient(135deg, #FFD700, #B8860B);
-            color: #000;
-            font-weight: 800;
+        .card-icon-wrapper {
+            width: 70px; height: 70px; border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 25px; transition: var(--transition);
         }
+        .card:hover .card-icon-wrapper {
+            background: var(--primary-gradient); border-color: transparent;
+            box-shadow: 0 10px 20px rgba(255, 30, 70, 0.3);
+        }
+        .card-icon-wrapper svg {
+            width: 32px; height: 32px; fill: var(--primary); transition: var(--transition);
+        }
+        .card:hover .card-icon-wrapper svg { fill: #fff; }
 
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            transition: all 0.2s ease;
-        }
-        .call-btn { background: rgba(255, 255, 255, 0.08); color: #fff; }
-        .sms-btn { background: rgba(255, 59, 48, 0.15); color: #FF3B30; }
-        .wa-btn { background: rgba(37, 211, 102, 0.15); color: #25D366; }
-        .delete-btn { background: rgba(255, 59, 48, 0.08); color: var(--app-red); }
+        .card h3 { font-size: 22px; font-weight: 800; margin-bottom: 15px; position: relative; z-index: 1; }
+        .card p { color: var(--text-muted); font-size: 16px; line-height: 1.7; position: relative; z-index: 1; }
+        .highlight { color: #fff; font-weight: 700; }
 
-        .plate-badge {
-            background: #fff;
-            color: #000;
-            border: 1px solid #000;
-            border-radius: 4px;
-            font-family: monospace;
-            padding: 0px 5px;
-            font-weight: bold;
+        /* ПОДВАЛ */
+        footer {
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px);
+            padding: 100px 5% 50px; text-align: center; border-top: 1px solid var(--border);
+            position: relative; z-index: 2; padding-bottom: 120px; /* Для мобильного дока */
         }
+        .footer-title { font-size: clamp(28px, 4vw, 40px); font-weight: 900; margin-bottom: 15px; }
+        .footer-phone {
+            font-size: clamp(40px, 6vw, 70px); font-weight: 900; display: inline-block;
+            margin: 30px 0; background: var(--text-main);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: var(--transition); position: relative; text-decoration: none;
+        }
+        .footer-phone:hover { background: var(--primary-gradient); -webkit-background-clip: text; transform: scale(1.02); }
+        .copyright { color: #555; font-size: 14px; font-weight: 500; margin-top: 50px; }
 
-        .fade-in-up {
-            animation: fadeInUp 0.4s ease forwards;
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        /* АНИМАЦИИ ПОЯВЛЕНИЯ (SCROLL REVEAL) */
+        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Задержки для сетки */
+        .grid .card:nth-child(1) { transition-delay: 0.1s; }
+        .grid .card:nth-child(2) { transition-delay: 0.2s; }
+        .grid .card:nth-child(3) { transition-delay: 0.3s; }
+        .grid .card:nth-child(4) { transition-delay: 0.4s; }
 
-        /* Кастомный красивый слайдер */
-        input[type=range] {
-            -webkit-appearance: none;
-            background: rgba(255,255,255,0.1);
-            height: 6px;
-            border-radius: 3px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: var(--app-red);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255,59,48,0.5);
+        /* МОБИЛЬНЫЙ ДОК (iOS Style) */
+        .mobile-dock { display: none; }
+
+        @media (max-width: 768px) {
+            .header-phone { display: none; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn { width: 100%; }
+            .section { padding: 80px 5%; }
+            .card { padding: 35px 25px; }
+            
+            /* Плавающий док снизу */
+            .mobile-dock {
+                display: flex; position: fixed; bottom: 20px; left: 5%; width: 90%;
+                background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                padding: 8px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(255, 30, 70, 0.15);
+                gap: 8px; z-index: 1000;
+                /* Анимация всплытия дока */
+                animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            
+            .mobile-dock .btn {
+                flex: 1; padding: 14px 10px; font-size: 14px; border-radius: 18px;
+            }
+            .mobile-dock svg { width: 18px; height: 18px; fill: currentColor; }
+            
+            /* Фикс hover для тач-скринов */
+            .card:hover { transform: none; box-shadow: none; border-color: var(--border); }
+            .card:active { transform: scale(0.97); border-color: var(--primary); }
         }
     </style>
 </head>
-<body class="max-w-md mx-auto px-4">
+<body>
 
+    <!-- Фоновые частицы/сферы -->
     <div class="ambient-bg">
-        <div class="ambient-blob blob-1"></div>
-        <div class="ambient-blob blob-2"></div>
-        <div class="ambient-blob blob-3"></div>
-    </div>
-
-    <!-- Верхний бар подписки -->
-    <div id="sub-bar" class="mb-4 mt-2 p-2.5 glass-card flex items-center justify-between border-yellow-500/30">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-crown text-yellow-400 text-sm"></i>
-            <span id="sub-status-text" class="text-xs font-semibold text-yellow-200">Тариф: FREE (Лимит 3 клиента)</span>
-        </div>
-        <button onclick="openPaywall()" class="px-3 py-1 bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-xs font-bold rounded-lg shadow-lg">PRO Доступ</button>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
 
     <!-- Шапка -->
-    <header class="px-1 mb-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-900 flex items-center justify-center shadow-lg shadow-red-600/30">
-                <i class="fa-solid fa-car-burst text-white text-lg"></i>
-            </div>
-            <div>
-                <h1 class="text-xl font-black tracking-tight text-white">ДТП СЕРВИС <span class="text-red-500 text-xs">PRO</span></h1>
-                <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">Учет осмотров и договоров</p>
-            </div>
-        </div>
-        <button onclick="exportExcel()" class="action-btn call-btn !w-10 !h-10 border border-white/10" title="Экспорт Excel">
-            <i class="fa-solid fa-file-excel text-green-400"></i>
-        </button>
+    <header id="header">
+        <div class="logo">Вызов<span class="text-gradient">ДТП</span>.рф</div>
+        <a href="tel:+79518703934" class="header-phone">
+            <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+            +7 (951) 870-39-34
+        </a>
     </header>
 
-    <!-- Финансовая статистика -->
-    <div class="grid grid-cols-3 gap-2 mb-4">
-        <div class="glass-card p-3 text-center">
-            <p class="text-white/40 text-[9px] uppercase font-bold">Осмотров</p>
-            <p class="text-lg font-bold text-white mt-0.5" id="stat-count">0</p>
-        </div>
-        <div class="glass-card p-3 text-center">
-            <p class="text-white/40 text-[9px] uppercase font-bold">Портфель</p>
-            <p class="text-xs font-bold text-emerald-400 mt-1" id="stat-volume">0 ₽</p>
-        </div>
-        <div class="glass-card p-3 text-center">
-            <p class="text-white/40 text-[9px] uppercase font-bold">Доход комиссии</p>
-            <p class="text-xs font-bold text-red-400 mt-1" id="stat-revenue">0 ₽</p>
-        </div>
-    </div>
-
-    <!-- Форма записи клиента -->
-    <section class="mb-5">
-        <div class="glass-card p-4 space-y-3 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-600 via-red-400 to-red-600"></div>
-            
-            <div>
-                <label class="block text-[10px] uppercase font-bold tracking-wider text-white/40 mb-1">Дата и время осмотра</label>
-                <input type="datetime-local" id="inspectionDate" class="ios-input !py-2.5">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="name" placeholder="ФИО клиента" class="ios-input !text-xs">
-                <input type="tel" id="phone" placeholder="+7 (999) 000-00-00" class="ios-input !text-xs">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="carMake" placeholder="Марка авто" class="ios-input !text-xs">
-                <input type="text" id="plate" placeholder="Гос. номер" class="ios-input !text-xs uppercase">
-            </div>
-
-            <!-- Раздел Договора и Комиссии (PRO Фича) -->
-            <div class="p-3 bg-white/5 rounded-xl border border-white/10 space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-red-400 uppercase tracking-wider"><i class="fa-solid fa-file-contract mr-1"></i> Тип договора</span>
-                    <select id="dealType" onchange="toggleDealFields()" class="ios-select !w-auto !py-1 !px-2 !text-xs">
-                        <option value="none">Без договора (Только осмотр)</option>
-                        <option value="cession">Цессия (Выкуп права)</option>
-                        <option value="agency">Агентский договор</option>
-                    </select>
-                </div>
-
-                <div id="deal-calculator" class="hidden space-y-3 pt-2 border-t border-white/5">
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="text-white/60">Размер комиссии:</span>
-                            <span class="font-bold text-red-400" id="commissionValue">20%</span>
-                        </div>
-                        <input type="range" id="commissionRate" min="15" max="30" value="20" oninput="updateCalculations()" class="w-full">
-                    </div>
-
-                    <div>
-                        <input type="number" id="claimAmount" oninput="updateCalculations()" placeholder="Оценочная сумма ущерба (₽)" class="ios-input !text-xs">
-                    </div>
-
-                    <div class="p-2.5 bg-black/40 rounded-lg text-xs flex justify-between items-center font-mono">
-                        <div>
-                            <span class="text-white/40 block text-[9px]">ВЫПЛАТА КЛИЕНТУ:</span>
-                            <span class="text-emerald-400 font-bold" id="clientPayout">0 ₽</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-white/40 block text-[9px]">ДОХОД СЕРВИСА:</span>
-                            <span class="text-red-400 font-bold" id="companyRevenue">0 ₽</span>
-                        </div>
-                    </div>
+    <main>
+        <!-- Главный экран -->
+        <section class="hero">
+            <div class="hero-content reveal">
+                <div class="badge">Приезд от 15 минут</div>
+                <h1>Оформление ДТП <br><span class="text-gradient">без участия ГИБДД</span></h1>
+                <p>Грамотно оформлю документы, защищу от мошенников и помогу получить максимальную выплату от страховой. Полное юридическое сопровождение под ключ в Воронеже.</p>
+                <div class="btn-group">
+                    <a href="tel:+79518703934" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+                        Вызвать комиссара
+                    </a>
+                    <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-glass">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h2v2H7zm8 0h2v2h-2zm-4 0h2v2h-2z"/></svg>
+                        Написать в чат
+                    </a>
                 </div>
             </div>
+        </section>
+
+        <!-- Услуги -->
+        <section class="section">
+            <div class="section-header reveal">
+                <h2 class="section-title">Работаем на <span class="text-gradient">ваш результат</span></h2>
+                <p class="section-subtitle">Мы не просто рисуем схему. Мы комплексно решаем проблему, защищаем от ошибок и гарантируем правильность оформления для страховой.</p>
+            </div>
             
-            <button onclick="saveClient()" class="w-full btn-magic flex items-center justify-center gap-2">
-                <i class="fa-solid fa-plus-circle"></i>
-                Записать & Сформировать SMS
-            </button>
-        </div>
-    </section>
+            <div class="grid">
+                <!-- Карточка 1 -->
+                <article class="card reveal">
+                    <div class="card-icon-wrapper">
+                        <!-- Иконка Документ -->
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    </div>
+                    <h3>Европротокол</h3>
+                    <p>Оформляем ДТП с лимитом <span class="highlight">до 100 000 ₽</span>. Делаем фотофиксацию и оформляем протокол через Госуслуги с лимитом <span class="highlight">до 400 000 ₽</span>.</p>
+                </article>
+                
+                <!-- Карточка 2 -->
+                <article class="card reveal">
+                    <div class="card-icon-wrapper">
+                        <!-- Иконка Деньги/Щит -->
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <h3>Помощь с выплатами</h3>
+                    <p>Помогаем подать документы в страховую так, чтобы вы получили <span class="highlight">реальную сумму</span> на ремонт без искусственных занижений.</p>
+                </article>
+                
+                <!-- Карточка 3 -->
+                <article class="card reveal">
+                    <div class="card-icon-wrapper">
+                        <!-- Иконка Поддержка/Звезда -->
+                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    </div>
+                    <h3>Полное сопровождение</h3>
+                    <p>Берем на себя всю бюрократию. Ведем дело от звонка с дороги до момента, когда деньги поступят на счет. Никаких очередей.</p>
+                </article>
+                
+                <!-- Карточка 4 -->
+                <article class="card reveal">
+                    <div class="card-icon-wrapper">
+                        <!-- Иконка Рукопожатие/Честность -->
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    </div>
+                    <h3>Без цессий</h3>
+                    <p>Работаем в ваших интересах. Мы принципиально <span class="highlight">не выкупаем долги</span> за копейки. Наша цель — чтобы всю сумму получили вы.</p>
+                </article>
+            </div>
+        </section>
+    </main>
 
-    <!-- Фильтры и поиск -->
-    <div class="mb-3 space-y-2">
-        <div class="relative">
-            <input type="text" id="search-input" oninput="render()" placeholder="Поиск по ФИО, номеру или авто..." class="ios-input pl-10 pr-4 !py-2.5 !text-xs">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30 text-xs"></i>
+    <!-- Подвал -->
+    <footer>
+        <div class="reveal">
+            <h2 class="footer-title">Попали в ДТП? Звоните прямо сейчас</h2>
+            <p style="color: var(--text-muted); font-size: 18px; margin-top: 10px;">Работаем 24/7. Приедем в любой район Воронежа.</p>
+            <a href="tel:+79518703934" class="footer-phone">+7 (951) 870-39-34</a>
+            <p class="copyright">© 2026 вызовдтп.рф — Аварийный комиссар Воронеж. Все права защищены.</p>
         </div>
+    </footer>
 
-        <div class="flex gap-1 overflow-x-auto pb-1 text-[11px]">
-            <button onclick="setFilter('all')" class="filter-btn active px-3 py-1.5 rounded-lg bg-red-600 text-white font-semibold">Все</button>
-            <button onclick="setFilter('cession')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Цессия</button>
-            <button onclick="setFilter('agency')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Агентские</button>
-            <button onclick="setFilter('none')" class="filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10">Осмотры</button>
-        </div>
+    <!-- Плавающий мобильный док (Floating Action Bar) -->
+    <div class="mobile-dock">
+        <a href="tel:+79518703934" class="btn btn-primary">
+            <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+            Вызвать
+        </a>
+        <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-glass">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/><path d="M7 9h2v2H7zm8 0h2v2h-2zm-4 0h2v2h-2z"/></svg>
+            Чат
+        </a>
     </div>
 
-    <!-- Список клиентов -->
-    <div id="clients-list" class="space-y-3"></div>
-
-    <!-- МОДАЛЬНОЕ ОКНО ОПЛАТЫ / PRO ПОДПИСКА -->
-    <div id="paywall-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card p-6 w-full max-w-sm text-center relative border-yellow-500/40">
-            <button onclick="closePaywall()" class="absolute top-4 right-4 text-white/40 active:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            
-            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-500 to-amber-300 mx-auto flex items-center justify-center text-black text-2xl font-bold mb-3 shadow-lg shadow-yellow-500/20">
-                <i class="fa-solid fa-crown"></i>
-            </div>
-
-            <h3 class="text-xl font-black text-white">Перейдите на PRO</h3>
-            <p class="text-xs text-white/60 mt-1 mb-4">Разблокируйте неограниченный учет договоров Цессии и Агентских комиссий от 15% до 30%.</p>
-
-            <div class="space-y-2 text-left text-xs mb-5">
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Безлимитное добавление клиентов</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Калькулятор Цессии и Агентского договора (15-30%)</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Отправка КП в WhatsApp в 1 клик</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Полный финансовый экспорт в Excel</div>
-            </div>
-
-            <div class="space-y-2">
-                <button onclick="activateProDemo()" class="w-full btn-magic btn-gold py-3">
-                    Активировать PRO (Тестовый доступ)
-                </button>
-                <p class="text-[9px] text-white/30">Нажмите для бесплатной активации в демо-режиме</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast уведомления -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-5 py-3 rounded-xl shadow-2xl font-semibold text-xs transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2">
-        <i id="toast-icon" class="fa-solid fa-circle-exclamation"></i>
-        <span id="toast-message">Ошибка</span>
-    </div>
-
+    <!-- Скрипты (Scroll Reveal + Изменение шапки при скролле) -->
     <script>
-        // Состояние приложения
-        let inspections = JSON.parse(localStorage.getItem('dtp_pro_inspections')) || [];
-        let isProStatus = localStorage.getItem('dtp_pro_status') === 'true';
-        let currentFilter = 'all';
+        document.addEventListener("DOMContentLoaded", function() {
+            // Эффект появления (Reveal)
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
 
-        const INSPECTION_ADDRESS = "ул. Карпинского, д. 39";
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Форматирование телефона
-        document.getElementById('phone').addEventListener('input', function (e) {
-            let input = e.target.value.replace(/\D/g, '');
-            if (!input) { e.target.value = ''; return; }
-            if (input.startsWith('7') || input.startsWith('8')) input = input.substring(1);
-            input = input.substring(0, 10);
-            let formatted = '+7';
-            if (input.length > 0) formatted += ' (' + input.substring(0, 3);
-            if (input.length >= 4) formatted += ') ' + input.substring(3, 6);
-            if (input.length >= 7) formatted += '-' + input.substring(6, 8);
-            if (input.length >= 9) formatted += '-' + input.substring(8, 10);
-            e.target.value = formatted;
-        });
-
-        function showToast(message, type = 'error') {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = message;
-            document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
-            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'} text-white px-5 py-3 rounded-xl shadow-2xl font-semibold text-xs transition-all duration-300 transform translate-y-0 opacity-100 z-50 flex items-center gap-2`;
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 2500);
-        }
-
-        // Подписка & PRO Логика
-        function updateSubUI() {
-            const statusText = document.getElementById('sub-status-text');
-            if (isProStatus) {
-                statusText.innerText = "Тариф: PRO Пакет (Безлимит)";
-                statusText.className = "text-xs font-semibold text-emerald-400";
-            } else {
-                statusText.innerText = `Тариф: FREE (${inspections.length}/3 клиентов)`;
-                statusText.className = "text-xs font-semibold text-yellow-200";
-            }
-        }
-
-        function openPaywall() { document.getElementById('paywall-modal').classList.remove('hidden'); }
-        function closePaywall() { document.getElementById('paywall-modal').classList.add('hidden'); }
-        
-        function activateProDemo() {
-            isProStatus = true;
-            localStorage.setItem('dtp_pro_status', 'true');
-            updateSubUI();
-            closePaywall();
-            showToast('PRO Доступ успешно активирован!', 'success');
-        }
-
-        // Переключение полей договора
-        function toggleDealFields() {
-            const type = document.getElementById('dealType').value;
-            const calcBox = document.getElementById('deal-calculator');
-            if (type === 'none') {
-                calcBox.classList.add('hidden');
-            } else {
-                calcBox.classList.remove('hidden');
-                updateCalculations();
-            }
-        }
-
-        function updateCalculations() {
-            const rate = document.getElementById('commissionRate').value;
-            const claim = parseFloat(document.getElementById('claimAmount').value) || 0;
-            
-            document.getElementById('commissionValue').innerText = rate + '%';
-            
-            const companyRev = (claim * (rate / 100));
-            const clientPay = claim - companyRev;
-
-            document.getElementById('companyRevenue').innerText = companyRev.toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('clientPayout').innerText = clientPay.toLocaleString('ru-RU') + ' ₽';
-        }
-
-        function saveClient() {
-            // Проверка подписки
-            if (!isProStatus && inspections.length >= 3) {
-                openPaywall();
-                return;
-            }
-
-            const date = document.getElementById('inspectionDate').value;
-            const name = document.getElementById('name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const car = document.getElementById('carMake').value.trim() || 'Не указано';
-            const plate = document.getElementById('plate').value.trim().toUpperCase() || '—';
-            
-            const dealType = document.getElementById('dealType').value;
-            const commissionRate = parseInt(document.getElementById('commissionRate').value);
-            const claimAmount = parseFloat(document.getElementById('claimAmount').value) || 0;
-
-            if (!date || !name || !phone) {
-                showToast('Заполните дату, ФИО и телефон!');
-                return;
-            }
-
-            const newClient = {
-                id: Date.now(),
-                date, name, phone, car, plate,
-                dealType, commissionRate, claimAmount,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-
-            inspections.unshift(newClient);
-            localStorage.setItem('dtp_pro_inspections', JSON.stringify(inspections));
-
-            // Очистить форму
-            document.getElementById('name').value = '';
-            document.getElementById('phone').value = '';
-            document.getElementById('carMake').value = '';
-            document.getElementById('plate').value = '';
-            document.getElementById('claimAmount').value = '';
-
-            // Отправка SMS
-            sendSMS(newClient);
-            render();
-            updateSubUI();
-        }
-
-        function sendSMS(c) {
-            const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-            let msg = `Здравствуйте, ${c.name}! Осмотр авто ${c.car} (${c.plate}) назначен на ${dateStr}. Адрес: ${INSPECTION_ADDRESS}.`;
-            
-            if (c.dealType === 'cession') msg += ` Вариант оформления: Выкуп прав (Цессия).`;
-            if (c.dealType === 'agency') msg += ` Вариант: Агентское сопровождение (${c.commissionRate}%).`;
-
-            window.location.href = `sms:${c.phone.replace(/\D/g, '')}&body=${encodeURIComponent(msg)}`;
-        }
-
-        function sendWhatsApp(id) {
-            const c = inspections.find(item => item.id === id);
-            if (!c) return;
-            const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-            
-            let text = `Добрый день, ${c.name}!\nПодтверждаем запись на осмотр ТС ${c.car} (${c.plate})\n📅 Дата/время: ${dateStr}\n📍 Адрес: ${INSPECTION_ADDRESS}`;
-            
-            if (c.dealType !== 'none') {
-                const companyRev = (c.claimAmount * (c.commissionRate / 100));
-                const clientPay = c.claimAmount - companyRev;
-                text += `\n\nУсловия договора (${c.dealType === 'cession' ? 'Цессия' : 'Агентский'}):\n- Сумма ущерба: ${c.claimAmount.toLocaleString()} ₽\n- Выплата вам: ${clientPay.toLocaleString()} ₽\n- Комиссия: ${c.commissionRate}%`;
-            }
-
-            window.open(`https://wa.me/${c.phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function setFilter(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = 'filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-white/60 font-semibold border border-white/10';
-            });
-            event.target.className = 'filter-btn active px-3 py-1.5 rounded-lg bg-red-600 text-white font-semibold';
-            render();
-        }
-
-        function deleteClient(id) {
-            inspections = inspections.filter(c => c.id !== id);
-            localStorage.setItem('dtp_pro_inspections', JSON.stringify(inspections));
-            render();
-            updateSubUI();
-            showToast('Запись удалена', 'success');
-        }
-
-        function render() {
-            const list = document.getElementById('clients-list');
-            const search = document.getElementById('search-input').value.toLowerCase();
-
-            let filtered = inspections.filter(c => {
-                const matchSearch = c.name.toLowerCase().includes(search) || c.phone.includes(search) || c.car.toLowerCase().includes(search);
-                const matchFilter = currentFilter === 'all' || c.dealType === currentFilter;
-                return matchSearch && matchFilter;
-            });
-
-            // Расчет статистики
-            let totalVolume = 0;
-            let totalRevenue = 0;
-            inspections.forEach(c => {
-                if (c.dealType !== 'none') {
-                    totalVolume += c.claimAmount;
-                    totalRevenue += (c.claimAmount * (c.commissionRate / 100));
+            // Изменение шапки при скролле
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
                 }
             });
-
-            document.getElementById('stat-count').innerText = inspections.length;
-            document.getElementById('stat-volume').innerText = totalVolume.toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('ru-RU') + ' ₽';
-
-            if (filtered.length === 0) {
-                list.innerHTML = `<p class="text-center text-white/30 text-xs py-8">Клиенты не найдены</p>`;
-                return;
-            }
-
-            list.innerHTML = filtered.map((c, i) => {
-                const dateStr = new Date(c.date).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                
-                let dealBadge = '<span class="px-2 py-0.5 rounded bg-white/10 text-white/50 text-[9px]">Без договора</span>';
-                if (c.dealType === 'cession') dealBadge = `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">Цессия (${c.commissionRate}%)</span>`;
-                if (c.dealType === 'agency') dealBadge = `<span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-[9px] font-bold">Агентский (${c.commissionRate}%)</span>`;
-
-                const companyRev = (c.claimAmount * (c.commissionRate / 100));
-
-                return `
-                <div class="glass-card p-3.5 fade-in-up space-y-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="flex items-center gap-2 mb-0.5">
-                                <span class="text-xs font-bold text-red-400">${dateStr}</span>
-                                ${dealBadge}
-                            </div>
-                            <h4 class="font-bold text-sm text-white">${c.name}</h4>
-                            <a href="tel:${c.phone}" class="text-xs text-white/50 font-mono">${c.phone}</a>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <button onclick="sendWhatsApp(${c.id})" class="action-btn wa-btn" title="Написать в WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
-                            <button onclick="sendSMS(inspections.find(x=>x.id===${c.id}))" class="action-btn sms-btn" title="Отправить SMS"><i class="fa-solid fa-comment-sms"></i></button>
-                            <button onclick="deleteClient(${c.id})" class="action-btn delete-btn"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-between items-center text-xs pt-2 border-t border-white/5">
-                        <div class="flex items-center gap-2">
-                            <span class="text-white/60">${c.car}</span>
-                            ${c.plate !== '—' ? `<span class="plate-badge text-[10px]">${c.plate}</span>` : ''}
-                        </div>
-                        ${c.dealType !== 'none' ? `
-                            <div class="text-right font-mono text-[11px]">
-                                <span class="text-white/40">Доход:</span>
-                                <span class="text-emerald-400 font-bold">${companyRev.toLocaleString()} ₽</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function exportExcel() {
-            if (inspections.length === 0) return showToast('Нет данных!');
-            const data = inspections.map(c => ({
-                'Дата осмотра': c.date,
-                'Клиент': c.name,
-                'Телефон': c.phone,
-                'Автомобиль': c.car,
-                'Гос. номер': c.plate,
-                'Тип договора': c.dealType,
-                'Комиссия %': c.commissionRate,
-                'Сумма ущерба': c.claimAmount,
-                'Выплата клиенту': c.claimAmount - (c.claimAmount * (c.commissionRate / 100)),
-                'Доход сервиса': (c.claimAmount * (c.commissionRate / 100))
-            }));
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Договоры и Осмотры");
-            XLSX.writeFile(wb, `Отчет_ДТП_Сервис_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showToast('Excel сгенерирован!', 'success');
-        }
-
-        // Старт
-        updateSubUI();
-        render();
+        });
     </script>
 </body>
 </html>
