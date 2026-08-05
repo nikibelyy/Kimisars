@@ -1,464 +1,446 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <title>Аварийный комиссар Воронеж | Высший класс оформления ДТП</title>
-    <meta name="description" content="Премиальный сервис оформления ДТП в Воронеже. Выезд за 15 минут, Европротокол до 400 тыс. руб., защита от мошенников и гарантия выплат.">
-    
-    <!-- Шрифты -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-base: #050508;
-            --surface-color: rgba(20, 20, 26, 0.4);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 30, 70, 0.35);
-            
-            --brand-red: #ff1e46;
-            --brand-orange: #ff5e00;
-            --brand-glow: rgba(255, 30, 70, 0.5);
-            
-            --text-main: #f5f5f7;
-            --text-muted: #8e8e9f;
-            
-            --gradient-neon: linear-gradient(135deg, var(--brand-red), var(--brand-orange));
-            --easing: cubic-bezier(0.22, 1, 0.36, 1);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Помощь животным — ЮMoney</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8b3dff;
+      --primary-hover: #7322f2;
+      --primary-glow: rgba(139, 61, 255, 0.45);
+      --bg-gradient: linear-gradient(135deg, #0e091e 0%, #1c103b 50%, #2b0b46 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text-main: #1c1c1e;
+      --text-muted: #6e6e73;
+      --accent-green: #30d158;
+    }
 
-        /* Полный сброс и защита от выхода за края */
-        *, *::before, *::after {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        html, body {
-            overflow-x: hidden;
-            width: 100%;
-            max-width: 100vw;
-        }
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 16px;
+      color: var(--text-main);
+      position: relative;
+      overflow-x: hidden;
+    }
 
-        body {
-            background-color: var(--bg-base);
-            background-image: radial-gradient(circle at 50% 0%, rgba(30, 15, 20, 0.5) 0%, transparent 70%);
-            color: var(--text-main);
-            font-family: 'Manrope', sans-serif;
-            line-height: 1.5;
-            position: relative;
-        }
+    /* Фоновые свечения */
+    .bg-glow-1, .bg-glow-2 {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+      pointer-events: none;
+      animation: float 8s ease-in-out infinite alternate;
+    }
 
-        /* 1. КИНЕМАТОГРАФИЧЕСКИЙ ШУМ */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 9999; opacity: 0.035;
-            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-        }
+    .bg-glow-1 {
+      width: 320px;
+      height: 320px;
+      background: rgba(139, 61, 255, 0.35);
+      top: -40px;
+      left: -40px;
+    }
 
-        /* 2. АБСТРАКТНЫЙ ФОН */
-        .glow-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-        }
-        .glow-bg::after {
-            content: ''; position: absolute; top: -10%; right: -20%;
-            width: 80vmin; height: 80vmin;
-            background: radial-gradient(circle, rgba(255,30,70,0.12) 0%, transparent 60%);
-            filter: blur(80px);
-        }
-        .glow-bg::before {
-            content: ''; position: absolute; bottom: -10%; left: -20%;
-            width: 70vmin; height: 70vmin;
-            background: radial-gradient(circle, rgba(255,94,0,0.08) 0%, transparent 60%);
-            filter: blur(80px);
-        }
+    .bg-glow-2 {
+      width: 360px;
+      height: 360px;
+      background: rgba(255, 107, 107, 0.25);
+      bottom: -60px;
+      right: -60px;
+      animation-delay: -4s;
+    }
 
-        /* 3. DYNAMIC ISLAND ШАПКА */
-        header {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 24px); max-width: 1100px; z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 12px 8px 20px; border-radius: 40px;
-            background: rgba(12, 12, 16, 0.75);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            transition: all 0.4s var(--easing);
-        }
-        header.scrolled {
-            top: 10px; background: rgba(10, 10, 14, 0.9);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 20px rgba(255, 30, 70, 0.15);
-        }
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 40px) scale(1.1); }
+    }
 
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(16px, 3.5vw, 20px); font-weight: 900; letter-spacing: -0.5px;
-            text-transform: uppercase;
-        }
-        .text-gradient {
-            background: var(--gradient-neon);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+    .container {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
 
-        /* Кнопки в острове */
-        .header-actions {
-            display: flex; align-items: center; gap: 8px;
-        }
-        .island-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 700;
-            text-decoration: none; color: #fff; background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s var(--easing);
-            white-space: nowrap;
-        }
-        .island-btn svg { width: 15px; height: 15px; fill: currentColor; }
-        .island-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.02); }
-        
-        .island-btn.call {
-            background: var(--gradient-neon);
-            border: none;
-            box-shadow: 0 4px 15px rgba(255, 30, 70, 0.4);
-        }
-        .island-btn.call:hover {
-            box-shadow: 0 6px 20px var(--brand-glow);
-            transform: scale(1.03);
-        }
+    /* Карточка формы */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 
+                  0 0 0 1px rgba(255, 255, 255, 0.15);
+      animation: cardAppear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-        /* ОБЩИЕ КНОПКИ */
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            padding: 16px 30px; border-radius: 100px; font-weight: 700; font-size: 16px;
-            cursor: pointer; text-decoration: none; transition: all 0.4s var(--easing);
-            position: relative; overflow: hidden; border: none; z-index: 1; text-align: center;
-        }
-        .btn-primary { background: var(--text-main); color: var(--bg-base); }
-        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 10px 30px rgba(255,255,255,0.15); }
-        
-        .btn-neon { background: var(--gradient-neon); color: #fff; }
-        .btn-neon::before {
-            content: ''; position: absolute; inset: 0; background: inherit; 
-            filter: blur(12px); z-index: -1; opacity: 0.5; transition: 0.4s;
-        }
-        .btn-neon:hover { transform: scale(1.03); }
-        .btn-neon:hover::before { opacity: 1; filter: blur(20px); }
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
-        /* 4. ГЛАВНЫЙ ЭКРАН */
-        .hero {
-            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-            padding: 140px 5% 80px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;
-        }
-        .tagline {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 8px 16px; border-radius: 100px; background: rgba(255, 30, 70, 0.1);
-            border: 1px solid rgba(255, 30, 70, 0.2); color: var(--brand-red);
-            font-size: clamp(11px, 3vw, 13px); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            margin-bottom: 25px;
-        }
-        .tagline .pulse {
-            width: 8px; height: 8px; background: var(--brand-red); border-radius: 50%;
-            box-shadow: 0 0 10px var(--brand-red); animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
+    /* Шапка */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-        .hero h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(32px, 8vw, 85px); font-weight: 900;
-            line-height: 1.1; letter-spacing: -1px; margin-bottom: 25px;
-        }
-        .hero p {
-            font-size: clamp(15px, 4vw, 22px); color: var(--text-muted);
-            max-width: 650px; line-height: 1.6; margin-bottom: 40px; font-weight: 500;
-        }
-        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(139, 61, 255, 0.1);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      border: 1px solid rgba(139, 61, 255, 0.2);
+    }
 
-        /* 5. БЕГУЩАЯ СТРОКА */
-        .marquee-container {
-            width: 100%; overflow: hidden; position: relative; z-index: 10;
-            background: var(--gradient-neon); padding: 15px 0;
-            transform: rotate(-2deg) scale(1.05);
-            box-shadow: 0 15px 40px rgba(255, 30, 70, 0.15);
-        }
-        .marquee {
-            display: flex; white-space: nowrap; width: max-content;
-            animation: marqueeText 20s linear infinite;
-        }
-        .marquee span {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(16px, 4vw, 22px); font-weight: 900;
-            color: #fff; text-transform: uppercase; letter-spacing: 1.5px;
-            padding: 0 15px; display: inline-flex; align-items: center; gap: 30px;
-        }
-        @keyframes marqueeText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .badge-icon {
+      font-size: 14px;
+      animation: pulse 2s infinite;
+    }
 
-        /* ОБЩИЕ СТИЛИ СЕКЦИЙ */
-        .section { padding: 100px 5%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
-        .section-title {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(28px, 6.5vw, 55px);
-            font-weight: 900; letter-spacing: -1px; margin-bottom: 50px; line-height: 1.15;
-        }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
 
-        /* 6. СЕТКА БЕНТО */
-        .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
-        .bento-card {
-            background: var(--surface-color); border: 1px solid var(--border-color);
-            border-radius: 28px; padding: 35px; backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px); position: relative; overflow: hidden;
-            transition: all 0.4s var(--easing); display: flex; flex-direction: column; justify-content: space-between;
-        }
-        
-        .card-large { grid-column: span 8; min-height: 320px; background: linear-gradient(145deg, rgba(30,30,35,0.5), rgba(10,10,14,0.7)); }
-        .card-small { grid-column: span 4; }
-        .card-medium { grid-column: span 5; }
-        .card-wide { grid-column: span 7; }
+    .title {
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #111;
+      margin-bottom: 8px;
+    }
 
-        .bento-card:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
 
-        .icon-box {
-            width: 55px; height: 55px; border-radius: 18px; background: rgba(255,255,255,0.04);
-            display: flex; align-items: center; justify-content: center; margin-bottom: 25px;
-            border: 1px solid var(--border-color); transition: 0.3s;
-        }
-        .bento-card:hover .icon-box { background: rgba(255,30,70,0.1); border-color: rgba(255,30,70,0.3); }
-        .icon-box svg { width: 26px; height: 26px; fill: var(--brand-red); }
+    /* Быстрый выбор сумм */
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
 
-        .bento-card h3 { font-size: clamp(18px, 4.5vw, 26px); font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
-        .bento-card p { color: var(--text-muted); font-size: clamp(14px, 3.5vw, 16px); line-height: 1.6; }
-        .card-large h3 { font-size: clamp(24px, 5.5vw, 36px); }
-        .amount-tag {
-            display: inline-block; background: var(--brand-red); color: #fff;
-            padding: 3px 10px; border-radius: 8px; font-weight: 800; transform: rotate(-2deg);
-        }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
 
-        /* 7. ШАГИ (Таймлайн) */
-        .steps-container { display: flex; flex-direction: column; gap: 35px; position: relative; }
-        .steps-container::before {
-            content: ''; position: absolute; left: 23px; top: 0; bottom: 0; width: 2px;
-            background: linear-gradient(to bottom, var(--brand-red) 0%, rgba(255,30,70,0) 100%);
-        }
-        .step { display: flex; gap: 20px; align-items: flex-start; position: relative; }
-        .step-num {
-            width: 48px; height: 48px; border-radius: 50%; background: var(--bg-base);
-            border: 2px solid var(--brand-red); display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: 900; color: var(--brand-red); flex-shrink: 0;
-            box-shadow: 0 0 15px rgba(255,30,70,0.25); z-index: 2;
-        }
-        .step-content h3 { font-size: clamp(18px, 4.5vw, 22px); font-weight: 800; margin-bottom: 8px; }
-        .step-content p { color: var(--text-muted); font-size: clamp(14px, 3.5vw, 16px); line-height: 1.6; }
+    .preset-btn {
+      background: #f2f2f7;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 12px 6px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c2c2e;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        /* ПОДВАЛ */
-        footer {
-            padding: 80px 5% 80px; text-align: center; border-top: 1px solid var(--border-color);
-            background: radial-gradient(circle at bottom center, rgba(255,30,70,0.08) 0%, transparent 70%);
-        }
-        .footer-cta { font-family: 'Montserrat', sans-serif; font-size: clamp(26px, 6vw, 60px); font-weight: 900; margin-bottom: 15px; }
-        .massive-phone {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(32px, 8vw, 90px); font-weight: 900;
-            display: inline-block; margin-bottom: 20px; text-decoration: none;
-            background: #fff; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            transition: all 0.3s; line-height: 1.2;
-        }
-        .massive-phone:hover { background: var(--gradient-neon); -webkit-background-clip: text; transform: scale(1.02); }
+    .preset-btn:hover {
+      background: #e5e5ea;
+      transform: translateY(-2px);
+    }
 
-        /* АНИМАЦИИ (SCROLL REVEAL) */
-        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s var(--easing); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+    .preset-btn.active {
+      background: #ffffff;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 4px 14px rgba(139, 61, 255, 0.22);
+    }
 
-        /* МЕДИАЗАПРОСЫ */
-        @media (max-width: 900px) {
-            .bento-card { grid-column: span 12 !important; min-height: auto; }
-            .card-large h3 { font-size: 28px; }
-        }
+    .preset-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: #8e8e93;
+      margin-top: 2px;
+    }
 
-        @media (max-width: 768px) {
-            header {
-                width: calc(100% - 16px);
-                padding: 6px 10px 6px 16px;
-            }
-            .island-btn {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-            .island-btn span {
-                display: none; /* На очень узких экранах скрываем текст у кнопки вызова, оставляя иконку для минимализма */
-            }
-            .island-btn.call svg {
-                width: 16px;
-                height: 16px;
-            }
-            
-            .hero { padding: 130px 5% 60px; text-align: left; }
-            .btn-group { flex-direction: column; width: 100%; }
-            .btn { width: 100%; padding: 18px 20px; font-size: 15px; }
-            
-            .section { padding: 70px 5%; }
-            .bento-card { padding: 25px 20px; border-radius: 20px; }
-            .icon-box { width: 48px; height: 48px; margin-bottom: 15px; }
-            .icon-box svg { width: 22px; height: 22px; }
+    .preset-btn.active .preset-sub {
+      color: var(--primary);
+    }
 
-            .steps-container::before { left: 20px; }
-            .step-num { width: 42px; height: 42px; font-size: 16px; }
-        }
-    </style>
+    /* Поле ввода суммы */
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .amount-input {
+      width: 100%;
+      background: #f2f2f7;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 16px 45px 16px 18px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1c1c1e;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .amount-input:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(139, 61, 255, 0.15);
+    }
+
+    .currency-symbol {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      font-weight: 700;
+      color: #8e8e93;
+      pointer-events: none;
+    }
+
+    /* Фирменная кнопка ЮMoney */
+    .yoomoney-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #8b3dff 0%, #6310f5 100%);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 18px 24px;
+      border-radius: 20px;
+      text-decoration: none;
+      box-shadow: 0 10px 25px var(--primary-glow);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Анимация перелива кнопки */
+    .yoomoney-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+      );
+      animation: shine 3.5s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      20% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    .yoomoney-btn:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 14px 30px rgba(139, 61, 255, 0.55);
+    }
+
+    .yoomoney-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .ym-badge {
+      width: 28px;
+      height: 28px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 15px;
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    /* Гарантия безопасности */
+    .security-tag {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .shield-icon {
+      width: 14px;
+      height: 14px;
+      fill: var(--accent-green);
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 480px) {
+      .card {
+        padding: 24px 16px;
+        border-radius: 22px;
+      }
+
+      .title {
+        font-size: 22px;
+      }
+
+      .preset-btn {
+        padding: 10px 4px;
+        font-size: 15px;
+      }
+
+      .yoomoney-btn {
+        padding: 16px 18px;
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Шум и Фон -->
-    <div class="noise"></div>
-    <div class="glow-bg"></div>
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
 
-    <!-- Шапка (Dynamic Island) -->
-    <header id="header">
-        <div class="logo">Вызов<span class="text-gradient">ДТП</span></div>
-        <div class="header-actions">
-            <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="island-btn">
-                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
-                Чат
-            </a>
-            <a href="tel:+79518703934" class="island-btn call">
-                <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
-                <span>Позвонить</span>
-            </a>
+  <div class="container">
+    <div class="card">
+      
+      <!-- Заголовок -->
+      <div class="header">
+        <div class="badge">
+          <span class="badge-icon">🐾</span> Помощь животным
         </div>
-    </header>
+        <h1 class="title">Забота и корм</h1>
+        <p class="subtitle">Каждый рубль помогает купить кошачий и собачий корм, медикаменты и тёплые подстилки.</p>
+      </div>
 
-    <main>
-        <!-- Главный экран -->
-        <section class="hero">
-            <div class="reveal">
-                <div class="tagline"><span class="pulse"></span> Дежурный экипаж 24/7</div>
-                <h1>Оформление ДТП <br>без участия <span class="text-gradient">ГИБДД</span></h1>
-                <p>Приедем за 15 минут в любой район Воронежа. Защитим от автоподстав, правильно оформим документы и добьемся 100% выплаты от страховой.</p>
-                <div class="btn-group">
-                    <a href="tel:+79518703934" class="btn btn-neon">Вызвать комиссара</a>
-                    <a href="https://max.ru/u/f9LHodD0cOI2FnwqO5-1DgAW1HKEqMwxe-uqadKqMyDXOUGaLoBaJ-8eRJw" target="_blank" class="btn btn-primary">Написать в Чат</a>
-                </div>
-            </div>
-        </section>
+      <!-- Выбор суммы -->
+      <div class="section-label">Выберите или введите сумму</div>
+      <div class="presets-grid">
+        <button class="preset-btn" data-value="150">
+          150 ₽
+          <span class="preset-sub">Порция корма</span>
+        </button>
+        <button class="preset-btn active" data-value="300">
+          300 ₽
+          <span class="preset-sub">Обед на 3 дня</span>
+        </button>
+        <button class="preset-btn" data-value="500">
+          500 ₽
+          <span class="preset-sub">Вет-осмотр</span>
+        </button>
+      </div>
 
-        <!-- Неоновая бегущая строка -->
-        <div class="marquee-container">
-            <div class="marquee">
-                <span>Приезд от 15 минут</span> • <span>Гарантия выплат</span> • <span>Без цессий</span> • <span>Европротокол</span> • <span>Юридическая защита</span> • 
-                <span>Приезд от 15 минут</span> • <span>Гарантия выплат</span> • <span>Без цессий</span> • <span>Европротокол</span> • <span>Юридическая защита</span>
-            </div>
-        </div>
+      <!-- Поле ввода -->
+      <div class="input-wrapper">
+        <input type="number" id="customAmount" class="amount-input" value="300" min="1" placeholder="Ваша сумма">
+        <span class="currency-symbol">₽</span>
+      </div>
 
-        <!-- Сетка Услуг -->
-        <section class="section">
-            <h2 class="section-title reveal">Мы работаем на <br><span class="text-gradient">ваш результат</span></h2>
-            
-            <div class="bento-grid">
-                <article class="bento-card card-large reveal">
-                    <div>
-                        <div class="icon-box">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                        </div>
-                        <h3>Расширенный <br>Европротокол</h3>
-                        <p>Оформляем ДТП с базовым лимитом до 100 000 ₽. Проводим профессиональную фотофиксацию и оформляем электронный протокол через Госуслуги, что увеличивает лимит выплат до <span class="amount-tag">400 000 ₽</span>.</p>
-                    </div>
-                </article>
+      <!-- Красивая кнопка перевода ЮMoney -->
+      <a href="https://yoomoney.ru/to/4100119581597465/300" id="payButton" target="_blank" rel="noopener" class="yoomoney-btn">
+        <div class="ym-badge">Ю</div>
+        <span>Перевести <span id="btnAmount">300</span> ₽</span>
+      </a>
 
-                <article class="bento-card card-small reveal" style="transition-delay: 0.1s;">
-                    <div class="icon-box">
-                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    </div>
-                    <h3>Экономия времени</h3>
-                    <p>Никаких очередей в ГИБДД. Всё решается прямо на месте аварии максимально быстро.</p>
-                </article>
+      <!-- Безопасность -->
+      <div class="security-tag">
+        <svg class="shield-icon" viewBox="0 0 24 24">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+        Безопасный перевод через ЮMoney
+      </div>
 
-                <article class="bento-card card-medium reveal" style="transition-delay: 0.2s;">
-                    <div class="icon-box">
-                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                    </div>
-                    <h3>Оценка ущерба</h3>
-                    <p>Грамотно фиксируем все скрытые повреждения, чтобы страховая не смогла занизить сумму ремонта.</p>
-                </article>
+    </div>
+  </div>
 
-                <article class="bento-card card-wide reveal" style="transition-delay: 0.3s;">
-                    <div class="icon-box">
-                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                    </div>
-                    <h3>Честно. Без цессий</h3>
-                    <p>Мы принципиально <strong>не выкупаем долги</strong> за копейки. Наша цель — полное юридическое сопровождение, чтобы всю положенную по закону сумму получили именно вы.</p>
-                </article>
-            </div>
-        </section>
+  <script>
+    const BASE_URL = 'https://yoomoney.ru/to/4100119581597465';
+    const amountInput = document.getElementById('customAmount');
+    const payBtn = document.getElementById('payButton');
+    const btnAmount = document.getElementById('btnAmount');
+    const presetBtns = document.querySelectorAll('.preset-btn');
 
-        <!-- Шаги работы -->
-        <section class="section">
-            <h2 class="section-title reveal">Как мы <span class="text-gradient">помогаем</span></h2>
-            <div class="steps-container">
-                <div class="step reveal">
-                    <div class="step-num">1</div>
-                    <div class="step-content">
-                        <h3>Вызов и приезд</h3>
-                        <p>Вы звоните нам. Экипаж выезжает немедленно и прибывает на место ДТП в среднем за 15–20 минут.</p>
-                    </div>
-                </div>
-                <div class="step reveal" style="transition-delay: 0.1s;">
-                    <div class="step-num">2</div>
-                    <div class="step-content">
-                        <h3>Защита и фиксация</h3>
-                        <p>Ограждаем место аварии, помогаем успокоиться. Делаем точные замеры и детальную фотофиксацию всех повреждений.</p>
-                    </div>
-                </div>
-                <div class="step reveal" style="transition-delay: 0.2s;">
-                    <div class="step-num">3</div>
-                    <div class="step-content">
-                        <h3>Оформление бумаг</h3>
-                        <p>Заполняем извещение о ДТП (Европротокол) без единой ошибки, чтобы у страховой не было повода для отказа.</p>
-                    </div>
-                </div>
-                <div class="step reveal" style="transition-delay: 0.3s;">
-                    <div class="step-num">4</div>
-                    <div class="step-content">
-                        <h3>Получение денег</h3>
-                        <p>Консультируем по дальнейшим действиям. При необходимости предоставляем автоюриста для споров со страховой.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+    function updatePayLink(val) {
+      const cleanVal = parseInt(val, 10);
+      if (cleanVal && cleanVal > 0) {
+        btnAmount.textContent = cleanVal;
+        payBtn.href = `${BASE_URL}/${cleanVal}`;
+      } else {
+        btnAmount.textContent = '0';
+        payBtn.href = BASE_URL;
+      }
+    }
 
-    <!-- Подвал -->
-    <footer>
-        <div class="reveal">
-            <div class="footer-cta">Попали в ДТП?</div>
-            <p style="color: var(--text-muted); font-size: clamp(16px, 4vw, 20px); margin-bottom: 25px;">Звоните, дежурный комиссар уже на связи.</p>
-            <a href="tel:+79518703934" class="massive-phone">+7 (951) 870-39-34</a>
-            <p style="color: #666; font-size: 13px; margin-top: 40px; line-height: 1.6;">© 2026 вызовдтп.рф — Аварийный комиссар Воронеж.<br>Профессиональное оформление ДТП.</p>
-        </div>
-    </footer>
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const val = btn.getAttribute('data-value');
+        amountInput.value = val;
+        updatePayLink(val);
+      });
+    });
 
-    <!-- Скрипты -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Эффект появления при скролле
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+    amountInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      presetBtns.forEach(b => {
+        if (b.getAttribute('data-value') === val) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      updatePayLink(val);
+    });
+  </script>
 
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-            // Эффект шапки
-            const header = document.getElementById('header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 40) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
