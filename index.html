@@ -2,28 +2,27 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <!-- Адаптация под iPhone: отключение масштабирования и учёт вырезов экрана (viewport-fit=cover) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Юкнига — CRM</title>
+  <title>Юзаметки</title>
 
   <!-- PWA & iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Юкнига">
+  <meta name="apple-mobile-web-app-title" content="Юзаметки">
   <meta name="theme-color" content="#0e091e">
 
   <!-- Векторная иконка для современных браузеров и Android -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%238b3dff'/%3E%3Ctext x='96' y='135' font-family='Arial' font-size='110' font-weight='bold' fill='white' text-anchor='middle'%3EЮ%3C/text%3E%3C/svg%3E">
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D0%AE%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0%20CRM%22%2C%22short_name%22%3A%22%D0%AE%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e091e%22%2C%22theme_color%22%3A%22%230e091e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20192%20192'%253E%253Crect%20width%3D'192'%20height%3D'192'%20rx%3D'40'%20fill%3D'%25238b3dff'%2F%253E%253Ctext%20x%3D'96'%20y%3D'135'%20font-family%3D'Arial'%20font-size%3D'110'%20font-weight%3D'bold'%20fill%3D'white'%20text-anchor%3D'middle'%253E%D0%AE%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D0%AE%D0%B7%D0%B0%D0%BC%D0%B5%D1%82%D0%BA%D0%B8%22%2C%22short_name%22%3A%22%D0%AE%D0%B7%D0%B0%D0%BC%D0%B5%D1%82%D0%BA%D0%B8%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e091e%22%2C%22theme_color%22%3A%22%230e091e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20192%20192'%253E%253Crect%20width%3D'192'%20height%3D'192'%20rx%3D'40'%20fill%3D'%25238b3dff'%2F%253E%253Ctext%20x%3D'96'%20y%3D'135'%20font-family%3D'Arial'%20font-size%3D'110'%20font-weight%3D'bold'%20fill%3D'white'%20text-anchor%3D'middle'%253E%D0%AE%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
-    // Генерация PNG-иконки для старых версий iOS прямо в браузере (чтобы точно появился значок на экране)
+    // Генерация PNG-иконки для iOS на лету (чтобы точно появился значок)
     (function generateAppleIcon() {
       const canvas = document.createElement('canvas');
       canvas.width = 192; canvas.height = 192;
@@ -72,8 +71,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* Отступы с учетом "челки" iPhone */
-      padding: calc(env(safe-area-inset-top, 20px) + 80px) 16px env(safe-area-inset-bottom, 20px) 16px;
+      /* Отступы с учетом "челки" iPhone, убран верхний отступ под остров */
+      padding: calc(env(safe-area-inset-top, 20px) + 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
       position: relative;
       overflow-x: hidden;
     }
@@ -93,65 +92,6 @@
     @keyframes float {
       0% { transform: translate(0, 0) scale(1); }
       100% { transform: translate(30px, 40px) scale(1.1); }
-    }
-
-    /* iPhone Dynamic Island */
-    .dynamic-island {
-      position: fixed;
-      top: calc(env(safe-area-inset-top, 12px) + 12px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #000000;
-      width: 170px;
-      height: 36px;
-      border-radius: 20px;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .island-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .island-logo {
-      width: 18px;
-      height: 18px;
-      background: linear-gradient(135deg, #8b3dff, #6310f5);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 900;
-      color: #fff;
-    }
-
-    .island-title {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      color: #ffffff;
-    }
-
-    .island-indicator {
-      width: 7px;
-      height: 7px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.7; }
     }
 
     /* Контейнер приложения */
@@ -196,7 +136,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
       padding: 14px 16px;
-      font-size: 16px; /* 16px предотвращает авто-зум на iPhone */
+      font-size: 16px;
       color: #fff;
       outline: none;
       transition: all 0.2s ease;
@@ -205,7 +145,7 @@
 
     .textarea-field {
       resize: none;
-      height: 100px;
+      height: 140px; /* Сделал поле ввода больше, раз это заметки */
     }
 
     .input-field::placeholder, .textarea-field::placeholder { color: #71717a; }
@@ -258,7 +198,7 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
     .client-header {
@@ -267,16 +207,10 @@
       align-items: center;
     }
 
-    .client-name {
-      font-size: 17px;
-      font-weight: 700;
-      color: #fff;
-    }
-
     .client-desc {
-      font-size: 15px;
-      color: #d1d1d6;
-      line-height: 1.4;
+      font-size: 16px;
+      color: #ffffff;
+      line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
     }
@@ -302,24 +236,14 @@
   <div class="bg-glow-1"></div>
   <div class="bg-glow-2"></div>
 
-  <!-- Dynamic Island -->
-  <div class="dynamic-island">
-    <div class="island-brand">
-      <div class="island-logo">Ю</div>
-      <span class="island-title">Юкнига</span>
-    </div>
-    <div class="island-indicator"></div>
-  </div>
-
   <div class="app-container">
 
     <!-- Форма добавления -->
     <div class="glass-card">
-      <div class="card-title">Новая запись</div>
+      <div class="card-title">Новая заметка</div>
       <form id="addClientForm" class="form-group">
-        <input type="text" id="clientName" class="input-field" placeholder="Имя клиента" required autocomplete="off">
-        <textarea id="clientDesc" class="textarea-field" placeholder="Описание (услуга, детали...)" required></textarea>
-        <button type="submit" class="btn-submit">Сохранить запись</button>
+        <textarea id="clientDesc" class="textarea-field" placeholder="Текст вашей заметки..." required></textarea>
+        <button type="submit" class="btn-submit">Сохранить</button>
       </form>
     </div>
 
@@ -327,11 +251,11 @@
     <div class="glass-card">
       <div class="stat-card">
         <div class="stat-value" id="totalCount">0</div>
-        <div class="stat-label">Всего записей</div>
+        <div class="stat-label">Всего заметок</div>
       </div>
       
       <div class="form-group" style="margin-bottom: 16px;">
-        <input type="text" id="searchInput" class="input-field" placeholder="Поиск...">
+        <input type="text" id="searchInput" class="input-field" placeholder="Поиск по заметкам...">
       </div>
 
       <div id="clientsList" class="clients-list"></div>
@@ -340,10 +264,10 @@
   </div>
 
   <script>
+    // Хранилище (название ключа оставил старым, чтобы старые записи не потерялись)
     let clients = JSON.parse(localStorage.getItem('ukniga_clients')) || [];
 
     const form = document.getElementById('addClientForm');
-    const nameInput = document.getElementById('clientName');
     const descInput = document.getElementById('clientDesc');
     const clientsList = document.getElementById('clientsList');
     const searchInput = document.getElementById('searchInput');
@@ -358,14 +282,11 @@
       e.preventDefault();
       const newClient = {
         id: Date.now(),
-        name: nameInput.value.trim(),
         desc: descInput.value.trim()
       };
       clients.unshift(newClient);
       saveStorage();
-      nameInput.value = '';
       descInput.value = '';
-      nameInput.blur();
       descInput.blur();
     });
 
@@ -377,14 +298,13 @@
     function render(query = '') {
       clientsList.innerHTML = '';
       const filtered = clients.filter(c => 
-        c.name.toLowerCase().includes(query.toLowerCase()) || 
         c.desc.toLowerCase().includes(query.toLowerCase())
       );
 
       totalCountEl.textContent = clients.length;
 
       if (filtered.length === 0) {
-        clientsList.innerHTML = `<div class="empty-state">${query ? 'Ничего не найдено' : 'Записей пока нет'}</div>`;
+        clientsList.innerHTML = `<div class="empty-state">${query ? 'Ничего не найдено' : 'Заметок пока нет'}</div>`;
         return;
       }
 
@@ -392,11 +312,10 @@
         const item = document.createElement('div');
         item.className = 'client-item';
         item.innerHTML = `
-          <div class="client-header">
-            <div class="client-name">${escapeHtml(client.name)}</div>
+          <div class="client-desc">${escapeHtml(client.desc)}</div>
+          <div class="client-header" style="justify-content: flex-end; margin-top: 4px;">
             <button class="btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
           </div>
-          <div class="client-desc">${escapeHtml(client.desc)}</div>
         `;
         clientsList.appendChild(item);
       });
