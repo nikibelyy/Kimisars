@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Записная книга">
+  <meta name="apple-mobile-web-app-title" content="Записи">
   <meta name="theme-color" content="#121216">
-  <title>Ю-Книга</title>
+  <title>Записи</title>
 
   <script>
-    // Динамический манифест для установки PWA на iPhone
     const manifest = {
-      "name": "Ю-Записная Книга",
+      "name": "Записная Книжка",
       "short_name": "Записи",
       "start_url": ".",
       "display": "standalone",
@@ -39,6 +38,7 @@
       --accent: #7B5CFF;
       --accent-glow: rgba(123, 92, 255, 0.4);
       --mint: #00D692;
+      --mint-glow: rgba(0, 214, 146, 0.3);
       --text: #FFFFFF;
       --text-sub: #8E8E93;
       --border: rgba(255, 255, 255, 0.08);
@@ -57,86 +57,73 @@
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-top: calc(env(safe-area-inset-top) + 10px);
-      padding-bottom: calc(env(safe-area-inset-bottom) + 90px);
+      padding-top: calc(env(safe-area-inset-top) + 8px);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
       overflow-x: hidden;
       user-select: none;
     }
 
-    /* Шапка в стиле ЮMoney */
-    header {
-      padding: 10px 20px 15px;
+    /* Dynamic Island Header */
+    .island-header-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: center;
+      padding: 6px 20px 14px;
     }
 
-    .title {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #FFF 30%, #A0A0B0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .badge {
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: rgba(0, 214, 146, 0.12);
-      color: var(--mint);
+    .dynamic-island {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 24px;
+      border-radius: 30px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      animation: islandPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
+    .island-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
       border-radius: 50%;
-      background: var(--mint);
-      box-shadow: 0 0 8px var(--mint);
+      box-shadow: 0 0 10px var(--accent);
     }
 
-    /* Верхний виджет общей суммы */
-    .balance-card {
-      margin: 5px 20px 20px;
-      background: linear-gradient(135deg, #1C1C22 0%, #15151B 100%);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .balance-title {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 4px;
-    }
-
-    .balance-val {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--mint);
-      letter-spacing: -0.5px;
-    }
-
-    .entries-count {
-      font-size: 13px;
-      color: var(--text-sub);
-      text-align: right;
-    }
-
-    .entries-num {
-      font-size: 20px;
+    .island-title {
+      font-size: 16px;
       font-weight: 700;
-      color: var(--text);
+      color: #FFF;
+      letter-spacing: -0.3px;
+    }
+
+    /* Табы переключения */
+    .tabs-container {
+      display: flex;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 4px;
+      margin: 0 20px 15px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: none;
+      color: var(--text-sub);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #FFF;
+      box-shadow: 0 4px 12px var(--accent-glow);
     }
 
     /* Поиск */
@@ -161,7 +148,7 @@
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    /* Лента записей (Страницы книги) */
+    /* Список записей */
     .notebook-list {
       padding: 0 20px;
       display: flex;
@@ -177,7 +164,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      transition: transform 0.2s ease, background-color 0.2s ease;
+      transition: transform 0.2s ease;
       animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
     }
 
@@ -186,14 +173,14 @@
       background: var(--card-active);
     }
 
-    .note-top {
+    .note-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
     }
 
     .note-name {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       color: #FFF;
     }
@@ -204,10 +191,39 @@
       margin-top: 2px;
     }
 
-    .note-amount {
+    .income-amount {
       font-size: 18px;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--mint);
+    }
+
+    .income-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px;
+      border-radius: 14px;
+      border-left: 3px solid var(--mint);
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFF;
+      margin-top: 2px;
     }
 
     .note-body {
@@ -216,9 +232,9 @@
       color: #D0D0E0;
       white-space: pre-wrap;
       word-break: break-word;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
       padding: 12px;
-      border-radius: 12px;
+      border-radius: 14px;
       border-left: 3px solid var(--accent);
     }
 
@@ -243,32 +259,48 @@
       color: #FF453A;
     }
 
-    /* Кнопка Добавить (FAB) */
-    .fab {
+    /* Нижняя панель с кнопками добавления */
+    .floating-bar {
       position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 25px);
+      bottom: calc(env(safe-area-inset-bottom) + 20px);
+      left: 20px;
       right: 20px;
-      width: 62px;
-      height: 62px;
-      border-radius: 31px;
-      background: linear-gradient(135deg, #7B5CFF 0%, #5A35FF 100%);
-      color: white;
-      border: none;
-      font-size: 32px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 25px var(--accent-glow);
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      gap: 12px;
       z-index: 100;
     }
 
-    .fab:active {
-      transform: scale(0.9);
+    .btn-fab {
+      flex: 1;
+      padding: 16px;
+      border-radius: 20px;
+      border: none;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
 
-    /* Шторка записи (Модалка) */
+    .btn-fab:active {
+      transform: scale(0.95);
+    }
+
+    .btn-fab.note {
+      background: linear-gradient(135deg, #7B5CFF 0%, #5A35FF 100%);
+      box-shadow: 0 8px 20px var(--accent-glow);
+    }
+
+    .btn-fab.income {
+      background: linear-gradient(135deg, #00D692 0%, #00B37A 100%);
+      box-shadow: 0 8px 20px var(--mint-glow);
+    }
+
+    /* Модалки */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -359,7 +391,6 @@
 
     .submit-btn {
       width: 100%;
-      background: var(--accent);
       color: white;
       border: none;
       padding: 16px;
@@ -367,18 +398,28 @@
       font-size: 16px;
       font-weight: 700;
       margin-top: 10px;
+    }
+
+    .submit-btn.purple {
+      background: var(--accent);
       box-shadow: 0 6px 20px var(--accent-glow);
     }
 
-    .submit-btn:active {
-      opacity: 0.85;
+    .submit-btn.green {
+      background: var(--mint);
+      box-shadow: 0 6px 20px var(--mint-glow);
     }
 
     .empty-state {
       text-align: center;
-      padding: 40px 20px;
+      padding: 50px 20px;
       color: var(--text-sub);
       font-size: 15px;
+    }
+
+    @keyframes islandPop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     @keyframes slideUp {
@@ -389,74 +430,102 @@
 </head>
 <body>
 
-  <header>
-    <div class="title">Записи</div>
-    <div class="badge">Офлайн книжка</div>
-  </header>
+  <!-- Dynamic Island Header -->
+  <div class="island-header-container">
+    <div class="dynamic-island">
+      <div class="island-dot"></div>
+      <div class="island-title">Записи</div>
+    </div>
+  </div>
 
-  <!-- Верхняя сводка -->
-  <div class="balance-card">
-    <div>
-      <div class="balance-title">Итого зафиксировано</div>
-      <div class="balance-val" id="totalSum">0 ₽</div>
-    </div>
-    <div class="entries-count">
-      <div class="balance-title">Всего страниц</div>
-      <div class="entries-num" id="totalCount">0</div>
-    </div>
+  <!-- Переключатель разделов -->
+  <div class="tabs-container">
+    <button class="tab-btn active" id="tabNotesBtn" onclick="switchTab('notes')">📝 Заметки</button>
+    <button class="tab-btn" id="tabIncomeBtn" onclick="switchTab('income')">💰 Доходы</button>
   </div>
 
   <!-- Поиск -->
   <div class="search-box">
-    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по записям и именам...">
+    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по записям...">
   </div>
 
-  <!-- Список записей -->
+  <!-- Список -->
   <div class="notebook-list" id="notebookList"></div>
 
-  <!-- Кнопка добавления -->
-  <button class="fab" id="openModalBtn">+</button>
+  <!-- Нижние кнопки действия -->
+  <div class="floating-bar">
+    <button class="btn-fab note" onclick="openNoteModal()">✏️ Запись</button>
+    <button class="btn-fab income" onclick="openIncomeModal()">💰 Доход</button>
+  </div>
 
-  <!-- Форма записи -->
-  <div class="modal-overlay" id="modalOverlay">
+  <!-- Модалка обычного текста -->
+  <div class="modal-overlay" id="noteModalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Новая запись</div>
-        <button class="close-btn" id="closeModalBtn">✕</button>
+        <div class="modal-title" id="noteModalTitle">Новая запись</div>
+        <button class="close-btn" onclick="closeNoteModal()">✕</button>
       </div>
       <form id="noteForm">
         <input type="hidden" id="noteId">
         <div class="form-group">
-          <label>Клиент / Имя</label>
-          <input type="text" id="noteName" class="form-control" placeholder="Алексей" required>
+          <label>Тема / Имя</label>
+          <input type="text" id="noteName" class="form-control" placeholder="Например: Проект X" required>
         </div>
         <div class="form-group">
-          <label>Сумма (₽)</label>
-          <input type="number" id="noteAmount" class="form-control" placeholder="0">
+          <label>Текст записи</label>
+          <textarea id="noteText" class="form-control" placeholder="Подробности..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn purple">Сохранить запись</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модалка дохода (Где, За что, За кого, Сколько) -->
+  <div class="modal-overlay" id="incomeModalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="incomeModalTitle">Получен доход</div>
+        <button class="close-btn" onclick="closeIncomeModal()">✕</button>
+      </div>
+      <form id="incomeForm">
+        <input type="hidden" id="incomeId">
+        <div class="form-group">
+          <label>Где (Куда пришло / Карта)</label>
+          <input type="text" id="incomeWhere" class="form-control" placeholder="Например: Сбербанк / Наличка" required>
         </div>
         <div class="form-group">
-          <label>Заметка / Заказ / Текст</label>
-          <textarea id="noteText" class="form-control" placeholder="Напиши сюда все подробности..."></textarea>
+          <label>За что (Услуга / Товар)</label>
+          <input type="text" id="incomeWhat" class="form-control" placeholder="Например: Разработка сайта" required>
         </div>
-        <button type="submit" class="submit-btn">Записать</button>
+        <div class="form-group">
+          <label>За кого (Клиент / Заказчик)</label>
+          <input type="text" id="incomeWho" class="form-control" placeholder="Например: Антон" required>
+        </div>
+        <div class="form-group">
+          <label>Сколько (Сумма ₽)</label>
+          <input type="number" id="incomeAmount" class="form-control" placeholder="0" required>
+        </div>
+        <button type="submit" class="submit-btn green">Записать доход</button>
       </form>
     </div>
   </div>
 
   <script>
-    // Хранение данных
-    let entries = JSON.parse(localStorage.getItem('my_book_entries')) || [
-      {
-        id: '1',
-        name: 'Иван Петров',
-        amount: 15000,
-        text: 'Сделал предоплату за дизайн. Срок — до пятницы.',
-        date: '07 авг. 2026, 14:20'
-      }
-    ];
+    let currentTab = 'notes'; // 'notes' или 'income'
 
-    function save() {
-      localStorage.setItem('my_book_entries', JSON.stringify(entries));
+    let notes = JSON.parse(localStorage.getItem('my_app_notes')) || [];
+    let incomes = JSON.parse(localStorage.getItem('my_app_incomes')) || [];
+
+    function saveAll() {
+      localStorage.setItem('my_app_notes', JSON.stringify(notes));
+      localStorage.setItem('my_app_incomes', JSON.stringify(incomes));
+      render();
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabNotesBtn').classList.toggle('active', tab === 'notes');
+      document.getElementById('tabIncomeBtn').classList.toggle('active', tab === 'income');
       render();
     }
 
@@ -465,116 +534,183 @@
       const search = document.getElementById('searchInput').value.toLowerCase();
       list.innerHTML = '';
 
-      let total = 0;
+      if (currentTab === 'notes') {
+        const filtered = notes.filter(item => 
+          item.name.toLowerCase().includes(search) || (item.text && item.text.toLowerCase().includes(search))
+        );
 
-      const filtered = entries.filter(item => {
-        const match = item.name.toLowerCase().includes(search) || item.text.toLowerCase().includes(search);
-        if (match) total += Number(item.amount || 0);
-        return match;
-      });
+        if (filtered.length === 0) {
+          list.innerHTML = '<div class="empty-state">Заметок пока нет</div>';
+          return;
+        }
 
-      document.getElementById('totalSum').innerText = total.toLocaleString('ru-RU') + ' ₽';
-      document.getElementById('totalCount').innerText = entries.length;
-
-      if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-state">Записей пока нет. Нажмите +, чтобы добавить первую!</div>';
-        return;
-      }
-
-      filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'note-card';
-        card.innerHTML = `
-          <div class="note-top">
-            <div>
-              <div class="note-name">${escapeHTML(item.name)}</div>
-              <div class="note-date">${item.date}</div>
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'note-card';
+          card.innerHTML = `
+            <div class="note-header">
+              <div>
+                <div class="note-name">${escapeHTML(item.name)}</div>
+                <div class="note-date">${item.date}</div>
+              </div>
             </div>
-            ${item.amount ? `<div class="note-amount">${Number(item.amount).toLocaleString('ru-RU')} ₽</div>` : ''}
-          </div>
-          ${item.text ? `<div class="note-body">${escapeHTML(item.text)}</div>` : ''}
-          <div class="note-actions">
-            <button class="btn-action" onclick="editNote('${item.id}')">Редактировать</button>
-            <button class="btn-action delete" onclick="deleteNote('${item.id}')">Удалить</button>
-          </div>
-        `;
-        list.appendChild(card);
-      });
+            ${item.text ? `<div class="note-body">${escapeHTML(item.text)}</div>` : ''}
+            <div class="note-actions">
+              <button class="btn-action" onclick="editNote('${item.id}')">Изменить</button>
+              <button class="btn-action delete" onclick="deleteNote('${item.id}')">Удалить</button>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+
+      } else {
+        // Таб Доходы
+        const filtered = incomes.filter(item => 
+          item.where.toLowerCase().includes(search) || 
+          item.what.toLowerCase().includes(search) || 
+          item.who.toLowerCase().includes(search)
+        );
+
+        if (filtered.length === 0) {
+          list.innerHTML = '<div class="empty-state">Записей о доходах пока нет</div>';
+          return;
+        }
+
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'note-card';
+          card.innerHTML = `
+            <div class="note-header">
+              <div>
+                <div class="note-name">Закого: ${escapeHTML(item.who)}</div>
+                <div class="note-date">${item.date}</div>
+              </div>
+              <div class="income-amount">+${Number(item.amount).toLocaleString('ru-RU')} ₽</div>
+            </div>
+            <div class="income-details">
+              <div class="detail-item">
+                <div class="detail-label">Где</div>
+                <div class="detail-value">${escapeHTML(item.where)}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">За что</div>
+                <div class="detail-value">${escapeHTML(item.what)}</div>
+              </div>
+            </div>
+            <div class="note-actions">
+              <button class="btn-action" onclick="editIncome('${item.id}')">Изменить</button>
+              <button class="btn-action delete" onclick="deleteIncome('${item.id}')">Удалить</button>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      }
     }
 
     function escapeHTML(str) {
       return (str || '').replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
     }
 
-    // Модальное окно
-    const modalOverlay = document.getElementById('modalOverlay');
-    const noteForm = document.getElementById('noteForm');
-
-    function openModal() { modalOverlay.classList.add('active'); }
-    function closeModal() {
-      modalOverlay.classList.remove('active');
-      noteForm.reset();
-      document.getElementById('noteId').value = '';
-      document.getElementById('modalTitle').innerText = 'Новая запись';
+    function getNowDate() {
+      const now = new Date();
+      return now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
     }
 
-    document.getElementById('openModalBtn').addEventListener('click', openModal);
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    // --- Управление Заметками ---
+    const noteModalOverlay = document.getElementById('noteModalOverlay');
+    function openNoteModal() { noteModalOverlay.classList.add('active'); }
+    function closeNoteModal() { 
+      noteModalOverlay.classList.remove('active'); 
+      document.getElementById('noteForm').reset();
+      document.getElementById('noteId').value = '';
+    }
 
-    noteForm.addEventListener('submit', (e) => {
+    document.getElementById('noteForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const id = document.getElementById('noteId').value;
       const name = document.getElementById('noteName').value;
-      const amount = document.getElementById('noteAmount').value;
       const text = document.getElementById('noteText').value;
 
       if (id) {
-        const item = entries.find(x => x.id === id);
-        if (item) {
-          item.name = name;
-          item.amount = amount;
-          item.text = text;
-        }
+        const item = notes.find(x => x.id === id);
+        if (item) { item.name = name; item.text = text; }
       } else {
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-        entries.unshift({
-          id: Date.now().toString(),
-          name,
-          amount,
-          text,
-          date: dateStr
-        });
+        notes.unshift({ id: Date.now().toString(), name, text, date: getNowDate() });
       }
 
-      save();
-      closeModal();
+      saveAll();
+      closeNoteModal();
     });
 
     window.editNote = function(id) {
-      const item = entries.find(x => x.id === id);
+      const item = notes.find(x => x.id === id);
       if (!item) return;
       document.getElementById('noteId').value = item.id;
       document.getElementById('noteName').value = item.name;
-      document.getElementById('noteAmount').value = item.amount || '';
       document.getElementById('noteText').value = item.text || '';
-      document.getElementById('modalTitle').innerText = 'Редактировать запись';
-      openModal();
+      openNoteModal();
     };
 
     window.deleteNote = function(id) {
       if (confirm('Удалить эту запись?')) {
-        entries = entries.filter(x => x.id !== id);
-        save();
+        notes = notes.filter(x => x.id !== id);
+        saveAll();
+      }
+    };
+
+    // --- Управление Доходами ---
+    const incomeModalOverlay = document.getElementById('incomeModalOverlay');
+    function openIncomeModal() { incomeModalOverlay.classList.add('active'); }
+    function closeIncomeModal() { 
+      incomeModalOverlay.classList.remove('active'); 
+      document.getElementById('incomeForm').reset();
+      document.getElementById('incomeId').value = '';
+    }
+
+    document.getElementById('incomeForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('incomeId').value;
+      const where = document.getElementById('incomeWhere').value;
+      const what = document.getElementById('incomeWhat').value;
+      const who = document.getElementById('incomeWho').value;
+      const amount = document.getElementById('incomeAmount').value;
+
+      if (id) {
+        const item = incomes.find(x => x.id === id);
+        if (item) { item.where = where; item.what = what; item.who = who; item.amount = amount; }
+      } else {
+        incomes.unshift({ id: Date.now().toString(), where, what, who, amount, date: getNowDate() });
+      }
+
+      switchTab('income');
+      saveAll();
+      closeIncomeModal();
+    });
+
+    window.editIncome = function(id) {
+      const item = incomes.find(x => x.id === id);
+      if (!item) return;
+      document.getElementById('incomeId').value = item.id;
+      document.getElementById('incomeWhere').value = item.where;
+      document.getElementById('incomeWhat').value = item.what;
+      document.getElementById('incomeWho').value = item.who;
+      document.getElementById('incomeAmount').value = item.amount;
+      openIncomeModal();
+    };
+
+    window.deleteIncome = function(id) {
+      if (confirm('Удалить эту запись о доходе?')) {
+        incomes = incomes.filter(x => x.id !== id);
+        saveAll();
       }
     };
 
     document.getElementById('searchInput').addEventListener('input', render);
 
-    // Поддержка работы без интернета (Service Worker)
+    // Off-line Service Worker
     if ('serviceWorker' in navigator) {
       const swCode = `
-        self.addEventListener('install', e => e.waitUntil(caches.open('book-v1').then(c => c.addAll(['./']))));
+        self.addEventListener('install', e => e.waitUntil(caches.open('app-v2').then(c => c.addAll(['./']))));
         self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
       `;
       const swBlob = new Blob([swCode], { type: 'application/javascript' });
