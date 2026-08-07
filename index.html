@@ -2,27 +2,49 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <!-- Адаптация под iPhone: отключение масштабирования и учёт вырезов экрана (viewport-fit=cover) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Юкнига — CRM</title>
 
-  <!-- PWA Meta Tags -->
+  <!-- PWA & iOS Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Юкнига">
   <meta name="theme-color" content="#0e091e">
 
-  <!-- Manifest Data URI -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"Юкнига CRM","short_name":"Юкнига","start_url":".","display":"standalone","background_color":"#0e091e","theme_color":"#0e091e","icons":[{"src":"https://yoomoney.ru/favicon.ico","sizes":"192x192","type":"image/png"}]}'>
+  <!-- Векторная иконка для современных браузеров и Android -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%238b3dff'/%3E%3Ctext x='96' y='135' font-family='Arial' font-size='110' font-weight='bold' fill='white' text-anchor='middle'%3EЮ%3C/text%3E%3C/svg%3E">
 
-  <!-- Fonts -->
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D0%AE%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0%20CRM%22%2C%22short_name%22%3A%22%D0%AE%D0%BA%D0%BD%D0%B8%D0%B3%D0%B0%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e091e%22%2C%22theme_color%22%3A%22%230e091e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20192%20192'%253E%253Crect%20width%3D'192'%20height%3D'192'%20rx%3D'40'%20fill%3D'%25238b3dff'%2F%253E%253Ctext%20x%3D'96'%20y%3D'135'%20font-family%3D'Arial'%20font-size%3D'110'%20font-weight%3D'bold'%20fill%3D'white'%20text-anchor%3D'middle'%253E%D0%AE%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <script>
+    // Генерация PNG-иконки для старых версий iOS прямо в браузере (чтобы точно появился значок на экране)
+    (function generateAppleIcon() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 192; canvas.height = 192;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 192, 192);
+      grad.addColorStop(0, '#8b3dff'); grad.addColorStop(1, '#6310f5');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.roundRect(0, 0, 192, 192, 40); ctx.fill();
+      ctx.fillStyle = 'white'; ctx.font = 'bold 110px Arial';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Ю', 96, 106);
+      const link = document.createElement('link');
+      link.rel = 'apple-touch-icon';
+      link.href = canvas.toDataURL('image/png');
+      document.head.appendChild(link);
+    })();
+  </script>
+
   <style>
     :root {
       --primary: #8b3dff;
-      --primary-hover: #7322f2;
       --primary-glow: rgba(139, 61, 255, 0.4);
       --bg-gradient: linear-gradient(135deg, #0e091e 0%, #1c103b 50%, #2b0b46 100%);
       --card-bg: rgba(255, 255, 255, 0.07);
@@ -50,7 +72,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 90px 16px 40px 16px;
+      /* Отступы с учетом "челки" iPhone */
+      padding: calc(env(safe-area-inset-top, 20px) + 80px) 16px env(safe-area-inset-bottom, 20px) 16px;
       position: relative;
       overflow-x: hidden;
     }
@@ -64,23 +87,8 @@
       pointer-events: none;
       animation: float 10s ease-in-out infinite alternate;
     }
-
-    .bg-glow-1 {
-      width: 320px;
-      height: 320px;
-      background: rgba(139, 61, 255, 0.25);
-      top: -50px;
-      left: -50px;
-    }
-
-    .bg-glow-2 {
-      width: 360px;
-      height: 360px;
-      background: rgba(255, 107, 107, 0.15);
-      bottom: -80px;
-      right: -80px;
-      animation-delay: -5s;
-    }
+    .bg-glow-1 { width: 320px; height: 320px; background: rgba(139, 61, 255, 0.25); top: -50px; left: -50px; }
+    .bg-glow-2 { width: 360px; height: 360px; background: rgba(255, 107, 107, 0.15); bottom: -80px; right: -80px; animation-delay: -5s; }
 
     @keyframes float {
       0% { transform: translate(0, 0) scale(1); }
@@ -90,11 +98,11 @@
     /* iPhone Dynamic Island */
     .dynamic-island {
       position: fixed;
-      top: 12px;
+      top: calc(env(safe-area-inset-top, 12px) + 12px);
       left: 50%;
       transform: translateX(-50%);
       background: #000000;
-      width: 210px;
+      width: 170px;
       height: 36px;
       border-radius: 20px;
       z-index: 1000;
@@ -102,15 +110,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5),
-                  0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .dynamic-island:hover {
-      width: 230px;
-      box-shadow: 0 12px 30px rgba(139, 61, 255, 0.3),
-                  0 0 0 1px rgba(139, 61, 255, 0.4);
     }
 
     .island-brand {
@@ -161,36 +162,28 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
-    /* Общие стили карточек */
+    /* Карточки */
     .glass-card {
       background: var(--card-bg);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--card-border);
       border-radius: 24px;
-      padding: 22px;
+      padding: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .card-title {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      color: #fff;
     }
 
-    /* Форма ввода (Без окон, всё прямо на экране) */
+    /* Элементы формы */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -203,7 +196,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
       padding: 14px 16px;
-      font-size: 15px;
+      font-size: 16px; /* 16px предотвращает авто-зум на iPhone */
       color: #fff;
       outline: none;
       transition: all 0.2s ease;
@@ -212,26 +205,16 @@
 
     .textarea-field {
       resize: none;
-      height: 80px;
+      height: 100px;
     }
 
-    .input-field::placeholder, .textarea-field::placeholder {
-      color: #71717a;
-    }
-
+    .input-field::placeholder, .textarea-field::placeholder { color: #71717a; }
     .input-field:focus, .textarea-field:focus {
       border-color: var(--primary);
       background: rgba(0, 0, 0, 0.4);
       box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.2);
     }
 
-    .row-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    /* Фирменная кнопка */
     .btn-submit {
       width: 100%;
       background: linear-gradient(135deg, #8b3dff 0%, #6310f5 100%);
@@ -243,65 +226,25 @@
       border-radius: 16px;
       cursor: pointer;
       box-shadow: 0 10px 20px var(--primary-glow);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transition: all 0.2s ease;
       margin-top: 4px;
     }
 
-    .btn-submit::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      animation: shine 4s infinite;
-    }
-
-    @keyframes shine {
-      0% { left: -100%; }
-      20% { left: 100%; }
-      100% { left: 100%; }
-    }
-
-    .btn-submit:active {
-      transform: scale(0.98);
-    }
+    .btn-submit:active { transform: scale(0.97); }
 
     /* Статистика */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
     .stat-card {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 18px;
       padding: 14px;
       text-align: center;
+      margin-bottom: 16px;
     }
+    .stat-value { font-size: 24px; font-weight: 800; color: #fff; }
+    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-    .stat-value {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* Список клиентов */
+    /* Список */
     .clients-list {
       display: flex;
       flex-direction: column;
@@ -316,87 +259,42 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      position: relative;
-      transition: all 0.2s ease;
-    }
-
-    .client-item:hover {
-      border-color: rgba(139, 61, 255, 0.3);
     }
 
     .client-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .client-name {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: #fff;
     }
 
-    .client-price {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--accent-green);
-    }
-
     .client-desc {
-      font-size: 14px;
+      font-size: 15px;
       color: #d1d1d6;
       line-height: 1.4;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .client-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
     .btn-delete {
-      background: none;
+      background: rgba(255, 69, 58, 0.1);
       border: none;
       color: var(--danger);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 8px;
-      transition: background 0.2s;
+      padding: 6px 12px;
+      border-radius: 10px;
     }
 
-    .btn-delete:active {
-      background: rgba(255, 69, 58, 0.15);
-    }
+    .btn-delete:active { background: rgba(255, 69, 58, 0.2); }
+    .empty-state { text-align: center; padding: 20px 10px; color: var(--text-muted); font-size: 15px; }
 
-    .empty-state {
-      text-align: center;
-      padding: 30px 10px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    /* Поиск */
-    .search-box {
-      margin-bottom: 12px;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding-top: 80px;
-      }
-      .glass-card {
-        padding: 18px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -415,126 +313,75 @@
 
   <div class="app-container">
 
-    <!-- Форма записи -->
+    <!-- Форма добавления -->
     <div class="glass-card">
-      <div class="card-title">
-        <span>Записать клиента</span>
-      </div>
+      <div class="card-title">Новая запись</div>
       <form id="addClientForm" class="form-group">
         <input type="text" id="clientName" class="input-field" placeholder="Имя клиента" required autocomplete="off">
-        <textarea id="clientDesc" class="textarea-field" placeholder="Описание (услуга, заметки, детали...)" required></textarea>
-        
-        <div class="row-inputs">
-          <input type="number" id="clientPrice" class="input-field" placeholder="Сумма (₽)" required min="0">
-          <input type="text" id="clientTime" class="input-field" placeholder="Время / Дата" required>
-        </div>
-
-        <button type="submit" class="btn-submit">
-          <span>Сохранить запись</span>
-        </button>
+        <textarea id="clientDesc" class="textarea-field" placeholder="Описание (услуга, детали...)" required></textarea>
+        <button type="submit" class="btn-submit">Сохранить запись</button>
       </form>
     </div>
 
-    <!-- Статистика -->
-    <div class="stats-grid">
+    <!-- Список записей -->
+    <div class="glass-card">
       <div class="stat-card">
         <div class="stat-value" id="totalCount">0</div>
         <div class="stat-label">Всего записей</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" id="totalSum">0 ₽</div>
-        <div class="stat-label">Общая сумма</div>
-      </div>
-    </div>
-
-    <!-- Список клиентов -->
-    <div class="glass-card">
-      <div class="card-title">
-        <span>Записи</span>
-      </div>
       
-      <div class="search-box">
-        <input type="text" id="searchInput" class="input-field" placeholder="Поиск по имени или описанию...">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <input type="text" id="searchInput" class="input-field" placeholder="Поиск...">
       </div>
 
-      <div id="clientsList" class="clients-list">
-        <!-- Список заполняется через JS -->
-      </div>
+      <div id="clientsList" class="clients-list"></div>
     </div>
 
   </div>
 
   <script>
-    // Инициализация хранилища
     let clients = JSON.parse(localStorage.getItem('ukniga_clients')) || [];
 
     const form = document.getElementById('addClientForm');
     const nameInput = document.getElementById('clientName');
     const descInput = document.getElementById('clientDesc');
-    const priceInput = document.getElementById('clientPrice');
-    const timeInput = document.getElementById('clientTime');
     const clientsList = document.getElementById('clientsList');
     const searchInput = document.getElementById('searchInput');
     const totalCountEl = document.getElementById('totalCount');
-    const totalSumEl = document.getElementById('totalSum');
 
-    // Установка текущего времени по умолчанию
-    function setInitialTime() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      timeInput.value = `${hours}:${minutes}`;
-    }
-    setInitialTime();
-
-    // Сохранение в LocalStorage
     function saveStorage() {
       localStorage.setItem('ukniga_clients', JSON.stringify(clients));
       render();
     }
 
-    // Добавление записи
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-
       const newClient = {
         id: Date.now(),
         name: nameInput.value.trim(),
-        desc: descInput.value.trim(),
-        price: parseFloat(priceInput.value) || 0,
-        time: timeInput.value.trim(),
-        createdAt: new Date().toLocaleDateString('ru-RU')
+        desc: descInput.value.trim()
       };
-
       clients.unshift(newClient);
       saveStorage();
-
-      // Очистка полей
       nameInput.value = '';
       descInput.value = '';
-      priceInput.value = '';
-      setInitialTime();
+      nameInput.blur();
+      descInput.blur();
     });
 
-    // Удаление записи
     function deleteClient(id) {
       clients = clients.filter(c => c.id !== id);
       saveStorage();
     }
 
-    // Рендер списка
     function render(query = '') {
       clientsList.innerHTML = '';
-
       const filtered = clients.filter(c => 
         c.name.toLowerCase().includes(query.toLowerCase()) || 
         c.desc.toLowerCase().includes(query.toLowerCase())
       );
 
-      // Обновление метрик
       totalCountEl.textContent = clients.length;
-      const totalSum = clients.reduce((sum, c) => sum + c.price, 0);
-      totalSumEl.textContent = `${totalSum.toLocaleString('ru-RU')} ₽`;
 
       if (filtered.length === 0) {
         clientsList.innerHTML = `<div class="empty-state">${query ? 'Ничего не найдено' : 'Записей пока нет'}</div>`;
@@ -547,51 +394,27 @@
         item.innerHTML = `
           <div class="client-header">
             <div class="client-name">${escapeHtml(client.name)}</div>
-            <div class="client-price">${client.price.toLocaleString('ru-RU')} ₽</div>
-          </div>
-          <div class="client-desc">${escapeHtml(client.desc)}</div>
-          <div class="client-footer">
-            <span>📅 ${escapeHtml(client.time)} (${client.createdAt})</span>
             <button class="btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
           </div>
+          <div class="client-desc">${escapeHtml(client.desc)}</div>
         `;
         clientsList.appendChild(item);
       });
     }
 
     function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, (m) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-      })[m]);
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
     }
 
-    // Поиск
-    searchInput.addEventListener('input', (e) => {
-      render(e.target.value);
-    });
-
-    // Первоначальный рендер
+    searchInput.addEventListener('input', (e) => render(e.target.value));
     render();
 
-    // Вшитый Service Worker для оффлайн работы без внешних файлов
+    // Автономная работа PWA
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'ukniga-v1';
-        self.addEventListener('install', e => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', e => {
-          e.waitUntil(clients.claim());
-        });
-        self.addEventListener('fetch', e => {
-          e.respondWith(
-            fetch(e.request).catch(() => caches.match(e.request))
-          );
-        });
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
       `;
       const blob = new Blob([swCode], { type: 'application/javascript' });
       navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
