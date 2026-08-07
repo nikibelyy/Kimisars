@@ -3,721 +3,599 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Юкнига — CRM</title>
+
+  <!-- PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Записи">
-  <meta name="theme-color" content="#121216">
-  <title>Записи</title>
+  <meta name="apple-mobile-web-app-title" content="Юкнига">
+  <meta name="theme-color" content="#0e091e">
 
-  <script>
-    const manifest = {
-      "name": "Записная Книжка",
-      "short_name": "Записи",
-      "start_url": ".",
-      "display": "standalone",
-      "background_color": "#121216",
-      "theme_color": "#7B5CFF",
-      "icons": [{
-        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='%237B5CFF'/><text x='50%' y='68%' font-size='55' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>Ю</text></svg>",
-        "sizes": "192x192 512x512",
-        "type": "image/svg+xml"
-      }]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  </script>
+  <!-- Manifest Data URI -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Юкнига CRM","short_name":"Юкнига","start_url":".","display":"standalone","background_color":"#0e091e","theme_color":"#0e091e","icons":[{"src":"https://yoomoney.ru/favicon.ico","sizes":"192x192","type":"image/png"}]}'>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #121216;
-      --card: #1C1C22;
-      --card-active: #262630;
-      --accent: #7B5CFF;
-      --accent-glow: rgba(123, 92, 255, 0.4);
-      --mint: #00D692;
-      --mint-glow: rgba(0, 214, 146, 0.3);
-      --text: #FFFFFF;
-      --text-sub: #8E8E93;
-      --border: rgba(255, 255, 255, 0.08);
-      --radius: 22px;
+      --primary: #8b3dff;
+      --primary-hover: #7322f2;
+      --primary-glow: rgba(139, 61, 255, 0.4);
+      --bg-gradient: linear-gradient(135deg, #0e091e 0%, #1c103b 50%, #2b0b46 100%);
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --accent-green: #30d158;
+      --danger: #ff453a;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-top: calc(env(safe-area-inset-top) + 8px);
-      padding-bottom: calc(env(safe-area-inset-bottom) + 100px);
-      overflow-x: hidden;
       user-select: none;
     }
 
-    /* Dynamic Island Header */
-    .island-header-container {
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
       display: flex;
-      justify-content: center;
-      padding: 6px 20px 14px;
+      flex-direction: column;
+      align-items: center;
+      padding: 90px 16px 40px 16px;
+      position: relative;
+      overflow-x: hidden;
     }
 
+    /* Фоновые свечения */
+    .bg-glow-1, .bg-glow-2 {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: 0;
+      pointer-events: none;
+      animation: float 10s ease-in-out infinite alternate;
+    }
+
+    .bg-glow-1 {
+      width: 320px;
+      height: 320px;
+      background: rgba(139, 61, 255, 0.25);
+      top: -50px;
+      left: -50px;
+    }
+
+    .bg-glow-2 {
+      width: 360px;
+      height: 360px;
+      background: rgba(255, 107, 107, 0.15);
+      bottom: -80px;
+      right: -80px;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 40px) scale(1.1); }
+    }
+
+    /* iPhone Dynamic Island */
     .dynamic-island {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
       background: #000000;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 8px 24px;
-      border-radius: 30px;
+      width: 210px;
+      height: 36px;
+      border-radius: 20px;
+      z-index: 1000;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-      animation: islandPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .island-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--accent);
+    .dynamic-island:hover {
+      width: 230px;
+      box-shadow: 0 12px 30px rgba(139, 61, 255, 0.3),
+                  0 0 0 1px rgba(139, 61, 255, 0.4);
+    }
+
+    .island-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .island-logo {
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #8b3dff, #6310f5);
       border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      color: #fff;
     }
 
     .island-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #FFF;
-      letter-spacing: -0.3px;
-    }
-
-    /* Табы переключения */
-    .tabs-container {
-      display: flex;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 4px;
-      margin: 0 20px 15px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: none;
-      color: var(--text-sub);
       font-size: 14px;
-      font-weight: 600;
-      border-radius: 12px;
-      transition: all 0.25s ease;
-      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: #ffffff;
     }
 
-    .tab-btn.active {
-      background: var(--accent);
-      color: #FFF;
-      box-shadow: 0 4px 12px var(--accent-glow);
+    .island-indicator {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
     }
 
-    /* Поиск */
-    .search-box {
-      padding: 0 20px 15px;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
     }
 
-    .search-input {
+    /* Контейнер приложения */
+    .app-container {
       width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 18px;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-      transition: all 0.25s ease;
+      max-width: 460px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+    /* Общие стили карточек */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.5s ease-out;
     }
 
-    /* Список записей */
-    .notebook-list {
-      padding: 0 20px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Форма ввода (Без окон, всё прямо на экране) */
+    .form-group {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .note-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
+    .input-field, .textarea-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+      user-select: text;
+    }
+
+    .textarea-field {
+      resize: none;
+      height: 80px;
+    }
+
+    .input-field::placeholder, .textarea-field::placeholder {
+      color: #71717a;
+    }
+
+    .input-field:focus, .textarea-field:focus {
+      border-color: var(--primary);
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.2);
+    }
+
+    .row-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Фирменная кнопка */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #8b3dff 0%, #6310f5 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px var(--primary-glow);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shine 4s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      20% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    /* Статистика */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Список клиентов */
+    .clients-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      transition: transform 0.2s ease;
-      animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+      gap: 12px;
     }
 
-    .note-card:active {
-      transform: scale(0.98);
-      background: var(--card-active);
+    .client-item {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      transition: all 0.2s ease;
     }
 
-    .note-header {
+    .client-item:hover {
+      border-color: rgba(139, 61, 255, 0.3);
+    }
+
+    .client-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
     }
 
-    .note-name {
-      font-size: 17px;
+    .client-name {
+      font-size: 16px;
       font-weight: 700;
-      color: #FFF;
+      color: #fff;
     }
 
-    .note-date {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
-
-    .income-amount {
-      font-size: 18px;
+    .client-price {
+      font-size: 16px;
       font-weight: 800;
-      color: var(--mint);
+      color: var(--accent-green);
     }
 
-    .income-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 12px;
-      border-radius: 14px;
-      border-left: 3px solid var(--mint);
-    }
-
-    .detail-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .detail-label {
-      font-size: 11px;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .detail-value {
+    .client-desc {
       font-size: 14px;
-      font-weight: 600;
-      color: #FFF;
-      margin-top: 2px;
-    }
-
-    .note-body {
-      font-size: 15px;
+      color: #d1d1d6;
       line-height: 1.4;
-      color: #D0D0E0;
       white-space: pre-wrap;
       word-break: break-word;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 12px;
-      border-radius: 14px;
-      border-left: 3px solid var(--accent);
     }
 
-    .note-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 4px;
-    }
-
-    .btn-action {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 4px 8px;
-    }
-
-    .btn-action.delete {
-      color: #FF453A;
-    }
-
-    /* Нижняя панель с кнопками добавления */
-    .floating-bar {
-      position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 20px);
-      left: 20px;
-      right: 20px;
-      display: flex;
-      gap: 12px;
-      z-index: 100;
-    }
-
-    .btn-fab {
-      flex: 1;
-      padding: 16px;
-      border-radius: 20px;
-      border: none;
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .btn-fab:active {
-      transform: scale(0.95);
-    }
-
-    .btn-fab.note {
-      background: linear-gradient(135deg, #7B5CFF 0%, #5A35FF 100%);
-      box-shadow: 0 8px 20px var(--accent-glow);
-    }
-
-    .btn-fab.income {
-      background: linear-gradient(135deg, #00D692 0%, #00B37A 100%);
-      box-shadow: 0 8px 20px var(--mint-glow);
-    }
-
-    /* Модалки */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      align-items: flex-end;
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal {
-      width: 100%;
-      background: var(--card);
-      border-top-left-radius: 28px;
-      border-top-right-radius: 28px;
-      padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
-      transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
-    }
-
-    .modal-overlay.active .modal {
-      transform: translateY(0);
-    }
-
-    .modal-header {
+    .client-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .close-btn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      color: var(--text-sub);
-      width: 32px;
-      height: 32px;
-      border-radius: 16px;
-      font-size: 16px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: var(--text-muted);
     }
 
-    .form-control {
-      width: 100%;
-      background: #121216;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .form-control:focus {
-      border-color: var(--accent);
-    }
-
-    textarea.form-control {
-      min-height: 90px;
-      resize: none;
-    }
-
-    .submit-btn {
-      width: 100%;
-      color: white;
+    .btn-delete {
+      background: none;
       border: none;
-      padding: 16px;
-      border-radius: 16px;
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 10px;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
     }
 
-    .submit-btn.purple {
-      background: var(--accent);
-      box-shadow: 0 6px 20px var(--accent-glow);
-    }
-
-    .submit-btn.green {
-      background: var(--mint);
-      box-shadow: 0 6px 20px var(--mint-glow);
+    .btn-delete:active {
+      background: rgba(255, 69, 58, 0.15);
     }
 
     .empty-state {
       text-align: center;
-      padding: 50px 20px;
-      color: var(--text-sub);
-      font-size: 15px;
+      padding: 30px 10px;
+      color: var(--text-muted);
+      font-size: 14px;
     }
 
-    @keyframes islandPop {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    /* Поиск */
+    .search-box {
+      margin-bottom: 12px;
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+    @media (max-width: 480px) {
+      body {
+        padding-top: 80px;
+      }
+      .glass-card {
+        padding: 18px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Dynamic Island Header -->
-  <div class="island-header-container">
-    <div class="dynamic-island">
-      <div class="island-dot"></div>
-      <div class="island-title">Записи</div>
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <!-- Dynamic Island -->
+  <div class="dynamic-island">
+    <div class="island-brand">
+      <div class="island-logo">Ю</div>
+      <span class="island-title">Юкнига</span>
     </div>
+    <div class="island-indicator"></div>
   </div>
 
-  <!-- Переключатель разделов -->
-  <div class="tabs-container">
-    <button class="tab-btn active" id="tabNotesBtn" onclick="switchTab('notes')">📝 Заметки</button>
-    <button class="tab-btn" id="tabIncomeBtn" onclick="switchTab('income')">💰 Доходы</button>
-  </div>
+  <div class="app-container">
 
-  <!-- Поиск -->
-  <div class="search-box">
-    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по записям...">
-  </div>
-
-  <!-- Список -->
-  <div class="notebook-list" id="notebookList"></div>
-
-  <!-- Нижние кнопки действия -->
-  <div class="floating-bar">
-    <button class="btn-fab note" onclick="openNoteModal()">✏️ Запись</button>
-    <button class="btn-fab income" onclick="openIncomeModal()">💰 Доход</button>
-  </div>
-
-  <!-- Модалка обычного текста -->
-  <div class="modal-overlay" id="noteModalOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="noteModalTitle">Новая запись</div>
-        <button class="close-btn" onclick="closeNoteModal()">✕</button>
+    <!-- Форма записи -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>Записать клиента</span>
       </div>
-      <form id="noteForm">
-        <input type="hidden" id="noteId">
-        <div class="form-group">
-          <label>Тема / Имя</label>
-          <input type="text" id="noteName" class="form-control" placeholder="Например: Проект X" required>
+      <form id="addClientForm" class="form-group">
+        <input type="text" id="clientName" class="input-field" placeholder="Имя клиента" required autocomplete="off">
+        <textarea id="clientDesc" class="textarea-field" placeholder="Описание (услуга, заметки, детали...)" required></textarea>
+        
+        <div class="row-inputs">
+          <input type="number" id="clientPrice" class="input-field" placeholder="Сумма (₽)" required min="0">
+          <input type="text" id="clientTime" class="input-field" placeholder="Время / Дата" required>
         </div>
-        <div class="form-group">
-          <label>Текст записи</label>
-          <textarea id="noteText" class="form-control" placeholder="Подробности..."></textarea>
-        </div>
-        <button type="submit" class="submit-btn purple">Сохранить запись</button>
+
+        <button type="submit" class="btn-submit">
+          <span>Сохранить запись</span>
+        </button>
       </form>
     </div>
-  </div>
 
-  <!-- Модалка дохода (Где, За что, За кого, Сколько) -->
-  <div class="modal-overlay" id="incomeModalOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title" id="incomeModalTitle">Получен доход</div>
-        <button class="close-btn" onclick="closeIncomeModal()">✕</button>
+    <!-- Статистика -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalCount">0</div>
+        <div class="stat-label">Всего записей</div>
       </div>
-      <form id="incomeForm">
-        <input type="hidden" id="incomeId">
-        <div class="form-group">
-          <label>Где (Куда пришло / Карта)</label>
-          <input type="text" id="incomeWhere" class="form-control" placeholder="Например: Сбербанк / Наличка" required>
-        </div>
-        <div class="form-group">
-          <label>За что (Услуга / Товар)</label>
-          <input type="text" id="incomeWhat" class="form-control" placeholder="Например: Разработка сайта" required>
-        </div>
-        <div class="form-group">
-          <label>За кого (Клиент / Заказчик)</label>
-          <input type="text" id="incomeWho" class="form-control" placeholder="Например: Антон" required>
-        </div>
-        <div class="form-group">
-          <label>Сколько (Сумма ₽)</label>
-          <input type="number" id="incomeAmount" class="form-control" placeholder="0" required>
-        </div>
-        <button type="submit" class="submit-btn green">Записать доход</button>
-      </form>
+      <div class="stat-card">
+        <div class="stat-value" id="totalSum">0 ₽</div>
+        <div class="stat-label">Общая сумма</div>
+      </div>
     </div>
+
+    <!-- Список клиентов -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span>Записи</span>
+      </div>
+      
+      <div class="search-box">
+        <input type="text" id="searchInput" class="input-field" placeholder="Поиск по имени или описанию...">
+      </div>
+
+      <div id="clientsList" class="clients-list">
+        <!-- Список заполняется через JS -->
+      </div>
+    </div>
+
   </div>
 
   <script>
-    let currentTab = 'notes'; // 'notes' или 'income'
+    // Инициализация хранилища
+    let clients = JSON.parse(localStorage.getItem('ukniga_clients')) || [];
 
-    let notes = JSON.parse(localStorage.getItem('my_app_notes')) || [];
-    let incomes = JSON.parse(localStorage.getItem('my_app_incomes')) || [];
+    const form = document.getElementById('addClientForm');
+    const nameInput = document.getElementById('clientName');
+    const descInput = document.getElementById('clientDesc');
+    const priceInput = document.getElementById('clientPrice');
+    const timeInput = document.getElementById('clientTime');
+    const clientsList = document.getElementById('clientsList');
+    const searchInput = document.getElementById('searchInput');
+    const totalCountEl = document.getElementById('totalCount');
+    const totalSumEl = document.getElementById('totalSum');
 
-    function saveAll() {
-      localStorage.setItem('my_app_notes', JSON.stringify(notes));
-      localStorage.setItem('my_app_incomes', JSON.stringify(incomes));
-      render();
-    }
-
-    function switchTab(tab) {
-      currentTab = tab;
-      document.getElementById('tabNotesBtn').classList.toggle('active', tab === 'notes');
-      document.getElementById('tabIncomeBtn').classList.toggle('active', tab === 'income');
-      render();
-    }
-
-    function render() {
-      const list = document.getElementById('notebookList');
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      list.innerHTML = '';
-
-      if (currentTab === 'notes') {
-        const filtered = notes.filter(item => 
-          item.name.toLowerCase().includes(search) || (item.text && item.text.toLowerCase().includes(search))
-        );
-
-        if (filtered.length === 0) {
-          list.innerHTML = '<div class="empty-state">Заметок пока нет</div>';
-          return;
-        }
-
-        filtered.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'note-card';
-          card.innerHTML = `
-            <div class="note-header">
-              <div>
-                <div class="note-name">${escapeHTML(item.name)}</div>
-                <div class="note-date">${item.date}</div>
-              </div>
-            </div>
-            ${item.text ? `<div class="note-body">${escapeHTML(item.text)}</div>` : ''}
-            <div class="note-actions">
-              <button class="btn-action" onclick="editNote('${item.id}')">Изменить</button>
-              <button class="btn-action delete" onclick="deleteNote('${item.id}')">Удалить</button>
-            </div>
-          `;
-          list.appendChild(card);
-        });
-
-      } else {
-        // Таб Доходы
-        const filtered = incomes.filter(item => 
-          item.where.toLowerCase().includes(search) || 
-          item.what.toLowerCase().includes(search) || 
-          item.who.toLowerCase().includes(search)
-        );
-
-        if (filtered.length === 0) {
-          list.innerHTML = '<div class="empty-state">Записей о доходах пока нет</div>';
-          return;
-        }
-
-        filtered.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'note-card';
-          card.innerHTML = `
-            <div class="note-header">
-              <div>
-                <div class="note-name">Закого: ${escapeHTML(item.who)}</div>
-                <div class="note-date">${item.date}</div>
-              </div>
-              <div class="income-amount">+${Number(item.amount).toLocaleString('ru-RU')} ₽</div>
-            </div>
-            <div class="income-details">
-              <div class="detail-item">
-                <div class="detail-label">Где</div>
-                <div class="detail-value">${escapeHTML(item.where)}</div>
-              </div>
-              <div class="detail-item">
-                <div class="detail-label">За что</div>
-                <div class="detail-value">${escapeHTML(item.what)}</div>
-              </div>
-            </div>
-            <div class="note-actions">
-              <button class="btn-action" onclick="editIncome('${item.id}')">Изменить</button>
-              <button class="btn-action delete" onclick="deleteIncome('${item.id}')">Удалить</button>
-            </div>
-          `;
-          list.appendChild(card);
-        });
-      }
-    }
-
-    function escapeHTML(str) {
-      return (str || '').replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
-    }
-
-    function getNowDate() {
+    // Установка текущего времени по умолчанию
+    function setInitialTime() {
       const now = new Date();
-      return now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }) + ', ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      timeInput.value = `${hours}:${minutes}`;
+    }
+    setInitialTime();
+
+    // Сохранение в LocalStorage
+    function saveStorage() {
+      localStorage.setItem('ukniga_clients', JSON.stringify(clients));
+      render();
     }
 
-    // --- Управление Заметками ---
-    const noteModalOverlay = document.getElementById('noteModalOverlay');
-    function openNoteModal() { noteModalOverlay.classList.add('active'); }
-    function closeNoteModal() { 
-      noteModalOverlay.classList.remove('active'); 
-      document.getElementById('noteForm').reset();
-      document.getElementById('noteId').value = '';
-    }
-
-    document.getElementById('noteForm').addEventListener('submit', (e) => {
+    // Добавление записи
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const id = document.getElementById('noteId').value;
-      const name = document.getElementById('noteName').value;
-      const text = document.getElementById('noteText').value;
 
-      if (id) {
-        const item = notes.find(x => x.id === id);
-        if (item) { item.name = name; item.text = text; }
-      } else {
-        notes.unshift({ id: Date.now().toString(), name, text, date: getNowDate() });
-      }
+      const newClient = {
+        id: Date.now(),
+        name: nameInput.value.trim(),
+        desc: descInput.value.trim(),
+        price: parseFloat(priceInput.value) || 0,
+        time: timeInput.value.trim(),
+        createdAt: new Date().toLocaleDateString('ru-RU')
+      };
 
-      saveAll();
-      closeNoteModal();
+      clients.unshift(newClient);
+      saveStorage();
+
+      // Очистка полей
+      nameInput.value = '';
+      descInput.value = '';
+      priceInput.value = '';
+      setInitialTime();
     });
 
-    window.editNote = function(id) {
-      const item = notes.find(x => x.id === id);
-      if (!item) return;
-      document.getElementById('noteId').value = item.id;
-      document.getElementById('noteName').value = item.name;
-      document.getElementById('noteText').value = item.text || '';
-      openNoteModal();
-    };
-
-    window.deleteNote = function(id) {
-      if (confirm('Удалить эту запись?')) {
-        notes = notes.filter(x => x.id !== id);
-        saveAll();
-      }
-    };
-
-    // --- Управление Доходами ---
-    const incomeModalOverlay = document.getElementById('incomeModalOverlay');
-    function openIncomeModal() { incomeModalOverlay.classList.add('active'); }
-    function closeIncomeModal() { 
-      incomeModalOverlay.classList.remove('active'); 
-      document.getElementById('incomeForm').reset();
-      document.getElementById('incomeId').value = '';
+    // Удаление записи
+    function deleteClient(id) {
+      clients = clients.filter(c => c.id !== id);
+      saveStorage();
     }
 
-    document.getElementById('incomeForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const id = document.getElementById('incomeId').value;
-      const where = document.getElementById('incomeWhere').value;
-      const what = document.getElementById('incomeWhat').value;
-      const who = document.getElementById('incomeWho').value;
-      const amount = document.getElementById('incomeAmount').value;
+    // Рендер списка
+    function render(query = '') {
+      clientsList.innerHTML = '';
 
-      if (id) {
-        const item = incomes.find(x => x.id === id);
-        if (item) { item.where = where; item.what = what; item.who = who; item.amount = amount; }
-      } else {
-        incomes.unshift({ id: Date.now().toString(), where, what, who, amount, date: getNowDate() });
+      const filtered = clients.filter(c => 
+        c.name.toLowerCase().includes(query.toLowerCase()) || 
+        c.desc.toLowerCase().includes(query.toLowerCase())
+      );
+
+      // Обновление метрик
+      totalCountEl.textContent = clients.length;
+      const totalSum = clients.reduce((sum, c) => sum + c.price, 0);
+      totalSumEl.textContent = `${totalSum.toLocaleString('ru-RU')} ₽`;
+
+      if (filtered.length === 0) {
+        clientsList.innerHTML = `<div class="empty-state">${query ? 'Ничего не найдено' : 'Записей пока нет'}</div>`;
+        return;
       }
 
-      switchTab('income');
-      saveAll();
-      closeIncomeModal();
+      filtered.forEach(client => {
+        const item = document.createElement('div');
+        item.className = 'client-item';
+        item.innerHTML = `
+          <div class="client-header">
+            <div class="client-name">${escapeHtml(client.name)}</div>
+            <div class="client-price">${client.price.toLocaleString('ru-RU')} ₽</div>
+          </div>
+          <div class="client-desc">${escapeHtml(client.desc)}</div>
+          <div class="client-footer">
+            <span>📅 ${escapeHtml(client.time)} (${client.createdAt})</span>
+            <button class="btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
+          </div>
+        `;
+        clientsList.appendChild(item);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[m]);
+    }
+
+    // Поиск
+    searchInput.addEventListener('input', (e) => {
+      render(e.target.value);
     });
 
-    window.editIncome = function(id) {
-      const item = incomes.find(x => x.id === id);
-      if (!item) return;
-      document.getElementById('incomeId').value = item.id;
-      document.getElementById('incomeWhere').value = item.where;
-      document.getElementById('incomeWhat').value = item.what;
-      document.getElementById('incomeWho').value = item.who;
-      document.getElementById('incomeAmount').value = item.amount;
-      openIncomeModal();
-    };
+    // Первоначальный рендер
+    render();
 
-    window.deleteIncome = function(id) {
-      if (confirm('Удалить эту запись о доходе?')) {
-        incomes = incomes.filter(x => x.id !== id);
-        saveAll();
-      }
-    };
-
-    document.getElementById('searchInput').addEventListener('input', render);
-
-    // Off-line Service Worker
+    // Вшитый Service Worker для оффлайн работы без внешних файлов
     if ('serviceWorker' in navigator) {
       const swCode = `
-        self.addEventListener('install', e => e.waitUntil(caches.open('app-v2').then(c => c.addAll(['./']))));
-        self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+        const CACHE_NAME = 'ukniga-v1';
+        self.addEventListener('install', e => {
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', e => {
+          e.waitUntil(clients.claim());
+        });
+        self.addEventListener('fetch', e => {
+          e.respondWith(
+            fetch(e.request).catch(() => caches.match(e.request))
+          );
+        });
       `;
-      const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
     }
-
-    render();
   </script>
 </body>
 </html>
