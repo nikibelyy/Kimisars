@@ -61,6 +61,8 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none; /* Запрет выделения в iOS */
+      -webkit-touch-callout: none; /* Запрет всплывающих меню при долгом нажатии */
     }
 
     body {
@@ -71,10 +73,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* Отступы с учетом "челки" iPhone, убран верхний отступ под остров */
+      /* Отступы с учетом "челки" iPhone */
       padding: calc(env(safe-area-inset-top, 20px) + 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
       position: relative;
       overflow-x: hidden;
+      overscroll-behavior-y: none; /* Полный запрет pull-to-refresh (эффекта пружины) */
     }
 
     /* Фоновые свечения */
@@ -141,11 +144,12 @@
       outline: none;
       transition: all 0.2s ease;
       user-select: text;
+      -webkit-user-select: text; /* Разрешаем выделение текста внутри инпутов */
     }
 
     .textarea-field {
       resize: none;
-      height: 140px; /* Сделал поле ввода больше, раз это заметки */
+      height: 140px;
     }
 
     .input-field::placeholder, .textarea-field::placeholder { color: #71717a; }
@@ -264,7 +268,6 @@
   </div>
 
   <script>
-    // Хранилище (название ключа оставил старым, чтобы старые записи не потерялись)
     let clients = JSON.parse(localStorage.getItem('ukniga_clients')) || [];
 
     const form = document.getElementById('addClientForm');
