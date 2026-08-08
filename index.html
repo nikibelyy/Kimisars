@@ -1,90 +1,85 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ЮWheel — Испытай удачу</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Подключение VK ID SDK -->
-  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Access</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js для реактивности и анимаций -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body { background-color: #0d0d11; color: #f3f4f6; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
 </head>
-<body>
+<body x-data="{ isPaid: false, loading: false }">
 
-  <!-- Шапка сайта -->
-  <header class="header">
-    <div class="container header-container">
-      <div class="logo">Ю<span>Wheel</span></div>
-      
-      <div class="user-block" id="userBlock">
-        <button class="btn btn-vk" id="vkAuthBtn">Войти через VK</button>
-      </div>
-    </div>
-  </header>
+    <!-- ЭКРАН 1: ПЕЙВОЛЛ / ОПЛАТА -->
+    <template x-if="!isPaid">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="glass w-full max-w-md p-6 rounded-2xl shadow-2xl text-center animate__animated animate__fadeIn">
+                <div class="w-16 h-16 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                
+                <h1 class="text-2xl font-bold mb-2">Закрытое Сообщество</h1>
+                <p class="text-gray-400 text-sm mb-6">Доступ предоставляется только после подписки или единоразовой оплаты.</p>
+                
+                <div class="bg-white/5 p-4 rounded-xl mb-6 text-left border border-white/10">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">Доступ:</span>
+                        <span class="font-bold text-emerald-400">Навсегда</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-gray-300">Стоимость:</span>
+                        <span class="font-bold text-xl">500 ₽</span>
+                    </div>
+                </div>
 
-  <main class="container main-content">
-    
-    <!-- Панель управления балансом -->
-    <section class="card balance-card">
-      <div class="balance-info">
-        <span class="label">Ваш баланс</span>
-        <h2 id="balanceValue">0 ₽</h2>
-      </div>
-      <div class="balance-actions">
-        <button class="btn btn-primary" onclick="openModal('depositModal')">Пополнить</button>
-        <button class="btn btn-secondary" onclick="openModal('withdrawModal')">Вывести</button>
-      </div>
-    </section>
-
-    <!-- Секция Игры (Колесо) -->
-    <section class="card game-card">
-      <h2>Колесо Фортуны</h2>
-      <p class="subtitle">Чем выше ставка, тем больше шанс на победу!</p>
-
-      <div class="wheel-container">
-        <div class="pointer"></div>
-        <canvas id="wheel" width="340" height="340"></canvas>
-      </div>
-
-      <div class="bet-controls">
-        <div class="input-group">
-          <input type="number" id="betAmount" placeholder="Сумма ставки" min="10" value="100">
-          <span class="currency">₽</span>
+                <!-- Кнопка Имитации Оплаты -->
+                <button 
+                    @click="loading = true; setTimeout(() => { loading = false; isPaid = true; }, 1500)"
+                    class="w-full py-3 px-6 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all transform active:scale-95 shadow-lg flex items-center justify-center">
+                    <span x-show="!loading">Оплатить и войти</span>
+                    <span x-show="loading" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                </button>
+            </div>
         </div>
-        <button class="btn btn-accent" id="spinBtn">Сделать ставку</button>
-      </div>
+    </template>
 
-      <!-- Список участников текущего раунда -->
-      <div class="players-list">
-        <h3>Участники раунда</h3>
-        <ul id="playersContainer">
-          <!-- Динамические данные -->
-        </ul>
-      </div>
-    </section>
+    <!-- ЭКРАН 2: ПРИВАТНЫЙ КОНТЕНТ (Показывается после оплаты) -->
+    <template x-if="isPaid">
+        <div class="min-h-screen pb-12 animate__animated animate__fadeIn">
+            <!-- Шапка -->
+            <header class="glass sticky top-0 z-50 px-4 py-3 border-b border-white/10 flex justify-between items-center">
+                <span class="font-bold text-lg tracking-wide text-red-500">PRIVATE VRN</span>
+                <button @click="isPaid = false" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20">Выход</button>
+            </header>
 
-  </main>
+            <!-- Лента контента -->
+            <main class="max-w-md mx-auto p-4 space-y-6">
+                <!-- Карточка контента 1 -->
+                <article class="glass rounded-xl overflow-hidden border border-white/10">
+                    <div class="p-3 flex items-center space-x-3 border-b border-white/5">
+                        <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center font-bold text-xs">A</div>
+                        <div>
+                            <p class="text-sm font-semibold">Администратор</p>
+                            <p class="text-xs text-gray-400">10 минут назад</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-sm text-gray-200">Пример приватного поста или новости.</p>
+                    </div>
+                    <div class="bg-black/40 h-48 flex items-center justify-center text-gray-500 text-xs">
+                        [ Медиаконтент ]
+                    </div>
+                </article>
+            </main>
+        </div>
+    </template>
 
-  <!-- Модальное окно пополнения -->
-  <div class="modal" id="depositModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
-      <h3>Пополнение баланса</h3>
-      <input type="number" id="depositAmount" placeholder="Введите сумму (₽)" min="50">
-      <button class="btn btn-primary btn-full" onclick="handleDeposit()">Перейти к оплате</button>
-    </div>
-  </div>
-
-  <!-- Модальное окно вывода -->
-  <div class="modal" id="withdrawModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
-      <h3>Вывод средств</h3>
-      <input type="text" id="withdrawWallet" placeholder="Номер ЮMoney кошелька или карты">
-      <input type="number" id="withdrawAmount" placeholder="Сумма вывода (₽)" min="100">
-      <button class="btn btn-primary btn-full" onclick="handleWithdraw()">Запросить вывод</button>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
