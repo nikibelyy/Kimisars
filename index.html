@@ -2,345 +2,89 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Юзаметки</title>
-
-  <!-- PWA & iOS Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Юзаметки">
-  <meta name="theme-color" content="#0e091e">
-
-  <!-- Векторная иконка для современных браузеров и Android -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%238b3dff'/%3E%3Ctext x='96' y='135' font-family='Arial' font-size='110' font-weight='bold' fill='white' text-anchor='middle'%3EЮ%3C/text%3E%3C/svg%3E">
-
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%D0%AE%D0%B7%D0%B0%D0%BC%D0%B5%D1%82%D0%BA%D0%B8%22%2C%22short_name%22%3A%22%D0%AE%D0%B7%D0%B0%D0%BC%D0%B5%D1%82%D0%BA%D0%B8%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e091e%22%2C%22theme_color%22%3A%22%230e091e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20192%20192'%253E%253Crect%20width%3D'192'%20height%3D'192'%20rx%3D'40'%20fill%3D'%25238b3dff'%2F%253E%253Ctext%20x%3D'96'%20y%3D'135'%20font-family%3D'Arial'%20font-size%3D'110'%20font-weight%3D'bold'%20fill%3D'white'%20text-anchor%3D'middle'%253E%D0%AE%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script>
-    // Генерация PNG-иконки для iOS на лету (чтобы точно появился значок)
-    (function generateAppleIcon() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 192; canvas.height = 192;
-      const ctx = canvas.getContext('2d');
-      const grad = ctx.createLinearGradient(0, 0, 192, 192);
-      grad.addColorStop(0, '#8b3dff'); grad.addColorStop(1, '#6310f5');
-      ctx.fillStyle = grad;
-      ctx.beginPath(); ctx.roundRect(0, 0, 192, 192, 40); ctx.fill();
-      ctx.fillStyle = 'white'; ctx.font = 'bold 110px Arial';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('Ю', 96, 106);
-      const link = document.createElement('link');
-      link.rel = 'apple-touch-icon';
-      link.href = canvas.toDataURL('image/png');
-      document.head.appendChild(link);
-    })();
-  </script>
-
-  <style>
-    :root {
-      --primary: #8b3dff;
-      --primary-glow: rgba(139, 61, 255, 0.4);
-      --bg-gradient: linear-gradient(135deg, #0e091e 0%, #1c103b 50%, #2b0b46 100%);
-      --card-bg: rgba(255, 255, 255, 0.07);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --text-main: #ffffff;
-      --text-muted: #a1a1aa;
-      --accent-green: #30d158;
-      --danger: #ff453a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none; /* Запрет выделения в iOS */
-      -webkit-touch-callout: none; /* Запрет всплывающих меню при долгом нажатии */
-    }
-
-    body {
-      min-height: 100vh;
-      background: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      /* Отступы с учетом "челки" iPhone */
-      padding: calc(env(safe-area-inset-top, 20px) + 20px) 16px env(safe-area-inset-bottom, 20px) 16px;
-      position: relative;
-      overflow-x: hidden;
-      overscroll-behavior-y: none; /* Полный запрет pull-to-refresh (эффекта пружины) */
-    }
-
-    /* Фоновые свечения */
-    .bg-glow-1, .bg-glow-2 {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(120px);
-      z-index: 0;
-      pointer-events: none;
-      animation: float 10s ease-in-out infinite alternate;
-    }
-    .bg-glow-1 { width: 320px; height: 320px; background: rgba(139, 61, 255, 0.25); top: -50px; left: -50px; }
-    .bg-glow-2 { width: 360px; height: 360px; background: rgba(255, 107, 107, 0.15); bottom: -80px; right: -80px; animation-delay: -5s; }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(30px, 40px) scale(1.1); }
-    }
-
-    /* Контейнер приложения */
-    .app-container {
-      width: 100%;
-      max-width: 460px;
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Карточки */
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: #fff;
-    }
-
-    /* Элементы формы */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .input-field, .textarea-field {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 16px;
-      color: #fff;
-      outline: none;
-      transition: all 0.2s ease;
-      user-select: text;
-      -webkit-user-select: text; /* Разрешаем выделение текста внутри инпутов */
-    }
-
-    .textarea-field {
-      resize: none;
-      height: 140px;
-    }
-
-    .input-field::placeholder, .textarea-field::placeholder { color: #71717a; }
-    .input-field:focus, .textarea-field:focus {
-      border-color: var(--primary);
-      background: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.2);
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: linear-gradient(135deg, #8b3dff 0%, #6310f5 100%);
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 16px;
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 10px 20px var(--primary-glow);
-      transition: all 0.2s ease;
-      margin-top: 4px;
-    }
-
-    .btn-submit:active { transform: scale(0.97); }
-
-    /* Статистика */
-    .stat-card {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 14px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .stat-value { font-size: 24px; font-weight: 800; color: #fff; }
-    .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-    /* Список */
-    .clients-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .client-item {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .client-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .client-desc {
-      font-size: 16px;
-      color: #ffffff;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .btn-delete {
-      background: rgba(255, 69, 58, 0.1);
-      border: none;
-      color: var(--danger);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 10px;
-    }
-
-    .btn-delete:active { background: rgba(255, 69, 58, 0.2); }
-    .empty-state { text-align: center; padding: 20px 10px; color: var(--text-muted); font-size: 15px; }
-
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ЮWheel — Испытай удачу</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Подключение VK ID SDK -->
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
 </head>
 <body>
 
-  <div class="bg-glow-1"></div>
-  <div class="bg-glow-2"></div>
-
-  <div class="app-container">
-
-    <!-- Форма добавления -->
-    <div class="glass-card">
-      <div class="card-title">Новая заметка</div>
-      <form id="addClientForm" class="form-group">
-        <textarea id="clientDesc" class="textarea-field" placeholder="Текст вашей заметки..." required></textarea>
-        <button type="submit" class="btn-submit">Сохранить</button>
-      </form>
-    </div>
-
-    <!-- Список записей -->
-    <div class="glass-card">
-      <div class="stat-card">
-        <div class="stat-value" id="totalCount">0</div>
-        <div class="stat-label">Всего заметок</div>
-      </div>
+  <!-- Шапка сайта -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo">Ю<span>Wheel</span></div>
       
-      <div class="form-group" style="margin-bottom: 16px;">
-        <input type="text" id="searchInput" class="input-field" placeholder="Поиск по заметкам...">
+      <div class="user-block" id="userBlock">
+        <button class="btn btn-vk" id="vkAuthBtn">Войти через VK</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    
+    <!-- Панель управления балансом -->
+    <section class="card balance-card">
+      <div class="balance-info">
+        <span class="label">Ваш баланс</span>
+        <h2 id="balanceValue">0 ₽</h2>
+      </div>
+      <div class="balance-actions">
+        <button class="btn btn-primary" onclick="openModal('depositModal')">Пополнить</button>
+        <button class="btn btn-secondary" onclick="openModal('withdrawModal')">Вывести</button>
+      </div>
+    </section>
+
+    <!-- Секция Игры (Колесо) -->
+    <section class="card game-card">
+      <h2>Колесо Фортуны</h2>
+      <p class="subtitle">Чем выше ставка, тем больше шанс на победу!</p>
+
+      <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="340" height="340"></canvas>
       </div>
 
-      <div id="clientsList" class="clients-list"></div>
-    </div>
+      <div class="bet-controls">
+        <div class="input-group">
+          <input type="number" id="betAmount" placeholder="Сумма ставки" min="10" value="100">
+          <span class="currency">₽</span>
+        </div>
+        <button class="btn btn-accent" id="spinBtn">Сделать ставку</button>
+      </div>
 
+      <!-- Список участников текущего раунда -->
+      <div class="players-list">
+        <h3>Участники раунда</h3>
+        <ul id="playersContainer">
+          <!-- Динамические данные -->
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Модальное окно пополнения -->
+  <div class="modal" id="depositModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('depositModal')">&times;</span>
+      <h3>Пополнение баланса</h3>
+      <input type="number" id="depositAmount" placeholder="Введите сумму (₽)" min="50">
+      <button class="btn btn-primary btn-full" onclick="handleDeposit()">Перейти к оплате</button>
+    </div>
   </div>
 
-  <script>
-    let clients = JSON.parse(localStorage.getItem('ukniga_clients')) || [];
+  <!-- Модальное окно вывода -->
+  <div class="modal" id="withdrawModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('withdrawModal')">&times;</span>
+      <h3>Вывод средств</h3>
+      <input type="text" id="withdrawWallet" placeholder="Номер ЮMoney кошелька или карты">
+      <input type="number" id="withdrawAmount" placeholder="Сумма вывода (₽)" min="100">
+      <button class="btn btn-primary btn-full" onclick="handleWithdraw()">Запросить вывод</button>
+    </div>
+  </div>
 
-    const form = document.getElementById('addClientForm');
-    const descInput = document.getElementById('clientDesc');
-    const clientsList = document.getElementById('clientsList');
-    const searchInput = document.getElementById('searchInput');
-    const totalCountEl = document.getElementById('totalCount');
-
-    function saveStorage() {
-      localStorage.setItem('ukniga_clients', JSON.stringify(clients));
-      render();
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newClient = {
-        id: Date.now(),
-        desc: descInput.value.trim()
-      };
-      clients.unshift(newClient);
-      saveStorage();
-      descInput.value = '';
-      descInput.blur();
-    });
-
-    function deleteClient(id) {
-      clients = clients.filter(c => c.id !== id);
-      saveStorage();
-    }
-
-    function render(query = '') {
-      clientsList.innerHTML = '';
-      const filtered = clients.filter(c => 
-        c.desc.toLowerCase().includes(query.toLowerCase())
-      );
-
-      totalCountEl.textContent = clients.length;
-
-      if (filtered.length === 0) {
-        clientsList.innerHTML = `<div class="empty-state">${query ? 'Ничего не найдено' : 'Заметок пока нет'}</div>`;
-        return;
-      }
-
-      filtered.forEach(client => {
-        const item = document.createElement('div');
-        item.className = 'client-item';
-        item.innerHTML = `
-          <div class="client-desc">${escapeHtml(client.desc)}</div>
-          <div class="client-header" style="justify-content: flex-end; margin-top: 4px;">
-            <button class="btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
-          </div>
-        `;
-        clientsList.appendChild(item);
-      });
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
-    }
-
-    searchInput.addEventListener('input', (e) => render(e.target.value));
-    render();
-
-    // Автономная работа PWA
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        self.addEventListener('install', e => self.skipWaiting());
-        self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-      `;
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
