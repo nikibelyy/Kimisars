@@ -1,85 +1,107 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Access</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js для реактивности и анимаций -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <style>
-        body { background-color: #0d0d11; color: #f3f4f6; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Проверка полиса</title>
+  
+  <!-- Настройки для iPhone PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="НСИС Чек">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/isometric-folders/512/shield.png">
+  
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body x-data="{ isPaid: false, loading: false }">
+<body>
+  <div class="app-container">
+    <!-- Шапка -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <span class="logo-text">Проверка полиса</span>
+      </div>
+    </header>
 
-    <!-- ЭКРАН 1: ПЕЙВОЛЛ / ОПЛАТА -->
-    <template x-if="!isPaid">
-        <div class="min-h-screen flex items-center justify-center p-4">
-            <div class="glass w-full max-w-md p-6 rounded-2xl shadow-2xl text-center animate__animated animate__fadeIn">
-                <div class="w-16 h-16 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                
-                <h1 class="text-2xl font-bold mb-2">Закрытое Сообщество</h1>
-                <p class="text-gray-400 text-sm mb-6">Доступ предоставляется только после подписки или единоразовой оплаты.</p>
-                
-                <div class="bg-white/5 p-4 rounded-xl mb-6 text-left border border-white/10">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-300">Доступ:</span>
-                        <span class="font-bold text-emerald-400">Навсегда</span>
-                    </div>
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-gray-300">Стоимость:</span>
-                        <span class="font-bold text-xl">500 ₽</span>
-                    </div>
-                </div>
+    <!-- Главная карточка (Стиль ЮMoney) -->
+    <main class="content">
+      <div class="card">
+        <h2 class="card-title">Введите данные</h2>
+        <p class="card-subtitle">Для проверки полиса ОСАГО / ДСАГО в базе НСИС</p>
 
-                <!-- Кнопка Имитации Оплаты -->
-                <button 
-                    @click="loading = true; setTimeout(() => { loading = false; isPaid = true; }, 1500)"
-                    class="w-full py-3 px-6 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all transform active:scale-95 shadow-lg flex items-center justify-center">
-                    <span x-show="!loading">Оплатить и войти</span>
-                    <span x-show="loading" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-                </button>
+        <form id="checkForm" onsubmit="handleSubmit(event)">
+          <!-- Поле 1: Буквы (Серия) -->
+          <div class="input-group">
+            <label for="serial">Серия полиса (буквы)</label>
+
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                id="serial" 
+                placeholder="например, ХХХ" 
+                autocomplete="off" 
+                autocorrect="off" 
+                autocapitalize="characters" 
+                required
+              >
             </div>
+          </div>
+
+          <!-- Поле 2: Цифры (Номер) -->
+          <div class="input-group">
+            <label for="number">Номер полиса (цифры)</label>
+            <div class="input-wrapper">
+              <input 
+                type="tel" 
+                id="number" 
+                pattern="[0-9]*" 
+                inputmode="numeric" 
+                placeholder="например, 0669291219" 
+                autocomplete="off" 
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Кнопка действия -->
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <span>Проверить полис</span>
+            <div class="spinner hidden" id="spinner"></div>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Модальный экран с результатом (iOS Sheet style) -->
+    <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
+      <div class="modal-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="modal-header">
+          <h3>Результат запроса</h3>
+          <button class="btn-close" onclick="closeModal()">✕</button>
         </div>
-    </template>
+        
+        <div class="modal-body">
+          <p class="info-text">Ссылка сформирована. Нажмите кнопку ниже для перехода на официальный сайт НСИС:</p>
+          
+          <div class="link-preview-box">
+            <span class="link-label">Сформированный URL:</span>
+            <div class="link-url" id="generatedUrl">---</div>
+          </div>
 
-    <!-- ЭКРАН 2: ПРИВАТНЫЙ КОНТЕНТ (Показывается после оплаты) -->
-    <template x-if="isPaid">
-        <div class="min-h-screen pb-12 animate__animated animate__fadeIn">
-            <!-- Шапка -->
-            <header class="glass sticky top-0 z-50 px-4 py-3 border-b border-white/10 flex justify-between items-center">
-                <span class="font-bold text-lg tracking-wide text-red-500">PRIVATE VRN</span>
-                <button @click="isPaid = false" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20">Выход</button>
-            </header>
-
-            <!-- Лента контента -->
-            <main class="max-w-md mx-auto p-4 space-y-6">
-                <!-- Карточка контента 1 -->
-                <article class="glass rounded-xl overflow-hidden border border-white/10">
-                    <div class="p-3 flex items-center space-x-3 border-b border-white/5">
-                        <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center font-bold text-xs">A</div>
-                        <div>
-                            <p class="text-sm font-semibold">Администратор</p>
-                            <p class="text-xs text-gray-400">10 минут назад</p>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <p class="text-sm text-gray-200">Пример приватного поста или новости.</p>
-                    </div>
-                    <div class="bg-black/40 h-48 flex items-center justify-center text-gray-500 text-xs">
-                        [ Медиаконтент ]
-                    </div>
-                </article>
-            </main>
+          <a id="redirectBtn" href="#" target="_blank" class="btn-secondary">
+            Перейти на сайт НСИС ↗
+          </a>
+          
+          <button type="button" class="btn-tertiary" onclick="copyLink()">
+            Скопировать ссылку
+          </button>
         </div>
-    </template>
+      </div>
+    </div>
+  </div>
 
+  <script src="app.js"></script>
 </body>
 </html>
