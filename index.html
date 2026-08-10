@@ -5,103 +5,258 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
   <title>Проверка полиса</title>
   
-  <!-- Настройки для iPhone PWA -->
+  <!-- iOS PWA настройки -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="НСИС Чек">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="https://img.icons8.com/isometric-folders/512/shield.png">
-  
-  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Дизайн ЮMoney (Темная фиолетовая тема) */
+    :root {
+      --bg-color: #0F0A1C;
+      --card-bg: #1B1429;
+      --input-bg: #271E38;
+      --primary-purple: #8B3DFF;
+      --primary-gradient: linear-gradient(135deg, #8B3DFF 0%, #6000FF 100%);
+      --accent-glow: rgba(139, 61, 255, 0.4);
+      --text-main: #FFFFFF;
+      --text-secondary: #9E93B4;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--safe-top) 16px var(--safe-bottom);
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* Шапка в стиле ЮMoney */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(139, 61, 255, 0.15);
+      border: 1px solid rgba(139, 61, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #C299FF;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #D1C4E9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Карточка формы */
+    .card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 24px 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      height: 56px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 0 18px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: #615575;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--primary-purple);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+      background: #2E2442;
+    }
+
+    /* Кнопка */
+    .btn-submit {
+      width: 100%;
+      height: 58px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px var(--accent-glow);
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.97);
+    }
+
+    /* Лоадер */
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
+
   <div class="app-container">
-    <!-- Шапка -->
-    <header class="header">
-      <div class="logo">
-        <span class="logo-icon">🛡️</span>
-        <span class="logo-text">Проверка полиса</span>
-      </div>
-    </header>
+    <div class="header">
+      <div class="badge">🛡️ База НСИС</div>
+      <h1 class="title">Проверка полиса</h1>
+    </div>
 
-    <!-- Главная карточка (Стиль ЮMoney) -->
-    <main class="content">
-      <div class="card">
-        <h2 class="card-title">Введите данные</h2>
-        <p class="card-subtitle">Для проверки полиса ОСАГО / ДСАГО в базе НСИС</p>
-
-        <form id="checkForm" onsubmit="handleSubmit(event)">
-          <!-- Поле 1: Буквы (Серия) -->
-          <div class="input-group">
-            <label for="serial">Серия полиса (буквы)</label>
-
-            <div class="input-wrapper">
-              <input 
-                type="text" 
-                id="serial" 
-                placeholder="например, ХХХ" 
-                autocomplete="off" 
-                autocorrect="off" 
-                autocapitalize="characters" 
-                required
-              >
-            </div>
+    <div class="card">
+      <form id="policyForm" onsubmit="handleCheck(event)">
+        <!-- Поле 1: Буквы -->
+        <div class="input-group">
+          <label for="serial">Серия (буквы)</label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="serial" 
+              placeholder="ХХХ" 
+              autocomplete="off" 
+              autocorrect="off" 
+              autocapitalize="characters" 
+              required
+            >
           </div>
-
-          <!-- Поле 2: Цифры (Номер) -->
-          <div class="input-group">
-            <label for="number">Номер полиса (цифры)</label>
-            <div class="input-wrapper">
-              <input 
-                type="tel" 
-                id="number" 
-                pattern="[0-9]*" 
-                inputmode="numeric" 
-                placeholder="например, 0669291219" 
-                autocomplete="off" 
-                required
-              >
-            </div>
-          </div>
-
-          <!-- Кнопка действия -->
-          <button type="submit" class="btn-primary" id="submitBtn">
-            <span>Проверить полис</span>
-            <div class="spinner hidden" id="spinner"></div>
-          </button>
-        </form>
-      </div>
-    </main>
-
-    <!-- Модальный экран с результатом (iOS Sheet style) -->
-    <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
-      <div class="modal-sheet" onclick="event.stopPropagation()">
-        <div class="sheet-handle"></div>
-        <div class="modal-header">
-          <h3>Результат запроса</h3>
-          <button class="btn-close" onclick="closeModal()">✕</button>
         </div>
-        
-        <div class="modal-body">
-          <p class="info-text">Ссылка сформирована. Нажмите кнопку ниже для перехода на официальный сайт НСИС:</p>
-          
-          <div class="link-preview-box">
-            <span class="link-label">Сформированный URL:</span>
-            <div class="link-url" id="generatedUrl">---</div>
-          </div>
 
-          <a id="redirectBtn" href="#" target="_blank" class="btn-secondary">
-            Перейти на сайт НСИС ↗
-          </a>
-          
-          <button type="button" class="btn-tertiary" onclick="copyLink()">
-            Скопировать ссылку
-          </button>
+        <!-- Поле 2: Цифры -->
+        <div class="input-group">
+          <label for="number">Номер (цифры)</label>
+          <div class="input-wrapper">
+            <input 
+              type="tel" 
+              id="number" 
+              pattern="[0-9]*" 
+              inputmode="numeric" 
+              placeholder="0669291219" 
+              autocomplete="off" 
+              required
+            >
+          </div>
         </div>
-      </div>
+
+        <!-- Кнопка перехода -->
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span>Проверить</span>
+          <div class="spinner hidden" id="spinner"></div>
+        </button>
+      </form>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    // Автоматический переподвод букв в верхний регистр при вводе
+    document.getElementById('serial').addEventListener('input', function() {
+      this.value = this.value.toUpperCase();
+    });
+
+    function handleCheck(event) {
+      event.preventDefault();
+
+      const serial = document.getElementById('serial').value.trim();
+      const number = document.getElementById('number').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+
+      if (!serial || !number) return;
+
+      // Показываем анимацию загрузки
+      submitBtn.querySelector('span').textContent = 'Переход...';
+      spinner.classList.remove('hidden');
+
+      // Кодируем русскую серию в процентный формат (%D0%A5%D0%A5...)
+      const encodedSerial = encodeURIComponent(serial);
+      const encodedNumber = encodeURIComponent(number);
+
+      const targetUrl = `https://www.nsis.ru/qr/check-policy/?serial=${encodedSerial}&number=${encodedNumber}`;
+
+      // Мгновенный переход на сайт НСИС
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 300);
+    }
+
+    // Регистрация PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
 </body>
 </html>
