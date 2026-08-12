@@ -1,0 +1,166 @@
+:root {
+    --primary: #8736E6; /* Цвет в стиле ЮMoney */
+    --primary-hover: #7529CD;
+    --bg: #F5F6F8;
+    --surface: #FFFFFF;
+    --text-main: #1A1A1A;
+    --text-sec: #8A8A8E;
+    
+    /* Отступы для iPhone (челка и полоса снизу) */
+    --safe-top: env(safe-area-inset-top, 20px);
+    --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Убирает синее мигание при клике на iOS */
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    overflow: hidden; /* Запрещаем скролл всей страницы, скроллится только контент */
+}
+
+.app-container {
+    height: 100vh;
+    height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    background: var(--surface);
+    padding: calc(var(--safe-top) + 16px) 20px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.app-header p {
+    color: var(--text-sec);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.client-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px calc(var(--safe-bottom) + 80px); /* Отступ снизу для кнопки */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Карточки клиентов */
+.client-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    animation: slideIn 0.3s ease-out;
+}
+
+.client-card h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.client-card p {
+    font-size: 14px;
+    color: var(--text-sec);
+    margin-bottom: 2px;
+}
+
+/* Плавающая кнопка добавления */
+.fab {
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + 20px);
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 28px;
+    box-shadow: 0 8px 24px rgba(135, 54, 230, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 20;
+}
+
+.fab:active { transform: scale(0.92); }
+
+/* Модальное окно (Bottom Sheet) */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.bottom-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px calc(var(--safe-bottom) + 20px);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+}
+
+.modal-overlay.active .bottom-sheet {
+    transform: translateY(0);
+}
+
+.sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: none; border: none; font-size: 20px; color: var(--text-sec); padding: 5px;
+}
+
+.input-group { margin-bottom: 16px; }
+.input-group label { display: block; font-size: 13px; color: var(--text-sec); margin-bottom: 8px; }
+.input-group input {
+    width: 100%; padding: 14px 16px;
+    background: var(--bg); border: 1px solid transparent;
+    border-radius: 12px; font-size: 16px; outline: none; transition: 0.2s;
+}
+.input-group input:focus { border-color: var(--primary); background: var(--surface); }
+
+.btn-primary {
+    width: 100%; padding: 16px; background: var(--primary);
+    color: white; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 600; margin-top: 10px; transition: 0.2s;
+}
+.btn-primary:active { background: var(--primary-hover); transform: scale(0.98); }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
