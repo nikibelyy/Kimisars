@@ -2,42 +2,42 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Настройки для идеального отображения на iPhone -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#F5F6F8">
+    <meta name="theme-color" content="#F2F3F5">
     
     <title>ДТП СЕРВИС</title>
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Главный экран -->
     <main class="app-container">
-        <header class="app-header">
-            <h1>ДТП СЕРВИС</h1>
-            <p>База клиентов</p>
-        </header>
+        <!-- Заголовок в стиле Dynamic Island -->
+        <div class="dynamic-island-container">
+            <div class="dynamic-island">
+                <span>ДТП СЕРВИС</span>
+            </div>
+        </div>
 
         <div class="client-list" id="clientList">
-            <!-- Сюда будут добавляться карточки клиентов -->
-            <div class="empty-state">Нет записей. Добавьте первого клиента.</div>
+            <!-- Карточки -->
         </div>
 
         <button class="fab" id="openAddModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
     </main>
 
-    <!-- Всплывающее окно добавления (Bottom Sheet) -->
+    <!-- Всплывающее окно (Bottom Sheet) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="bottom-sheet" id="bottomSheet">
+            <div class="sheet-drag-handle"></div>
             <div class="sheet-header">
-                <h3>Новое ДТП</h3>
+                <h3 id="modalTitle">Новое ДТП</h3>
                 <button class="close-btn" id="closeModal">✕</button>
             </div>
-            <form id="addClientForm">
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
                 <div class="input-group">
                     <label>ФИО клиента</label>
                     <input type="text" id="clientName" placeholder="Иванов Иван Иванович" required>
@@ -50,7 +50,7 @@
                     <label>Телефон</label>
                     <input type="tel" id="clientPhone" placeholder="+7 (999) 000-00-00" required>
                 </div>
-                <button type="submit" class="btn-primary">Сохранить в базу</button>
+                <button type="submit" class="btn-primary" id="submitBtn">Сохранить</button>
             </form>
         </div>
     </div>
