@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#F2F3F5">
+    <meta name="theme-color" content="#121214">
     
     <title>ДТП СЕРВИС</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Фоновые эффекты (светящиеся пятна) -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
     <main class="app-container">
-        <!-- Заголовок в стиле Dynamic Island -->
+        <!-- Островок -->
         <div class="dynamic-island-container">
             <div class="dynamic-island">
                 <span>ДТП СЕРВИС</span>
             </div>
+        </div>
+
+        <!-- Статистика и Выгрузка -->
+        <div class="dashboard">
+            <div class="stat-box">
+                <span class="stat-label">Всего клиентов</span>
+                <span class="stat-value" id="clientCount">0</span>
+            </div>
+            <button class="btn-export" id="exportBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Выгрузить базу
+            </button>
         </div>
 
         <div class="client-list" id="clientList">
@@ -28,7 +44,7 @@
         </button>
     </main>
 
-    <!-- Всплывающее окно (Bottom Sheet) -->
+    <!-- Всплывающее окно -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="bottom-sheet" id="bottomSheet">
             <div class="sheet-drag-handle"></div>
