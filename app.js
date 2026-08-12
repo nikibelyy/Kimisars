@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.getElementById('modalOverlay');
-    const bottomSheet = document.getElementById('bottomSheet');
     const openAddModal = document.getElementById('openAddModal');
     const closeModal = document.getElementById('closeModal');
     const clientForm = document.getElementById('clientForm');
     const clientList = document.getElementById('clientList');
     
-    // Элементы формы
+    const clientCountElem = document.getElementById('clientCount');
+    const exportBtn = document.getElementById('exportBtn');
+    
     const modalTitle = document.getElementById('modalTitle');
     const inputId = document.getElementById('clientId');
     const inputName = document.getElementById('clientName');
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let clients = JSON.parse(localStorage.getItem('dtp_clients')) || [];
 
-    // Открытие окна для ДОБАВЛЕНИЯ
+    // Открытие окна
     openAddModal.addEventListener('click', () => {
         clientForm.reset();
         inputId.value = '';
@@ -23,10 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.add('active');
     });
 
-    // Закрытие окна
     const closeForm = () => {
         modalOverlay.classList.remove('active');
-        setTimeout(() => clientForm.reset(), 400); // Очистка после скрытия
+        setTimeout(() => clientForm.reset(), 400);
     };
 
     closeModal.addEventListener('click', closeForm);
@@ -34,15 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === modalOverlay) closeForm();
     });
 
-    // Отрисовка списка
     function renderClients() {
+        // Обновляем счетчик
+        clientCountElem.textContent = clients.length;
+
         if (clients.length === 0) {
-            clientList.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#8A8A8E; font-weight:500;">Список пуст. Добавьте первого клиента.</div>';
+            clientList.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#A0A0A5; font-weight:500;">База пуста. Добавьте первого клиента.</div>';
             return;
         }
 
         clientList.innerHTML = '';
-        // Сортировка - новые сверху
         const sortedClients = [...clients].sort((a, b) => b.id - a.id);
 
         sortedClients.forEach((client, index) => {
@@ -53,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const card = document.createElement('div');
             card.className = 'client-card';
-            // Добавляем задержку анимации, чтобы карточки появлялись по очереди
             card.style.animationDelay = `${index * 0.05}s`; 
             card.innerHTML = `
                 <h4>${client.name}</h4>
@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Сохранение (Добавление или Обновление)
     clientForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
@@ -82,13 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (idVal) {
-            // Редактирование существующего
             const index = clients.findIndex(c => c.id == idVal);
-            if (index !== -1) {
-                clients[index] = { ...clients[index], ...clientData };
-            }
+            if (index !== -1) clients[index] = { ...clients[index], ...clientData };
         } else {
-            // Создание нового
             clientData.id = Date.now();
             clients.push(clientData);
         }
@@ -98,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeForm();
     });
 
-    // Функция удаления (сделана глобальной для доступа из HTML)
     window.deleteClient = function(id) {
         if(confirm('Точно удалить эту запись?')) {
             clients = clients.filter(c => c.id !== id);
@@ -107,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Функция редактирования (сделана глобальной)
     window.editClient = function(id) {
         const client = clients.find(c => c.id === id);
         if (client) {
@@ -120,6 +113,41 @@ document.addEventListener('DOMContentLoaded', () => {
             modalOverlay.classList.add('active');
         }
     };
+
+    // ФУНКЦИЯ ВЫГРУЗКИ В EXCEL (CSV)
+    exportBtn.addEventListener('click', () => {
+        if (clients.length === 0) {
+            alert('База пуста! Нечего выгружать.');
+            return;
+        }
+
+        // BOM для корректного отображения кириллицы в Excel
+        let csvContent = "\uFEFF"; 
+        csvContent += "ФИО;Автомобиль и госномер;Телефон;Дата добавления\n"; // Заголовки (разделитель точка с запятой)
+
+        clients.forEach(c => {
+            let date = new Date(c.id).toLocaleString('ru-RU');
+            // Убираем возможные точки с запятой из текста пользователя, чтобы не сломать таблицу
+            let name = c.name.replace(/;/g, ',');
+            let car = c.car.replace(/;/g, ',');
+            let phone = c.phone.replace(/;/g, ',');
+            
+            csvContent += `${name};${car};${phone};${date}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        const today = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
+        a.href = url;
+        a.download = `База_ДТП_${today}.csv`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
 
     renderClients();
 });
