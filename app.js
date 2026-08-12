@@ -1,22 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Привязка элементов интерфейса
     const modalOverlay = document.getElementById('modalOverlay');
     const openAddModal = document.getElementById('openAddModal');
     const closeModal = document.getElementById('closeModal');
     const clientForm = document.getElementById('clientForm');
     const clientList = document.getElementById('clientList');
     
+    // Элементы статистики и выгрузки
     const clientCountElem = document.getElementById('clientCount');
     const exportBtn = document.getElementById('exportBtn');
     
+    // Поля ввода
     const modalTitle = document.getElementById('modalTitle');
     const inputId = document.getElementById('clientId');
     const inputName = document.getElementById('clientName');
     const inputCar = document.getElementById('carInfo');
     const inputPhone = document.getElementById('clientPhone');
 
-    let clients = JSON.parse(localStorage.getItem('dtp_clients')) || [];
+    // Безопасное чтение базы (защита от ошибок кеша)
+    let clients = [];
+    try {
+        clients = JSON.parse(localStorage.getItem('dtp_clients')) || [];
+        if (!Array.isArray(clients)) clients = [];
+    } catch (e) {
+        console.error('Ошибка чтения базы:', e);
+        clients = [];
+    }
 
-    // Открытие окна
+    // Открытие окна добавления
     openAddModal.addEventListener('click', () => {
         clientForm.reset();
         inputId.value = '';
@@ -24,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.add('active');
     });
 
+    // Закрытие окна
     const closeForm = () => {
         modalOverlay.classList.remove('active');
         setTimeout(() => clientForm.reset(), 400);
@@ -34,9 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === modalOverlay) closeForm();
     });
 
+    // Отрисовка списка и обновление счетчика
     function renderClients() {
-        // Обновляем счетчик
-        clientCountElem.textContent = clients.length;
+        // Жесткое обновление счетчика
+        if (clientCountElem) {
+            clientCountElem.textContent = clients.length;
+        }
 
         if (clients.length === 0) {
             clientList.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#A0A0A5; font-weight:500;">База пуста. Добавьте первого клиента.</div>';
@@ -62,14 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="date">${date}</div>
                 
                 <div class="card-actions">
-                    <button class="btn-action btn-edit" onclick="editClient(${client.id})">Изменить</button>
-                    <button class="btn-action btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
+                    <button type="button" class="btn-action btn-edit" onclick="editClient(${client.id})">Изменить</button>
+                    <button type="button" class="btn-action btn-delete" onclick="deleteClient(${client.id})">Удалить</button>
                 </div>
             `;
             clientList.appendChild(card);
         });
     }
 
+    // Сохранение/Редактирование
     clientForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
@@ -82,7 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (idVal) {
             const index = clients.findIndex(c => c.id == idVal);
-            if (index !== -1) clients[index] = { ...clients[index], ...clientData };
+            if (index !== -1) {
+                clients[index] = { ...clients[index], ...clientData };
+            }
         } else {
             clientData.id = Date.now();
             clients.push(clientData);
@@ -93,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeForm();
     });
 
+    // Глобальные функции
     window.deleteClient = function(id) {
         if(confirm('Точно удалить эту запись?')) {
             clients = clients.filter(c => c.id !== id);
@@ -114,40 +133,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ФУНКЦИЯ ВЫГРУЗКИ В EXCEL (CSV)
-    exportBtn.addEventListener('click', () => {
-        if (clients.length === 0) {
-            alert('База пуста! Нечего выгружать.');
-            return;
-        }
+    // ВЫГРУЗКА БАЗЫ (АДАПТИРОВАНО ПОД IOS)
+    if (exportBtn) {
+        exportBtn.addEventListener('click', async () => {
+            if (clients.length === 0) {
+                alert('База пуста! Нечего выгружать.');
+                return;
+            }
 
-        // BOM для корректного отображения кириллицы в Excel
-        let csvContent = "\uFEFF"; 
-        csvContent += "ФИО;Автомобиль и госномер;Телефон;Дата добавления\n"; // Заголовки (разделитель точка с запятой)
+            let csvContent = "\uFEFFФИО;Автомобиль и госномер;Телефон;Дата добавления\n"; 
 
-        clients.forEach(c => {
-            let date = new Date(c.id).toLocaleString('ru-RU');
-            // Убираем возможные точки с запятой из текста пользователя, чтобы не сломать таблицу
-            let name = c.name.replace(/;/g, ',');
-            let car = c.car.replace(/;/g, ',');
-            let phone = c.phone.replace(/;/g, ',');
-            
-            csvContent += `${name};${car};${phone};${date}\n`;
+            clients.forEach(c => {
+                let date = new Date(c.id).toLocaleString('ru-RU');
+                let name = (c.name || '').replace(/;/g, ',');
+                let car = (c.car || '').replace(/;/g, ',');
+                let phone = (c.phone || '').replace(/;/g, ',');
+                csvContent += `${name};${car};${phone};${date}\n`;
+            });
+
+            const fileName = `База_ДТП_${new Date().toLocaleDateString('ru-RU').replace(/\./g, '-')}.csv`;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const file = new File([blob], fileName, { type: 'text/csv' });
+
+            // Проверка, поддерживает ли устройство нативное окно "Поделиться" файлом (iOS/Safari)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'База клиентов ДТП',
+                        text: 'Выгрузка базы из приложения'
+                    });
+                } catch (err) {
+                    console.log('Пользователь отменил отправку или произошла ошибка:', err);
+                }
+            } else {
+                // Запасной вариант для ПК и Android
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
         });
+    }
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        
-        const today = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
-        a.href = url;
-        a.download = `База_ДТП_${today}.csv`;
-        
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
-
+    // Инициализация при запуске
     renderClients();
 });
