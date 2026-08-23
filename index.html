@@ -1,76 +1,63 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#121214">
-    
-    <title>ДТП СЕРВИС</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <!-- Строгая адаптация, запрет зума -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- PWA теги для iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Клиенты">
+  
+  <title>Мои Клиенты</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Фоновые эффекты (светящиеся пятна) -->
-    <div class="bg-glow glow-1"></div>
-    <div class="bg-glow glow-2"></div>
 
-    <main class="app-container">
-        <!-- Островок -->
-        <div class="dynamic-island-container">
-            <div class="dynamic-island">
-                <span>ДТП СЕРВИС</span>
-            </div>
-        </div>
-
-        <!-- Статистика и Выгрузка -->
-        <div class="dashboard">
-            <div class="stat-box">
-                <span class="stat-label">Всего клиентов</span>
-                <span class="stat-value" id="clientCount">0</span>
-            </div>
-            <button class="btn-export" id="exportBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                Выгрузить базу
-            </button>
-        </div>
-
-        <div class="client-list" id="clientList">
-            <!-- Карточки -->
-        </div>
-
-        <button class="fab" id="openAddModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-    </main>
-
-    <!-- Всплывающее окно -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="bottom-sheet" id="bottomSheet">
-            <div class="sheet-drag-handle"></div>
-            <div class="sheet-header">
-                <h3 id="modalTitle">Новое ДТП</h3>
-                <button class="close-btn" id="closeModal">✕</button>
-            </div>
-            <form id="clientForm">
-                <input type="hidden" id="clientId">
-                <div class="input-group">
-                    <label>ФИО клиента</label>
-                    <input type="text" id="clientName" placeholder="Иванов Иван Иванович" required>
-                </div>
-                <div class="input-group">
-                    <label>Марка и госномер</label>
-                    <input type="text" id="carInfo" placeholder="Toyota Camry, А123АА" required>
-                </div>
-                <div class="input-group">
-                    <label>Телефон</label>
-                    <input type="tel" id="clientPhone" placeholder="+7 (999) 000-00-00" required>
-                </div>
-                <button type="submit" class="btn-primary" id="submitBtn">Сохранить</button>
-            </form>
-        </div>
+  <!-- Шапка -->
+  <header class="header">
+    <div class="header-content">
+      <h1>Август</h1>
+      <p class="subtitle">Выручка: <span id="total-revenue">0</span> ₽</p>
     </div>
+  </header>
 
-    <script src="app.js"></script>
+  <!-- Список клиентов -->
+  <main class="content">
+    <div id="clients-list" class="clients-list">
+      <!-- Карточки будут добавляться сюда -->
+    </div>
+  </main>
+
+  <!-- Нижняя навигация -->
+  <nav class="bottom-nav">
+    <div class="nav-item active">
+      <div class="icon-placeholder">📊</div>
+      <span>Сводка</span>
+    </div>
+    <div class="nav-item add-btn-container" onclick="toggleModal()">
+      <div class="add-btn">+</div>
+    </div>
+    <div class="nav-item">
+      <div class="icon-placeholder">👤</div>
+      <span>Профиль</span>
+    </div>
+  </nav>
+
+  <!-- Модальное окно добавления -->
+  <div id="add-modal" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-drag-pill"></div>
+      <h2>Новый клиент</h2>
+      <input type="text" id="client-name" placeholder="Имя клиента" class="ui-input">
+      <input type="text" id="client-service" placeholder="Услуга" class="ui-input">
+      <input type="number" id="client-price" placeholder="Сумма (₽)" class="ui-input">
+      <button class="ui-button" onclick="addClient()">Добавить</button>
+      <button class="ui-button secondary" onclick="toggleModal()">Отмена</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
