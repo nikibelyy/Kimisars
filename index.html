@@ -1,63 +1,300 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Клиенты">
-  
-  <title>Клиенты</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ВызовДТП.рф — Оформление ДТП и Аварийные комиссары</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые настройки и переменные */
+        :root {
+            --primary: #f59e0b; /* Сигнальный оранжевый */
+            --primary-hover: #d97706;
+            --dark: #0f172a;    /* Темно-синий фон */
+            --light: #f8fafc;   /* Светлый текст */
+            --card-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Шапка сайта */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background-color: rgba(15, 23, 42, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--light);
+        }
+
+        .header-contacts {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .phone {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Главный экран (Hero) */
+        .hero {
+            text-align: center;
+            padding: 100px 5% 80px;
+            background: linear-gradient(180deg, var(--dark) 0%, #1e293b 100%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #cbd5e1;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-call {
+            display: inline-block;
+            background-color: var(--primary);
+            color: #fff;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-call:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Услуги */
+        .services {
+            padding: 80px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #334155;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        /* Мессенджер MAX (Спец. блок) */
+        .messenger-section {
+            background-color: var(--card-bg);
+            padding: 60px 5%;
+            text-align: center;
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .btn-max {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .btn-max:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        /* Подвал */
+        footer {
+            padding: 40px 5%;
+            text-align: center;
+            background-color: #020617;
+            color: #94a3b8;
+        }
+
+        footer p {
+            margin-bottom: 15px;
+        }
+
+        /* Плавающая кнопка для телефонов */
+        .mobile-fab {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 800;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Адаптивность (Медиа-запросы) */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero p {
+                font-size: 16px;
+            }
+            .btn-call {
+                display: none; /* Скрываем основную кнопку на мобильном, показываем плавающую */
+            }
+            .mobile-fab {
+                display: block;
+            }
+            .messenger-section {
+                padding: 40px 5%;
+            }
+            .btn-max {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Фоновый градиент для красоты -->
-  <div class="app-background"></div>
-
-  <!-- Минималистичная шапка -->
-  <header class="top-bar">
-    <div>
-      <h1>Мои клиенты</h1>
-      <p class="subtitle" id="current-date">Список записей</p>
-    </div>
-  </header>
-
-  <!-- Список -->
-  <main class="content">
-    <div id="clients-list" class="clients-list">
-      <!-- Карточки генерируются через JS -->
-    </div>
-  </main>
-
-  <!-- Плавающая кнопка добавления (FAB) -->
-  <button class="fab-button" onclick="openSheet()">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-  </button>
-
-  <!-- Шторка (Bottom Sheet) -->
-  <div id="bottom-sheet" class="sheet-overlay" onclick="closeSheetOnBg(event)">
-    <div class="sheet-content">
-      <div class="sheet-drag-handle"></div>
-      <h2 id="sheet-title">Новый клиент</h2>
-      
-      <div class="form-group">
-        <input type="text" id="client-name" class="ui-input" placeholder="Имя (например, Александр)">
-        <input type="text" id="client-service" class="ui-input" placeholder="Услуга или описание">
-        <div class="price-input-wrapper">
-          <input type="number" id="client-price" class="ui-input price-input" placeholder="0">
-          <span class="price-currency">₽</span>
+    <!-- Шапка -->
+    <header>
+        <div class="logo">Вызов<span>ДТП</span>.рф</div>
+        <div class="header-contacts">
+            <!-- Замените номер на свой -->
+            <a href="tel:+79990000000" class="phone">☎ +7 (999) 000-00-00</a>
         </div>
-      </div>
+    </header>
 
-      <div class="sheet-actions">
-        <button class="ui-button primary" onclick="saveClient()">Сохранить</button>
-        <button id="btn-delete" class="ui-button danger hidden" onclick="deleteClient()">Удалить запись</button>
-      </div>
-    </div>
-  </div>
+    <main>
+        <!-- Главный экран -->
+        <section class="hero">
+            <h1>Попали в ДТП? Вызов аварийного комиссара 24/7</h1>
+            <p>Оперативный выезд, правильное оформление документов без участия ГИБДД (Европротокол), независимая оценка и юридическая помощь.</p>
+            <a href="tel:+79990000000" class="btn-call">Вызвать комиссара</a>
+        </section>
 
-  <script src="app.js"></script>
+        <!-- Блок с мессенджером MAX по вашему ТЗ -->
+        <section class="messenger-section">
+            <h2>Остались вопросы или нужна онлайн-консультация?</h2>
+            <p style="margin-top: 10px; color: #cbd5e1;">Свяжитесь со мной напрямую в удобном мессенджере:</p>
+            <a href="https://max.ru/u/f9LHodD0cOInNz1w870exeROHxnA9Fh8wM04dyyGgY0GQEVKRq9IMNWsy_w" target="_blank" class="btn-max">
+                💬 Я пользуюсь мессенджером MAX. Присоединяйся!
+            </a>
+        </section>
+
+        <!-- Услуги -->
+        <section class="services">
+            <h2 class="section-title">Наши услуги</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Оформление ДТП</h3>
+                    <p>Быстрое и грамотное оформление схемы ДТП и заполнение Европротокола. Гарантия выплат от страховой.</p>
+                </div>
+                <div class="card">
+                    <h3>Оценка ущерба</h3>
+                    <p>Независимая автоэкспертиза. Поможем взыскать реальную стоимость ремонта с виновника или страховой компании.</p>
+                </div>
+                <div class="card">
+                    <h3>Эвакуатор</h3>
+                    <p>Бережная погрузка и транспортировка вашего автомобиля с места происшествия до автосервиса или стоянки.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал (Адрес удален, оставлены только контакты) -->
+    <footer>
+        <p><strong>ВызовДТП.рф</strong> — Служба аварийных комиссаров</p>
+        <p>Круглосуточный телефон: <a href="tel:+79990000000" style="color: var(--primary);">+7 (999) 000-00-00</a></p>
+        <p>© 2024 Все права защищены.</p>
+    </footer>
+
+    <!-- Плавающая кнопка вызова для смартфонов -->
+    <a href="tel:+79990000000" class="mobile-fab">
+        ВЫЗВАТЬ КОМИССАРА
+    </a>
+
 </body>
 </html>
