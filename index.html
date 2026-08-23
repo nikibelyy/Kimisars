@@ -7,44 +7,44 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Клиенты">
   
-  <title>Мои Клиенты</title>
+  <title>Клиенты</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Главный экран баланса (стиль ЮMoney) -->
-  <header class="wallet-header">
-    <div class="wallet-card">
-      <p class="wallet-subtitle">Баланс за месяц</p>
-      <h1 class="wallet-balance"><span id="total-revenue">0</span> <span class="currency">₽</span></h1>
+  <!-- Фоновый градиент для красоты -->
+  <div class="app-background"></div>
+
+  <!-- Минималистичная шапка -->
+  <header class="top-bar">
+    <div>
+      <h1>Мои клиенты</h1>
+      <p class="subtitle" id="current-date">Список записей</p>
     </div>
   </header>
 
-  <!-- Список операций/клиентов -->
+  <!-- Список -->
   <main class="content">
-    <div class="section-title">
-      <h2>История</h2>
-    </div>
     <div id="clients-list" class="clients-list">
       <!-- Карточки генерируются через JS -->
     </div>
   </main>
 
-  <!-- Плавающая кнопка добавления -->
+  <!-- Плавающая кнопка добавления (FAB) -->
   <button class="fab-button" onclick="openSheet()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
   </button>
 
-  <!-- Умная шторка (Bottom Sheet) для Добавления/Редактирования -->
+  <!-- Шторка (Bottom Sheet) -->
   <div id="bottom-sheet" class="sheet-overlay" onclick="closeSheetOnBg(event)">
     <div class="sheet-content">
       <div class="sheet-drag-handle"></div>
       <h2 id="sheet-title">Новый клиент</h2>
       
       <div class="form-group">
-        <input type="text" id="client-name" class="ui-input" placeholder="Имя клиента (например, Анна)">
-        <input type="text" id="client-service" class="ui-input" placeholder="Услуга (например, Консультация)">
+        <input type="text" id="client-name" class="ui-input" placeholder="Имя (например, Александр)">
+        <input type="text" id="client-service" class="ui-input" placeholder="Услуга или описание">
         <div class="price-input-wrapper">
           <input type="number" id="client-price" class="ui-input price-input" placeholder="0">
           <span class="price-currency">₽</span>
@@ -53,7 +53,7 @@
 
       <div class="sheet-actions">
         <button class="ui-button primary" onclick="saveClient()">Сохранить</button>
-        <button id="btn-delete" class="ui-button danger hidden" onclick="deleteClient()">Удалить</button>
+        <button id="btn-delete" class="ui-button danger hidden" onclick="deleteClient()">Удалить запись</button>
       </div>
     </div>
   </div>
