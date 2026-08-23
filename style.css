@@ -1,11 +1,16 @@
 :root {
-  --primary: #8C38FA; /* Градиентный цвет ЮMoney */
-  --primary-dark: #6F18B3;
-  --bg-color: #F5F6F8;
-  --card-bg: #FFFFFF;
-  --text-main: #1A1A1A;
-  --text-muted: #8C93A6;
-  --border-radius: 24px;
+  --bg-main: #F4F5F7; /* Светло-серый фон приложения */
+  --bg-card: #FFFFFF;
+  --text-main: #191C1F;
+  --text-secondary: #8B94A3;
+  --accent: #7B3DFF; /* Фирменный фиолетовый */
+  --accent-gradient: linear-gradient(135deg, #7B3DFF 0%, #9B63FF 100%);
+  --danger: #FF3B30;
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --safe-top: env(safe-area-inset-top, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 * {
@@ -13,43 +18,76 @@
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-color);
+  background-color: var(--bg-main);
   color: var(--text-main);
   overflow-x: hidden;
-  overscroll-behavior-y: none; /* Убираем пружинящий скролл браузера */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  overscroll-behavior-y: none;
+  padding-bottom: calc(100px + var(--safe-bottom)); /* Место под кнопку */
 }
 
-/* Header */
-.header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+/* Шапка - Кошелек */
+.wallet-header {
+  padding: calc(var(--safe-top) + 20px) 20px 20px 20px;
+  background-color: var(--bg-main);
+}
+
+.wallet-card {
+  background: var(--text-main);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
   color: white;
-  padding: 20px 20px 40px 20px;
-  border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-  box-shadow: 0 10px 20px rgba(140, 56, 250, 0.2);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
 }
 
-.header h1 {
+/* Эффект свечения внутри карты */
+.wallet-card::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 200px; height: 200px;
+  background: var(--accent);
+  filter: blur(80px);
+  opacity: 0.4;
+  border-radius: 50%;
+}
+
+.wallet-subtitle {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.7;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.wallet-balance {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  position: relative;
+}
+
+.currency {
   font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 5px;
+  opacity: 0.8;
+  font-weight: 600;
 }
 
-.subtitle {
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-/* Content */
+/* Список */
 .content {
   padding: 0 20px;
-  margin-top: -20px;
+}
+
+.section-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-main);
 }
 
 .clients-list {
@@ -59,169 +97,210 @@ body {
 }
 
 /* Карточка клиента */
-.client-card {
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  padding: 16px 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+.client-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 16px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  animation: slideUp 0.4s ease forwards;
+  gap: 16px;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+  animation: slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   opacity: 0;
   transform: translateY(20px);
 }
 
-.client-info h3 {
-  font-size: 16px;
+.client-item:active {
+  transform: scale(0.96); /* Приятное сжатие при клике */
+}
+
+/* Круглая аватарка с буквой */
+.client-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.client-details {
+  flex-grow: 1;
+}
+
+.client-name {
+  font-size: 17px;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 
-.client-info p {
+.client-service {
   font-size: 14px;
-  color: var(--text-muted);
-}
-
-.client-price {
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--primary-dark);
-}
-
-/* Bottom Nav */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: env(safe-area-inset-bottom);
-  height: calc(70px + env(safe-area-inset-bottom));
-  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.05);
-  z-index: 100;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--text-muted);
-  font-size: 12px;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
-.nav-item.active {
-  color: var(--primary);
+.client-sum {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
-.add-btn {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+/* Плавающая кнопка (FAB) */
+.fab-button {
+  position: fixed;
+  bottom: calc(20px + var(--safe-bottom));
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--accent-gradient);
   border-radius: 50%;
+  border: none;
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 32px;
-  font-weight: 300;
-  margin-top: -30px;
-  box-shadow: 0 8px 16px rgba(140, 56, 250, 0.3);
+  justify-content: center;
+  box-shadow: 0 12px 24px rgba(123, 61, 255, 0.35);
+  z-index: 90;
   transition: transform 0.2s ease;
 }
 
-.add-btn:active {
+.fab-button:active {
   transform: scale(0.9);
 }
 
-/* Modal / Bottom Sheet */
-.modal-overlay {
+/* Bottom Sheet (Шторка) */
+.sheet-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 200;
+  backdrop-filter: blur(4px);
+  z-index: 100;
   opacity: 0;
-  visibility: hidden;
-  transition: 0.3s ease;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: flex-end;
 }
 
-.modal-overlay.active {
+.sheet-overlay.active {
   opacity: 1;
-  visibility: visible;
+  pointer-events: auto;
 }
 
-.modal-sheet {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.sheet-content {
+  background: var(--bg-card);
   width: 100%;
-  background: var(--card-bg);
-  border-top-left-radius: 32px;
-  border-top-right-radius: 32px;
-  padding: 24px 24px calc(24px + env(safe-area-inset-bottom)) 24px;
+  border-radius: 32px 32px 0 0;
+  padding: 12px 24px calc(24px + var(--safe-bottom)) 24px;
   transform: translateY(100%);
-  transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.modal-overlay.active .modal-sheet {
+.sheet-overlay.active .sheet-content {
   transform: translateY(0);
 }
 
-.modal-drag-pill {
-  width: 40px;
-  height: 4px;
-  background: #E0E2E8;
-  border-radius: 2px;
-  margin: 0 auto 20px auto;
+.sheet-drag-handle {
+  width: 40px; height: 5px;
+  background: #E1E3E6;
+  border-radius: 3px;
+  margin: 0 auto 24px auto;
 }
 
-.modal-sheet h2 {
-  margin-bottom: 20px;
-  font-size: 20px;
+.sheet-content h2 {
+  font-size: 22px;
+  margin-bottom: 24px;
+  text-align: center;
 }
 
-/* UI Elements */
+/* Формы ввода */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
 .ui-input {
   width: 100%;
-  padding: 16px;
-  background: var(--bg-color);
-  border: none;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  font-size: 16px;
+  background: var(--bg-main);
+  border: 1px solid transparent;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-size: 17px;
   outline: none;
+  transition: border 0.2s;
+  color: var(--text-main);
+}
+
+.ui-input:focus {
+  border-color: var(--accent);
+  background: white;
+}
+
+.price-input-wrapper {
+  position: relative;
+}
+
+.price-input {
+  font-size: 24px;
+  font-weight: 700;
+  padding-right: 40px;
+}
+
+.price-currency {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Кнопки в шторке */
+.sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .ui-button {
   width: 100%;
-  padding: 16px;
-  background: var(--primary);
-  color: white;
+  padding: 18px;
+  border-radius: var(--radius-md);
   border: none;
-  border-radius: 16px;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
-  margin-top: 10px;
+  transition: transform 0.1s, opacity 0.2s;
 }
 
-.ui-button.secondary {
-  background: #F0F2F5;
-  color: var(--text-main);
+.ui-button:active {
+  transform: scale(0.97);
+}
+
+.ui-button.primary {
+  background: var(--text-main);
+  color: white;
+}
+
+.ui-button.danger {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--danger);
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* Анимации */
-@keyframes slideUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
