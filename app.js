@@ -1,60 +1,51 @@
-// Инициализация базы данных
-let clients = JSON.parse(localStorage.getItem('yoo_clients_v2')) || [];
-let editingId = null; // Хранит ID клиента, если мы его редактируем
+let clients = JSON.parse(localStorage.getItem('premium_clients')) || [];
+let editingId = null;
 
-// Сохранение в память
+// Текущая дата
+const dateEl = document.getElementById('current-date');
+const options = { month: 'long', day: 'numeric', weekday: 'long' };
+dateEl.innerText = new Date().toLocaleDateString('ru-RU', options);
+
 function saveToLocal() {
-  localStorage.setItem('yoo_clients_v2', JSON.stringify(clients));
+  localStorage.setItem('premium_clients', JSON.stringify(clients));
 }
 
-// Форматирование чисел (10000 -> 10 000)
 function formatMoney(num) {
   return Number(num).toLocaleString('ru-RU');
 }
 
-// Получение первой буквы для аватарки
 function getInitials(name) {
-  return name ? name.charAt(0).toUpperCase() : '?';
+  return name ? name.charAt(0).toUpperCase() : 'C';
 }
 
-// Главная функция отрисовки интерфейса
 function renderClients() {
   const list = document.getElementById('clients-list');
-  const revenueEl = document.getElementById('total-revenue');
-  
   list.innerHTML = '';
-  let total = 0;
 
   if (clients.length === 0) {
-    list.innerHTML = '<p style="text-align:center; color:#8B94A3; margin-top: 20px;">Список пуст. Добавьте первого клиента.</p>';
+    list.innerHTML = '<p style="text-align:center; color:#8A8F9E; margin-top: 40px;">У вас пока нет записей.<br>Нажмите + чтобы добавить.</p>';
   }
 
   clients.forEach((client, index) => {
-    total += Number(client.price);
-    
     const card = document.createElement('div');
     card.className = 'client-item';
-    card.style.animationDelay = `${index * 0.05}s`; // Красивое каскадное появление
+    card.style.animationDelay = `${index * 0.08}s`;
     
-    // Вешаем обработчик клика на всю карточку для редактирования
     card.onclick = () => openSheet(client.id);
 
     card.innerHTML = `
       <div class="client-avatar">${getInitials(client.name)}</div>
       <div class="client-details">
         <div class="client-name">${client.name}</div>
-        <div class="client-service">${client.service || 'Без услуги'}</div>
+        <div class="client-service">${client.service || 'Без описания'}</div>
       </div>
-      <div class="client-sum">+${formatMoney(client.price)} ₽</div>
+      <div class="client-sum">${formatMoney(client.price)} ₽</div>
     `;
     
     list.appendChild(card);
   });
-
-  revenueEl.innerText = formatMoney(total);
 }
 
-// Открытие шторки (Bottom Sheet)
 function openSheet(id = null) {
   editingId = id;
   const sheet = document.getElementById('bottom-sheet');
@@ -66,63 +57,51 @@ function openSheet(id = null) {
   const priceInput = document.getElementById('client-price');
 
   if (id) {
-    // Режим РЕДАКТИРОВАНИЯ
     const client = clients.find(c => c.id === id);
-    title.innerText = 'Редактировать';
+    title.innerText = 'Изменить запись';
     nameInput.value = client.name;
     serviceInput.value = client.service;
     priceInput.value = client.price;
-    btnDelete.classList.remove('hidden'); // Показываем кнопку удаления
+    btnDelete.classList.remove('hidden');
   } else {
-    // Режим ДОБАВЛЕНИЯ
-    title.innerText = 'Новый клиент';
+    title.innerText = 'Новая запись';
     nameInput.value = '';
     serviceInput.value = '';
     priceInput.value = '';
-    btnDelete.classList.add('hidden'); // Прячем кнопку удаления
+    btnDelete.classList.add('hidden');
   }
 
   sheet.classList.add('active');
 }
 
-// Закрытие шторки
 function closeSheet() {
   document.getElementById('bottom-sheet').classList.remove('active');
   editingId = null;
 }
 
-// Закрытие по клику на темный фон
 function closeSheetOnBg(event) {
   if (event.target === document.getElementById('bottom-sheet')) {
     closeSheet();
   }
 }
 
-// Сохранение (Добавление нового ИЛИ обновление старого)
 function saveClient() {
   const name = document.getElementById('client-name').value.trim();
   const service = document.getElementById('client-service').value.trim();
   const price = document.getElementById('client-price').value.trim();
 
   if (!name || !price) {
-    alert("Введите имя и сумму!");
+    alert("Имя и сумма обязательны!");
     return;
   }
 
   if (editingId) {
-    // Обновляем существующего
     const index = clients.findIndex(c => c.id === editingId);
     if (index !== -1) {
       clients[index] = { id: editingId, name, service, price };
     }
   } else {
-    // Создаем нового с уникальным ID (через Date.now())
-    clients.unshift({ 
-      id: Date.now().toString(), 
-      name, 
-      service, 
-      price 
-    });
+    clients.unshift({ id: Date.now().toString(), name, service, price });
   }
 
   saveToLocal();
@@ -130,12 +109,9 @@ function saveClient() {
   closeSheet();
 }
 
-// Удаление клиента
 function deleteClient() {
   if (!editingId) return;
-  
-  // Запрашиваем подтверждение (стандартная практика iOS)
-  if(confirm("Удалить эту запись?")) {
+  if(confirm("Точно удалить?")) {
     clients = clients.filter(c => c.id !== editingId);
     saveToLocal();
     renderClients();
@@ -143,5 +119,4 @@ function deleteClient() {
   }
 }
 
-// Первичный запуск
 renderClients();
