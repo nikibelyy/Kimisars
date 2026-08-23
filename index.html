@@ -2,9 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <!-- Строгая адаптация, запрет зума -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <!-- PWA теги для iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Клиенты">
@@ -15,46 +13,48 @@
 </head>
 <body>
 
-  <!-- Шапка -->
-  <header class="header">
-    <div class="header-content">
-      <h1>Август</h1>
-      <p class="subtitle">Выручка: <span id="total-revenue">0</span> ₽</p>
+  <!-- Главный экран баланса (стиль ЮMoney) -->
+  <header class="wallet-header">
+    <div class="wallet-card">
+      <p class="wallet-subtitle">Баланс за месяц</p>
+      <h1 class="wallet-balance"><span id="total-revenue">0</span> <span class="currency">₽</span></h1>
     </div>
   </header>
 
-  <!-- Список клиентов -->
+  <!-- Список операций/клиентов -->
   <main class="content">
+    <div class="section-title">
+      <h2>История</h2>
+    </div>
     <div id="clients-list" class="clients-list">
-      <!-- Карточки будут добавляться сюда -->
+      <!-- Карточки генерируются через JS -->
     </div>
   </main>
 
-  <!-- Нижняя навигация -->
-  <nav class="bottom-nav">
-    <div class="nav-item active">
-      <div class="icon-placeholder">📊</div>
-      <span>Сводка</span>
-    </div>
-    <div class="nav-item add-btn-container" onclick="toggleModal()">
-      <div class="add-btn">+</div>
-    </div>
-    <div class="nav-item">
-      <div class="icon-placeholder">👤</div>
-      <span>Профиль</span>
-    </div>
-  </nav>
+  <!-- Плавающая кнопка добавления -->
+  <button class="fab-button" onclick="openSheet()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+  </button>
 
-  <!-- Модальное окно добавления -->
-  <div id="add-modal" class="modal-overlay">
-    <div class="modal-sheet">
-      <div class="modal-drag-pill"></div>
-      <h2>Новый клиент</h2>
-      <input type="text" id="client-name" placeholder="Имя клиента" class="ui-input">
-      <input type="text" id="client-service" placeholder="Услуга" class="ui-input">
-      <input type="number" id="client-price" placeholder="Сумма (₽)" class="ui-input">
-      <button class="ui-button" onclick="addClient()">Добавить</button>
-      <button class="ui-button secondary" onclick="toggleModal()">Отмена</button>
+  <!-- Умная шторка (Bottom Sheet) для Добавления/Редактирования -->
+  <div id="bottom-sheet" class="sheet-overlay" onclick="closeSheetOnBg(event)">
+    <div class="sheet-content">
+      <div class="sheet-drag-handle"></div>
+      <h2 id="sheet-title">Новый клиент</h2>
+      
+      <div class="form-group">
+        <input type="text" id="client-name" class="ui-input" placeholder="Имя клиента (например, Анна)">
+        <input type="text" id="client-service" class="ui-input" placeholder="Услуга (например, Консультация)">
+        <div class="price-input-wrapper">
+          <input type="number" id="client-price" class="ui-input price-input" placeholder="0">
+          <span class="price-currency">₽</span>
+        </div>
+      </div>
+
+      <div class="sheet-actions">
+        <button class="ui-button primary" onclick="saveClient()">Сохранить</button>
+        <button id="btn-delete" class="ui-button danger hidden" onclick="deleteClient()">Удалить</button>
+      </div>
     </div>
   </div>
 
