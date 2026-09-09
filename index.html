@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Табель • 8300 ₽/день</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient a1"></div><div class="ambient a2"></div>
+  <header class="topbar">
+    <div class="brand"><span class="logo">₽</span><div><b>Табель</b><small>зарплата и смены</small></div></div>
+    <button id="installBtn" class="icon-btn hidden" aria-label="Установить">＋</button>
+  </header>
+
+  <main class="app">
+    <section class="hero glass">
+      <div>
+        <span class="eyebrow">ТВОЯ СТАВКА</span>
+        <div class="rate-row"><strong id="rateView">8 300 ₽</strong><button id="editRate" class="pill">изменить</button></div>
+        <p id="periodLabel">Текущий месяц</p>
+      </div>
+      <div class="hero-orb">₽</div>
+    </section>
+
+    <section class="stats">
+      <article class="stat glass"><span>Смены</span><b id="daysView">0</b><small>рабочих дней</small></article>
+      <article class="stat glass accent"><span>Начислено</span><b id="salaryView">0 ₽</b><small>за выбранный период</small></article>
+      <article class="stat glass"><span>Среднее</span><b id="avgView">0 ₽</b><small>на календарный день</small></article>
+    </section>
+
+    <section class="calendar-card glass">
+      <div class="calendar-head">
+        <button id="prevMonth" class="nav">‹</button>
+        <div><h2 id="monthTitle"></h2><span id="selectedHint">Выбирай рабочие дни</span></div>
+        <button id="nextMonth" class="nav">›</button>
+      </div>
+      <div class="week"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
+      <div id="calendar" class="calendar"></div>
+      <div class="legend"><span><i class="dot work"></i>Работал</span><span><i class="dot today"></i>Сегодня</span><span><i class="dot empty"></i>Свободен</span></div>
+    </section>
+
+    <section class="actions">
+      <button id="selectAll" class="secondary">Отметить будни</button>
+      <button id="clearMonth" class="secondary danger">Очистить месяц</button>
+    </section>
+
+    <section class="summary glass">
+      <div><span>Выбранные смены</span><b id="summaryDays">0</b></div>
+      <div><span>Итого</span><b id="summarySalary">0 ₽</b></div>
+      <button id="shareBtn" class="primary">Поделиться итогом ↗</button>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="active"><span>▦</span>Табель</button>
+    <button id="todayBtn"><span>⌖</span>Сегодня</button>
+    <button id="resetBtn"><span>↺</span>Сброс</button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
