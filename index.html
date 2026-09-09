@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7b3ff2">
+<meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json">
+<title>Табель • Зарплата</title>
+<style>
+:root{--p:#7b3ff2;--p2:#a855f7;--bg:#f6f4fb;--card:#fff;--text:#17131f;--muted:#817a8f;--ok:#27c48a;--shadow:0 14px 40px #38205c14}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(145deg,#f7f4ff,#f3f0f8);color:var(--text)}
+.app{max-width:520px;margin:auto;min-height:100vh;padding:18px 16px 100px}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.brand{display:flex;gap:10px;align-items:center;font-weight:800;font-size:20px}.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--p),var(--p2));color:white;display:grid;place-items:center;box-shadow:0 8px 20px #7b3ff244}.pill{background:#fff;border:0;border-radius:20px;padding:9px 12px;color:var(--muted);box-shadow:var(--shadow)}
+.hero{background:linear-gradient(135deg,#7038ed,#9a4ff2);color:#fff;border-radius:28px;padding:22px;box-shadow:0 18px 45px #743bed3d;animation:up .55s ease}.hero small{opacity:.78}.amount{font-size:40px;font-weight:850;margin:7px 0}.sub{opacity:.82}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.stat{background:#ffffff1a;border:1px solid #ffffff20;padding:12px;border-radius:17px}.stat b{display:block;font-size:18px;margin-top:3px}
+.section{margin-top:22px}.section h2{font-size:18px;margin:0 0 12px}.calendar{background:var(--card);border-radius:25px;padding:15px;box-shadow:var(--shadow)}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.nav{display:flex;gap:6px}.nav button{border:0;background:#f2eff8;border-radius:12px;width:35px;height:35px;font-size:18px}.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.dow div{text-align:center;font-size:11px;color:var(--muted);padding:5px 0}.day{aspect-ratio:1;border:0;background:#faf9fc;border-radius:14px;font-weight:700;color:#514a5b;position:relative;cursor:pointer;transition:.18s}.day:hover{transform:translateY(-2px)}.day.work{background:linear-gradient(135deg,var(--p),var(--p2));color:white;box-shadow:0 7px 16px #7b3ff233}.day.today{outline:2px solid #bba5ef}.day.work:after{content:"✓";position:absolute;right:5px;bottom:3px;font-size:9px;opacity:.9}.empty{visibility:hidden}
+.card{background:#fff;border-radius:22px;padding:16px;box-shadow:var(--shadow)}.row{display:flex;justify-content:space-between;align-items:center;margin:9px 0}.muted{color:var(--muted)}.total{font-size:25px;font-weight:850}.btn{width:100%;border:0;border-radius:16px;padding:14px;background:var(--p);color:#fff;font-size:16px;font-weight:750;box-shadow:0 10px 24px #7b3ff22f;cursor:pointer}.btn:active{transform:scale(.98)}.danger{background:#fff0f2;color:#c43b55;box-shadow:none}.note{font-size:12px;color:var(--muted);line-height:1.45}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);background:#17131f;color:#fff;padding:12px 17px;border-radius:15px;transition:.3s;z-index:10}.toast.show{transform:translate(-50%,0)}@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media(min-width:700px){body{padding:30px}.app{min-height:auto}.hero{padding:28px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><div class="logo">Ю</div><span>Мой табель</span></div><button class="pill" id="clear">Сбросить</button></header>
+
+<section class="hero">
+<small>Ожидаемая зарплата</small><div class="amount" id="salary">0 ₽</div><div class="sub">по выбранным рабочим дням</div>
+<div class="stats"><div class="stat"><small>Смен</small><b id="count">0</b></div><div class="stat"><small>Ставка / день</small><b>8 300 ₽</b></div></div>
+</section>
+
+<section class="section"><h2>Рабочие дни</h2>
+<div class="calendar"><div class="calhead"><b id="month"></b><div class="nav"><button id="prev">‹</button><button id="next">›</button></div></div>
+<div class="dow"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+<div class="days" id="days"></div></div></section>
+
+<section class="section"><h2>Итоги</h2><div class="card">
+<div class="row"><span class="muted">Рабочих дней</span><b id="count2">0</b></div>
+<div class="row"><span class="muted">Начислено</span><b class="total" id="total">0 ₽</b></div>
+<button class="btn" id="share">Поделиться табелем</button>
+<p class="note">Нажимай на даты, когда работал. Данные сохраняются прямо в браузере и не отправляются на сервер.</p>
+</div></section>
+</div><div class="toast" id="toast">Сохранено</div>
+
+<script>
+const RATE=8300, KEY='my-timesheet-v1';
+let state=JSON.parse(localStorage.getItem(KEY)||'{"days":[]}');
+let view=new Date(); view.setDate(1);
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('ru-RU').format(n)+' ₽';
+function key(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
+function save(){localStorage.setItem(KEY,JSON.stringify(state)); updateTotals()}
+function updateTotals(){let n=state.days.length; $('count').textContent=n;$('count2').textContent=n;$('salary').textContent=money(n*RATE);$('total').textContent=money(n*RATE)}
+function render(){
+ const y=view.getFullYear(),m=view.getMonth();
+ $('month').textContent=view.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+ $('month').textContent=$('month').textContent[0].toUpperCase()+$('month').textContent.slice(1);
+ const first=new Date(y,m,1), last=new Date(y,m+1,0), start=(first.getDay()+6)%7;
+ $('days').innerHTML='';
+ for(let i=0;i<start;i++){let e=document.createElement('button');e.className='day empty';$('days').append(e)}
+ const today=new Date();
+ for(let d=1;d<=last.getDate();d++){
+  let e=document.createElement('button'), k=key(y,m,d); e.className='day';e.textContent=d;
+  if(state.days.includes(k))e.classList.add('work');
+  if(y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate())e.classList.add('today');
+  e.onclick=()=>{state.days.includes(k)?state.days=state.days.filter(x=>x!==k):state.days.push(k);save();render();toast('Табель обновлён')};
+  $('days').append(e)
+ }
+ updateTotals();
+}
+$('prev').onclick=()=>{view.setMonth(view.getMonth()-1);render()};$('next').onclick=()=>{view.setMonth(view.getMonth()+1);render()};
+$('clear').onclick=()=>{if(confirm('Очистить все выбранные рабочие дни?')){state.days=[];save();render();toast('Табель очищен')}};
+$('share').onclick=async()=>{let text=`Мой табель\\nРабочих дней: ${state.days.length}\\nНачислено: ${money(state.days.length*RATE)}\\nСтавка: ${money(RATE)} / день`;try{if(navigator.share)await navigator.share({title:'Мой табель',text});else{await navigator.clipboard.writeText(text);toast('Скопировано в буфер')}}catch(e){}};
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1500)}
+render();
+</script><script>if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");</script>
+</body></html>
