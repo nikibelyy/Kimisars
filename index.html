@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MY ГРАФИК">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+  <title>MY ГРАФИК — Black Edition</title>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">BLACK EDITION</div>
+      <h1 id="monthTitle">Сентябрь 2026</h1>
+    </div>
+    <button class="icon-btn" id="notifyBtn" aria-label="Уведомления">♧</button>
+  </header>
+
+  <main id="screen">
+    <section class="hero-grid">
+      <div class="stat-card"><span>Рабочие дни</span><strong id="workCount">0 / 22</strong></div>
+      <div class="stat-card"><span>Прогноз зарплаты</span><strong id="forecast">€ 0</strong></div>
+    </section>
+
+    <button class="pay-card" id="payCard">
+      <div class="pay-icon">€</div>
+      <div><small>Ближайшая зарплата</small><b id="payDate">25 сентября 2026</b></div>
+      <span id="daysLeft">—</span>
+      <span class="chev">›</span>
+    </button>
+
+    <section class="calendar-card">
+      <div class="calendar-head">
+        <button class="month-btn" id="prevMonth">‹</button>
+        <span id="calendarLabel">Сентябрь 2026</span>
+        <button class="month-btn" id="nextMonth">›</button>
+      </div>
+      <div class="weekdays">
+        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+      </div>
+      <div class="days" id="calendar"></div>
+      <div class="legend"><span><i class="dot work"></i>Рабочий день</span><span><i class="dot off"></i>Выходной</span><span><i class="ring"></i>Сегодня</span></div>
+    </section>
+
+    <button class="today-card" id="todayOpen">
+      <div class="today-icon">▣</div>
+      <div class="today-text"><small>Сегодня</small><b id="todayLabel">—</b><span id="todayHours">Выберите статус дня</span></div>
+      <span class="chev">›</span>
+    </button>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-tab="home">⌂<span>Главная</span></button>
+    <button class="tab" data-tab="schedule">▦<span>График</span></button>
+    <button class="tab" data-tab="salary">◉<span>Зарплата</span></button>
+    <button class="tab" data-tab="settings">⚙<span>Настройки</span></button>
+  </nav>
+</div>
+
+<div class="sheet-backdrop" id="backdrop"></div>
+<section class="sheet" id="daySheet">
+  <div class="sheet-handle"></div>
+  <button class="close" id="closeSheet">×</button>
+  <div class="eyebrow">СТАТУС ДНЯ</div>
+  <h2 id="sheetDate">24 сентября 2026</h2>
+  <div class="status-list">
+    <button class="status work-status" data-status="work">▣ <span>Работа</span><b>✓</b></button>
+    <button class="status off-status" data-status="off">☼ <span>Выходной</span><b>✓</b></button>
+    <button class="status vacation" data-status="vacation">✈ <span>Отпуск</span><b>✓</b></button>
+    <button class="status sick" data-status="sick">✚ <span>Больничный</span><b>✓</b></button>
+  </div>
+  <div class="form-row">
+    <label>Часы смены<input id="hoursInput" type="number" min="0" max="24" step=".5" value="9"></label>
+    <label>Ставка / час<input id="rateInput" type="number" min="0" step=".01" value="14.44"></label>
+  </div>
+  <label class="note-label">Заметка<textarea id="noteInput" placeholder="Например: ночная смена, доп. часы..."></textarea></label>
+  <button class="primary" id="saveDay">Сохранить</button>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
