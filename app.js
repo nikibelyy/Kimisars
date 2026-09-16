@@ -1,57 +1,102 @@
-const stateKey="my-grafik-black-edition-v1";
-const saved=JSON.parse(localStorage.getItem(stateKey)||"null")||{days:{},rate:14.44,hours:9,payDay:25};
-let state=saved, view=new Date(2026,8,1), selectedDate=null;
-const months=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-const today=new Date();
-const fmtKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-const ruDate=d=>`${d.getDate()} ${months[d.getMonth()].toLowerCase()} ${d.getFullYear()}`;
-function persist(){localStorage.setItem(stateKey,JSON.stringify(state))}
-function render(){
-  document.getElementById("monthTitle").textContent=`${months[view.getMonth()]} ${view.getFullYear()}`;
-  document.getElementById("calendarLabel").textContent=`${months[view.getMonth()]} ${view.getFullYear()}`;
-  const cal=document.getElementById("calendar"); cal.innerHTML="";
-  const first=new Date(view.getFullYear(),view.getMonth(),1), offset=(first.getDay()+6)%7, total=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
-  for(let i=0;i<offset;i++) cal.appendChild(Object.assign(document.createElement("button"),{className:"empty"}));
-  for(let n=1;n<=total;n++){
-    const d=new Date(view.getFullYear(),view.getMonth(),n), key=fmtKey(d), b=document.createElement("button");
-    const item=state.days[key]; b.textContent=n; b.className=item?.status||"off";
-    if(key===fmtKey(today)) b.classList.add("today");
-    b.onclick=()=>openDay(d); cal.appendChild(b);
-  }
-  const works=Object.values(state.days).filter(x=>x.status==="work");
-  document.getElementById("workCount").textContent=`${works.length} / 22`;
-  document.getElementById("forecast").textContent=`€ ${Math.round(works.length*state.hours*state.rate).toLocaleString("de-DE")}`;
-  const pay=new Date(view.getFullYear(),view.getMonth(),state.payDay);
-  document.getElementById("payDate").textContent=ruDate(pay);
-  const diff=Math.ceil((pay-new Date())/86400000); document.getElementById("daysLeft").textContent=diff>0?`Через ${diff} дн.`:"Сегодня";
-  const tk=fmtKey(today), ti=state.days[tk];
-  document.getElementById("todayLabel").textContent=ti?.status==="work"?"Работа":ti?.status==="vacation"?"Отпуск":ti?.status==="sick"?"Больничный":"Выходной";
-  document.getElementById("todayHours").textContent=ti?.status==="work"?`${ti.hours} ч · € ${Math.round(ti.hours*ti.rate)}`:"Нажмите, чтобы изменить";
+const MONTHLY_SALARY=124500;
+const KEY_OVERRIDES="workSalaryOverrides";
+const KEY_ANCHOR="workSalaryAnchor";
+const MONTHS=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+const GEN=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const now=new Date();
+let currentYear=now.getFullYear(),currentMonth=now.getMonth(),selectedDate=null;
+let overrides=JSON.parse(localStorage.getItem(KEY_OVERRIDES)||"{}");
+let anchorStatus=localStorage.getItem(KEY_ANCHOR)||"work";
+
+const $=id=>document.getElementById(id);
+function key(y,m,d){return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function firstWeekday(y,m){return (new Date(y,m,1).getDay()+6)%7}
+function isToday(y,m,d){return y===now.getFullYear()&&m===now.getMonth()&&d===now.getDate()}
+
+function getBaseStatus(date){
+ const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const target=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+ const diff=Math.round((target-today)/86400000);
+ let p=anchorStatus==="work"?((diff%4)+4)%4:(((diff+2)%4)+4)%4;
+ return p<2?"work":"off";
 }
-function openDay(d){
-  selectedDate=new Date(d); const key=fmtKey(d), item=state.days[key]||{status:"off",hours:state.hours,rate:state.rate,note:""};
-  document.getElementById("sheetDate").textContent=ruDate(d);
-  document.getElementById("hoursInput").value=item.hours??state.hours;
-  document.getElementById("rateInput").value=item.rate??state.rate;
-  document.getElementById("noteInput").value=item.note||"";
-  document.querySelectorAll(".status").forEach(x=>x.classList.toggle("selected",x.dataset.status===(item.status||"off")));
-  document.getElementById("backdrop").classList.add("open");document.getElementById("daySheet").classList.add("open");
+function getStatus(y,m,d){
+ const k=key(y,m,d);
+ return Object.prototype.hasOwnProperty.call(overrides,k)?overrides[k]:getBaseStatus(new Date(y,m,d));
 }
-function closeSheet(){document.getElementById("backdrop").classList.remove("open");document.getElementById("daySheet").classList.remove("open")}
-document.querySelectorAll(".status").forEach(b=>b.onclick=()=>{document.querySelectorAll(".status").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
-document.getElementById("saveDay").onclick=()=>{
-  const key=fmtKey(selectedDate), status=document.querySelector(".status.selected")?.dataset.status||"off";
-  state.days[key]={status,hours:+document.getElementById("hoursInput").value||0,rate:+document.getElementById("rateInput").value||0,note:document.getElementById("noteInput").value};
-  state.rate=+document.getElementById("rateInput").value||state.rate; state.hours=+document.getElementById("hoursInput").value||state.hours; persist();closeSheet();render();
-};
-document.getElementById("closeSheet").onclick=closeSheet;document.getElementById("backdrop").onclick=closeSheet;
-document.getElementById("prevMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
-document.getElementById("nextMonth").onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
-document.getElementById("todayOpen").onclick=()=>openDay(today);
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>alert("Раздел «"+t.innerText.trim()+"» подготовлен в прототипе. Следующий этап — полноценные экраны."));
-document.getElementById("notifyBtn").onclick=async()=>{
-  if(!("Notification" in window)){alert("Браузер не поддерживает уведомления.");return}
-  const p=await Notification.requestPermission(); alert(p==="granted"?"Уведомления включены. Для реальных iOS push нужен HTTPS и установленная PWA.":"Разрешение на уведомления не выдано.");
-};
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-render();
+function stats(y,m){
+ let total=daysInMonth(y,m),work=0;
+ for(let d=1;d<=total;d++)if(getStatus(y,m,d)==="work")work++;
+ return {total,work,off:total-work,rate:work?MONTHLY_SALARY/work:0};
+}
+function money(v){return Math.round(v).toLocaleString("ru-RU")}
+function plural(n,a,b,c){let x=n%10,y=n%100;return x===1&&y!==11?a:x>=2&&x<=4&&(y<10||y>=20)?b:c}
+
+function animateNumber(el,target){
+ const start=performance.now(); el.classList.remove("number-change"); void el.offsetWidth; el.classList.add("number-change");
+ function tick(t){let p=Math.min((t-start)/650,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(target*e).toLocaleString("ru-RU");if(p<1)requestAnimationFrame(tick)}
+ requestAnimationFrame(tick);
+}
+
+function half(y,m,start,end){
+ const s=stats(y,m);let n=0;
+ for(let d=start;d<=Math.min(end,s.total);d++)if(getStatus(y,m,d)==="work")n++;
+ return {days:n,amount:n*s.rate};
+}
+function renderCalendar(direction="none"){
+ $("calendarTitle").textContent=`${MONTHS[currentMonth]} ${currentYear}`;
+ const grid=$("calendarGrid");grid.innerHTML="";
+ for(let i=0;i<firstWeekday(currentYear,currentMonth);i++){let e=document.createElement("div");e.className="calendar-day empty";grid.appendChild(e)}
+ for(let d=1;d<=daysInMonth(currentYear,currentMonth);d++){
+  let status=getStatus(currentYear,currentMonth,d),cell=document.createElement("button");
+  cell.className=`calendar-day ${status}${isToday(currentYear,currentMonth,d)?" today":""}`;
+  cell.innerHTML=`<span class="day-number">${d}</span><span class="day-status"></span>`;
+  cell.onclick=()=>{cell.classList.add("selected");openDay(currentYear,currentMonth,d)};
+  grid.appendChild(cell);
+ }
+ if(direction!=="none"){grid.classList.remove("calendar-enter");void grid.offsetWidth;grid.classList.add("calendar-enter")}
+ updateStats();
+}
+function updateStats(){
+ const s=stats(currentYear,currentMonth),salary=s.work*s.rate;
+ let py=currentYear,pm=currentMonth-1;if(pm<0){pm=11;py--}
+ const first=half(currentYear,currentMonth,1,15),second=half(py,pm,16,999);
+ animateNumber($("salaryAmount"),salary);
+ $("salaryMonth").textContent=MONTHS[currentMonth];
+ $("workDaysStat").textContent=s.work;$("offDaysStat").textContent=s.off;
+ $("dayRateStat").textContent=`${money(s.rate)} ₽`;
+ $("workedCaption").textContent=`${s.work} рабочих дней`;$("plannedCaption").textContent=`из ${s.work}`;
+ $("salaryProgress").style.width=`${s.total?s.work/s.total*100:0}%`;
+ $("advanceAmount").textContent=`${money(first.amount)} ₽`;$("advanceDays").textContent=`${first.days} ${plural(first.days,"смена","смены","смен")}`;
+ $("salaryPaymentAmount").textContent=`${money(second.amount)} ₽`;$("salaryPaymentDays").textContent=`${second.days} ${plural(second.days,"смена","смены","смен")}`;
+}
+function openDay(y,m,d){
+ selectedDate={y,m,d};$("selectedDateTitle").textContent=`${d} ${GEN[m]} ${y}`;
+ $("dayModal").classList.add("active");document.body.style.overflow="hidden";
+}
+function closeModal(el){el.classList.remove("active");document.body.style.overflow="";selectedDate=null}
+function setSelected(status){
+ if(!selectedDate)return;overrides[key(selectedDate.y,selectedDate.m,selectedDate.d)]=status;
+ localStorage.setItem(KEY_OVERRIDES,JSON.stringify(overrides));closeModal($("dayModal"));renderCalendar();
+}
+$("setWorkButton").onclick=()=>setSelected("work");$("setOffButton").onclick=()=>setSelected("off");
+$("previousMonth").onclick=()=>{currentMonth--;if(currentMonth<0){currentMonth=11;currentYear--}renderCalendar("previous")};
+$("nextMonth").onclick=()=>{currentMonth++;if(currentMonth>11){currentMonth=0;currentYear++}renderCalendar("next")};
+$("settingsButton").onclick=()=>{$("settingsModal").classList.add("active");updateAnchor();document.body.style.overflow="hidden"};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal($(b.dataset.close)));
+document.querySelectorAll(".modal-overlay").forEach(o=>o.onclick=e=>{if(e.target===o)closeModal(o)});
+function updateAnchor(){
+ $("todayWorkSetting").classList.toggle("active",anchorStatus==="work");
+ $("todayOffSetting").classList.toggle("active",anchorStatus==="off");
+}
+function setAnchor(v){anchorStatus=v;localStorage.setItem(KEY_ANCHOR,v);updateAnchor();renderCalendar()}
+$("todayWorkSetting").onclick=()=>setAnchor("work");$("todayOffSetting").onclick=()=>setAnchor("off");
+$("resetButton").onclick=()=>{if(confirm("Удалить все ручные изменения графика?")){overrides={};localStorage.setItem(KEY_OVERRIDES,"{}");closeModal($("settingsModal"));renderCalendar()}};
+
+let sx=0,sy=0;
+$("calendarGrid").addEventListener("touchstart",e=>{sx=e.changedTouches[0].clientX;sy=e.changedTouches[0].clientY},{passive:true});
+$("calendarGrid").addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.3)return;if(dx<0)$("nextMonth").click();else $("previousMonth").click()},{passive:true});
+
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
+updateAnchor();renderCalendar();

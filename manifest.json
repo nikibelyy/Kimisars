@@ -1,0 +1,15 @@
+{
+  "name": "Мой график и зарплата",
+  "short_name": "Мой график",
+  "description": "Рабочий график 2 через 2 и расчёт заработной платы",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f2f7",
+  "theme_color": "#f2f2f7",
+  "lang": "ru",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
