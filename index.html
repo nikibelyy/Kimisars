@@ -1,90 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f2f2f7">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Мой график">
+<meta name="apple-mobile-web-app-title" content="График">
+<link rel="apple-touch-icon" href="icon.svg">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Мой график</title>
+<title>График</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app-shell">
-<header class="top-bar">
-<div><div class="eyebrow">МОЙ ГРАФИК</div><h1>Работа</h1></div>
-<button class="icon-button" id="settingsButton" aria-label="Настройки">⚙</button>
+<div class="app">
+<header class="header">
+  <div><div class="overline">МОЙ ГРАФИК</div><h1 id="pageTitle">Календарь</h1></div>
+  <button class="round-btn" id="quickSettings" aria-label="Настройки">⚙︎</button>
 </header>
 
 <main>
-<section class="salary-card glass-card">
-<div class="salary-card-top">
-<div><span class="section-label">ЗАРАБОТАНО</span><div class="salary-value"><span id="salaryAmount">0</span><span class="currency">₽</span></div></div>
-<div class="month-badge" id="salaryMonth">Сентябрь</div>
-</div>
-<div class="salary-progress"><div class="progress-track"><div class="progress-fill" id="salaryProgress"></div></div>
-<div class="progress-caption"><span id="workedCaption">0 рабочих дней</span><span id="plannedCaption">из 0</span></div></div>
+<section id="calendarPage" class="page active">
+  <div class="hero glass">
+    <div class="hero-top"><span class="pill">2 × 2</span><span class="muted">Сентябрь 2026</span></div>
+    <div class="hero-label">ЭТОТ МЕСЯЦ</div>
+    <div class="hero-number"><span id="heroSalary">0</span><b>₽</b></div>
+    <div class="hero-meta"><span id="heroDays">0 смен</span><span>·</span><span id="heroRate">0 ₽ / смена</span></div>
+    <div class="progress"><i id="heroProgress"></i></div>
+  </div>
+
+  <div class="section-head"><div><div class="overline">РАСПИСАНИЕ</div><h2>Календарь</h2></div></div>
+  <div class="calendar glass">
+    <div class="calendar-nav"><button id="prev">‹</button><strong id="monthTitle"></strong><button id="next">›</button></div>
+    <div class="week"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+    <div id="grid" class="grid"></div>
+    <div class="legend"><span><i class="dot work"></i>Работа</span><span><i class="dot off"></i>Выходной</span><span><i class="dot today"></i>Сегодня</span></div>
+  </div>
+  <div class="tip glass">Нажмите на дату, чтобы изменить статус смены.</div>
 </section>
 
-<section class="section">
-<div class="section-heading"><span class="section-label">ВЫПЛАТЫ</span><h2>Ближайшие деньги</h2></div>
-<div class="payments-grid">
-<article class="payment-card"><div class="payment-icon purple">25</div><div class="payment-info"><span>25 числа</span><strong id="advanceAmount">0 ₽</strong><small id="advanceDays">0 смен</small></div></article>
-<article class="payment-card"><div class="payment-icon blue">10</div><div class="payment-info"><span>10 числа</span><strong id="salaryPaymentAmount">0 ₽</strong><small id="salaryPaymentDays">0 смен</small></div></article>
-</div>
+<section id="salaryPage" class="page">
+  <div class="salary-orb glass">
+    <div class="overline">ПРОГНОЗ ЗА МЕСЯЦ</div>
+    <div class="big-salary"><span id="salaryBig">0</span><b>₽</b></div>
+    <div class="salary-sub"><span id="salaryMonth">Сентябрь 2026</span><span id="salaryWork">0 рабочих смен</span></div>
+    <div class="progress"><i id="salaryProgress"></i></div>
+  </div>
+  <div class="section-head"><div><div class="overline">ВЫПЛАТЫ</div><h2>Деньги</h2></div></div>
+  <div class="payout glass"><div class="payout-date purple">25</div><div><span>Аванс · 1–15 число</span><strong id="pay25">0 ₽</strong><small id="days25">0 смен</small></div></div>
+  <div class="payout glass"><div class="payout-date blue">10</div><div><span>Зарплата · 16–конец месяца</span><strong id="pay10">0 ₽</strong><small id="days10">0 смен</small></div></div>
+  <div class="salary-note glass">Расчёт смены: <strong id="rateText">0 ₽</strong>. Сумма зависит от количества рабочих смен в конкретном месяце.</div>
 </section>
 
-<section class="section calendar-section">
-<div class="calendar-header">
-<button class="month-arrow" id="previousMonth" aria-label="Предыдущий месяц">‹</button>
-<div class="month-title" id="calendarTitle"></div>
-<button class="month-arrow" id="nextMonth" aria-label="Следующий месяц">›</button>
-</div>
-<div class="calendar-card glass-card">
-<div class="weekdays"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
-<div class="calendar-grid" id="calendarGrid"></div>
-<div class="calendar-legend"><div><i class="legend-dot work"></i>Работа</div><div><i class="legend-dot off"></i>Выходной</div><div><i class="legend-dot today"></i>Сегодня</div></div>
-</div>
+<section id="settingsPage" class="page">
+  <div class="profile glass"><div class="avatar">2×2</div><div><div class="overline">ГРАФИК</div><h2>Рабочий режим</h2><p>2 рабочих · 2 выходных</p></div></div>
+  <div class="setting-group glass">
+    <div class="setting"><div><strong>Сегодня</strong><small>Начало цикла</small></div><div class="seg"><button id="anchorWork">Работа</button><button id="anchorOff">Выходной</button></div></div>
+    <div class="setting"><div><strong>Месячный доход</strong><small>При полном графике</small></div><b>124 500 ₽</b></div>
+    <button class="reset" id="reset">Сбросить изменения графика</button>
+  </div>
+  <div class="about glass"><span>О приложении</span><strong>График · v2.0</strong><small>Данные хранятся на этом устройстве.</small></div>
 </section>
-
-<section class="section">
-<div class="section-heading"><span class="section-label">СТАТИСТИКА</span><h2>Этот месяц</h2></div>
-<div class="stats-grid">
-<div class="stat-card glass-card"><span>Рабочих смен</span><strong id="workDaysStat">0</strong></div>
-<div class="stat-card glass-card"><span>Выходных</span><strong id="offDaysStat">0</strong></div>
-<div class="stat-card glass-card"><span>Смена стоит</span><strong id="dayRateStat">0 ₽</strong></div>
-<div class="stat-card glass-card"><span>План</span><strong>124 500 ₽</strong></div>
-</div>
-</section>
-
-<section class="hint-card"><div class="hint-icon">i</div><p>Нажми на день календаря, чтобы поменять его статус. Изменения сохраняются автоматически.</p></section>
 </main>
-<footer><span>2 × 2</span><span>•</span><span>124 500 ₽ / месяц</span></footer>
+
+<nav class="tabbar glass">
+<button class="tab active" data-page="calendarPage" data-title="Календарь"><span>▦</span><small>Календарь</small></button>
+<button class="tab" data-page="salaryPage" data-title="Зарплата"><span>₽</span><small>Зарплата</small></button>
+<button class="tab" data-page="settingsPage" data-title="Настройки"><span>⌘</span><small>Настройки</small></button>
+</nav>
 </div>
 
-<div class="modal-overlay" id="dayModal"><div class="bottom-sheet">
-<div class="sheet-handle"></div>
-<div class="sheet-header"><div><span class="section-label">ИЗМЕНИТЬ ДЕНЬ</span><h2 id="selectedDateTitle"></h2></div><button class="close-button" data-close="dayModal">×</button></div>
-<div class="status-buttons">
-<button class="status-option" id="setWorkButton"><span class="status-check work-check">✓</span><span><strong>Рабочий</strong><small>Учесть в зарплате</small></span></button>
-<button class="status-option" id="setOffButton"><span class="status-check off-check">×</span><span><strong>Выходной</strong><small>Не учитывать в зарплате</small></span></button>
-</div>
+<div class="sheet-overlay" id="sheetOverlay"><div class="sheet glass">
+<div class="handle"></div><div class="sheet-head"><div><div class="overline">ДАТА</div><h2 id="sheetDate"></h2></div><button id="closeSheet">×</button></div>
+<button class="status work-status" id="makeWork"><span>✓</span><div><strong>Рабочий день</strong><small>Учесть в заработке</small></div></button>
+<button class="status off-status" id="makeOff"><span>×</span><div><strong>Выходной</strong><small>Не учитывать в заработке</small></div></button>
 </div></div>
-
-<div class="modal-overlay" id="settingsModal"><div class="bottom-sheet">
-<div class="sheet-handle"></div>
-<div class="sheet-header"><div><span class="section-label">НАСТРОЙКИ</span><h2>График</h2></div><button class="close-button" data-close="settingsModal">×</button></div>
-<div class="settings-list">
-<div class="setting-item"><div><strong>Цикл</strong><small>2 рабочих / 2 выходных</small></div><span class="setting-value">2 × 2</span></div>
-<div class="setting-item"><div><strong>Сегодня</strong><small>С чего начинается цикл</small></div><div class="segmented-control"><button id="todayWorkSetting">Работа</button><button id="todayOffSetting">Выходной</button></div></div>
-<div class="setting-item"><div><strong>Месячный доход</strong><small>При полном графике</small></div><span class="setting-value">124 500 ₽</span></div>
-</div>
-<button class="danger-button" id="resetButton">Сбросить ручные изменения</button>
-</div></div>
-
 <script src="app.js"></script>
 </body>
 </html>
