@@ -2,127 +2,113 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#f7f7fa">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Мой график">
-<link rel="apple-touch-icon" href="icon.svg">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Мой график</title>
-<link rel="stylesheet" href="styles.css">
+<title>Мои смены</title>
+<style>
+:root{--bg:#f5f5f7;--card:rgba(255,255,255,.72);--text:#17171a;--muted:#73737b;--blue:#007aff;--green:#34c759;--red:#ff3b30;--line:rgba(0,0,0,.07)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#f7f7f9,#e9edf5);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",sans-serif;color:var(--text);min-height:100vh}
+.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom))}
+header{padding:24px 4px 16px;display:flex;justify-content:space-between;align-items:center}h1{font-size:34px;margin:0;font-weight:750;letter-spacing:-1.3px}.sub{color:var(--muted);font-size:14px;margin-top:3px}.gear{border:0;background:var(--card);backdrop-filter:blur(20px);width:42px;height:42px;border-radius:50%;font-size:19px}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 35px rgba(30,40,60,.08);backdrop-filter:blur(24px);border-radius:28px;padding:20px;margin:12px 0}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:12px}.big{font-size:34px;font-weight:750;letter-spacing:-1px}.label{color:var(--muted);font-size:13px;margin-bottom:7px}.accent{color:var(--blue)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.nav button{border:0;background:rgba(0,122,255,.1);color:var(--blue);border-radius:12px;padding:9px 12px;font-size:16px}.month{font-size:19px;font-weight:700}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;color:var(--muted);font-size:11px;font-weight:650;padding-bottom:4px}.day{min-height:67px;border:0;border-radius:15px;background:rgba(255,255,255,.62);padding:7px 4px;text-align:center;color:var(--text);font-family:inherit;position:relative}.day.muted{opacity:.3}.num{font-size:14px;font-weight:650}.status{font-size:10px;margin-top:7px;font-weight:700}.work .status{color:var(--green)}.off .status{color:var(--muted)}.today{outline:2px solid var(--blue)}.selected{background:rgba(0,122,255,.13)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.row strong{font-size:17px}.pill{padding:7px 11px;border-radius:999px;background:rgba(0,122,255,.1);color:var(--blue);font-size:12px;font-weight:700}
+.bar{height:10px;background:rgba(0,0,0,.07);border-radius:10px;overflow:hidden;margin-top:13px}.fill{height:100%;background:var(--blue);border-radius:10px}.small{font-size:13px;color:var(--muted);line-height:1.45}
+button{cursor:pointer}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{padding:15px;border-radius:20px;background:rgba(255,255,255,.5)}.stat b{display:block;font-size:21px;margin-top:4px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;align-items:end;justify-content:center;padding:12px;z-index:5}.sheet{background:#f7f7f8;border-radius:28px 28px 20px 20px;padding:20px;width:min(560px,100%);box-shadow:0 15px 60px #0003}.sheet h2{margin:0 0 14px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.action{border:0;padding:14px;border-radius:16px;font-size:16px;background:#e8e8ed}.action.primary{background:var(--blue);color:white}.close{width:100%;margin-top:10px;border:0;padding:14px;border-radius:16px;background:white;font-size:16px}
+@media(max-width:420px){h1{font-size:31px}.day{min-height:62px}.card{padding:17px;border-radius:24px}}
+</style>
 </head>
 <body>
 <div class="app">
-<header class="topbar">
-  <div>
-    <div class="eyebrow">МОЙ ГРАФИК</div>
-    <h1 id="screenTitle">Сегодня</h1>
-  </div>
-  <button class="glass-icon" id="openSettings" aria-label="Настройки">⚙︎</button>
-</header>
+<header><div><h1>Мои смены</h1><div class="sub">2 рабочих / 2 выходных · 8 300 ₽</div></div><button class="gear" onclick="openSettings()">⚙︎</button></header>
 
-<main>
-<!-- TODAY -->
-<section class="screen active" id="todayScreen">
-  <div class="today-card liquid">
-    <div class="shine"></div>
-    <div class="today-head">
-      <div>
-        <span class="eyebrow light">СЕГОДНЯ</span>
-        <h2 id="todayDate">—</h2>
-      </div>
-      <div class="status-chip" id="todayStatus">—</div>
-    </div>
-    <div class="today-salary-label">СТОИМОСТЬ СМЕНЫ</div>
-    <div class="today-money"><span id="todayMoney">8 300</span><b>₽</b></div>
-    <div class="today-bottom">
-      <div><span>До следующей смены</span><strong id="nextWork">—</strong></div>
-      <div><span>Следующая выплата</span><strong id="nextPay">—</strong></div>
-    </div>
-  </div>
-
-  <div class="section-title"><span class="eyebrow">БЛИЖАЙШАЯ ВЫПЛАТА</span><h2>Деньги</h2></div>
-  <div class="next-payment liquid">
-    <div class="pay-orb" id="payOrb">10</div>
-    <div class="pay-copy">
-      <span id="nextPaymentLabel">Зарплата</span>
-      <strong id="nextPaymentAmount">0 ₽</strong>
-      <small id="nextPaymentDays">0 смен</small>
-    </div>
-    <div class="countdown" id="countdown">—</div>
-  </div>
-
-  <div class="mini-grid">
-    <div class="metric liquid"><span>Отработано</span><strong id="todayWorked">0</strong><small>смен в месяце</small></div>
-    <div class="metric liquid"><span>Заработано</span><strong id="todayEarned">0 ₽</strong><small>по факту</small></div>
-  </div>
-
-  <button class="primary-button" id="todayCalendarButton">Открыть календарь <span>›</span></button>
+<section class="card hero">
+<div><div class="label">Сегодня</div><div id="todayStatus" class="big">—</div><div id="todayDate" class="sub"></div></div>
+<div><div class="label">До следующей выплаты</div><div id="pay" class="big accent">—</div><div id="payDate" class="sub"></div></div>
 </section>
 
-<!-- CALENDAR -->
-<section class="screen" id="calendarScreen">
-  <div class="calendar-summary liquid">
-    <div><span class="eyebrow">ТЕКУЩИЙ МЕСЯЦ</span><div class="summary-money"><span id="calendarSalary">0</span><b>₽</b></div></div>
-    <div class="summary-pill">8 300 ₽ / смена</div>
-  </div>
-  <div class="section-title row"><div><span class="eyebrow">РАСПИСАНИЕ</span><h2>Календарь</h2></div></div>
-  <div class="calendar liquid">
-    <div class="calendar-nav"><button id="prevMonth">‹</button><strong id="monthTitle">—</strong><button id="nextMonth">›</button></div>
-    <div class="week"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
-    <div class="calendar-grid" id="calendarGrid"></div>
-    <div class="legend"><span><i class="dot work"></i>Работа</span><span><i class="dot off"></i>Выходной</span><span><i class="dot today"></i>Сегодня</span></div>
-  </div>
-  <div class="glass info-note"><span>✦</span><p>Нажмите на день, чтобы вручную поменять смену. Изменения сохраняются на этом iPhone.</p></div>
+<section class="card">
+<div class="nav"><button onclick="changeMonth(-1)">‹</button><div id="month" class="month"></div><button onclick="changeMonth(1)">›</button></div>
+<div class="week"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+<div id="grid" class="grid"></div>
 </section>
 
-<!-- SALARY -->
-<section class="screen" id="salaryScreen">
-  <div class="salary-hero liquid">
-    <div class="hero-top"><span class="eyebrow">ЗАРАБОТАНО ЗА МЕСЯЦ</span><span class="live-dot">● LIVE</span></div>
-    <div class="salary-number"><span id="salaryBig">0</span><b>₽</b></div>
-    <div class="salary-line"><span id="salaryShiftCount">0 смен</span><span id="salaryRate">8 300 ₽ / смена</span></div>
-    <div class="bar"><i id="salaryBar"></i></div>
-    <div class="bar-caption"><span id="salaryPlan">План 124 500 ₽</span><span id="salaryPercent">0%</span></div>
-  </div>
-
-  <div class="section-title"><span class="eyebrow">ВЫПЛАТЫ</span><h2>10 и 25 числа</h2></div>
-  <div class="payout-card liquid"><div class="date-icon purple">25</div><div><span>Аванс · 1–15</span><strong id="advanceAmount">0 ₽</strong><small id="advanceDays">0 смен</small></div></div>
-  <div class="payout-card liquid"><div class="date-icon blue">10</div><div><span>Зарплата · 16–конец</span><strong id="restAmount">0 ₽</strong><small id="restDays">0 смен</small></div></div>
-  <div class="glass formula"><span>СТАВКА ЗА СМЕНУ</span><strong>8 300 ₽</strong><small>Месячный план 124 500 ₽ соответствует 15 сменам.</small></div>
+<section class="card">
+<div class="row"><strong>Заработок</strong><span class="pill" id="monthPay">0 ₽</span></div>
+<div class="stats" style="margin-top:12px">
+<div class="stat"><span class="small">Рабочих смен</span><b id="workCount">0</b></div>
+<div class="stat"><span class="small">Выходных</span><b id="offCount">0</b></div>
+</div>
+<div class="bar"><div id="fill" class="fill"></div></div>
+<p class="small" id="periodInfo"></p>
 </section>
 
-<!-- SETTINGS -->
-<section class="screen" id="settingsScreen">
-  <div class="settings-profile liquid"><div class="app-avatar">2×2</div><div><span class="eyebrow">ВАШ РЕЖИМ</span><h2>Работа · отдых</h2><p>Два рабочих дня, два выходных</p></div></div>
-  <div class="settings-card liquid">
-    <div class="setting-row"><div><strong>Начало цикла</strong><small>Считать сегодняшний день</small></div><div class="seg"><button id="setWork">Работа</button><button id="setOff">Выходной</button></div></div>
-    <div class="setting-row"><div><strong>Ставка за смену</strong><small>Фактическая оплата</small></div><b>8 300 ₽</b></div>
-    <div class="setting-row"><div><strong>Норма месяца</strong><small>Стабильный ориентир</small></div><b>124 500 ₽</b></div>
-  </div>
-  <button class="danger liquid" id="resetOverrides">Сбросить изменения календаря</button>
-  <div class="about liquid"><span>О приложении</span><strong>Мой график · Liquid Glass</strong><small>PWA для iPhone · данные хранятся локально</small></div>
+<section class="card">
+<div class="row"><strong>Ближайшая смена</strong><span class="pill" id="nextShift">—</span></div>
+<p class="small" id="nextInfo"></p>
 </section>
-</main>
-
-<nav class="tabbar liquid">
-  <button class="tab active" data-screen="todayScreen" data-title="Сегодня"><span>⌂</span><small>Сегодня</small></button>
-  <button class="tab" data-screen="calendarScreen" data-title="Календарь"><span>▦</span><small>Календарь</small></button>
-  <button class="tab" data-screen="salaryScreen" data-title="Зарплата"><span>₽</span><small>Зарплата</small></button>
-  <button class="tab" data-screen="settingsScreen" data-title="Настройки"><span>⚙</span><small>Настройки</small></button>
-</nav>
 </div>
 
-<div class="sheet-backdrop" id="daySheetBackdrop">
- <div class="sheet liquid">
-  <div class="handle"></div>
-  <div class="sheet-head"><div><span class="eyebrow">ИЗМЕНИТЬ ДЕНЬ</span><h2 id="sheetDate">—</h2></div><button id="closeSheet">×</button></div>
-  <button class="status-option" id="sheetWork"><span class="check green">✓</span><div><strong>Рабочий день</strong><small>+ 8 300 ₽ к заработку</small></div></button>
-  <button class="status-option" id="sheetOff"><span class="check gray">×</span><div><strong>Выходной</strong><small>Не учитывается в заработке</small></div></button>
- </div>
-</div>
-<script src="app.js"></script>
-</body>
-</html>
+<div id="modal" class="modal" onclick="if(event.target===this)closeSettings()">
+<div class="sheet">
+<h2>Настройки</h2>
+<p class="small">Первый рабочий день: <b>1 сентября 2026</b>. День 1–2 — работа, день 3–4 — выходные, затем цикл повторяется.</p>
+<label class="small">Оплата за смену</label>
+<input id="rate" type="number" value="8300" style="width:100%;margin:8px 0 14px;padding:14px;border:0;border-radius:15px;font-size:17px">
+<div class="actions"><button class="action" onclick="resetOverrides()">Сбросить изменения</button><button class="action primary" onclick="saveSettings()">Сохранить</button></div>
+<button class="close" onclick="closeSettings()">Закрыть</button>
+</div></div>
+
+<script>
+const START=new Date(2026,8,1), names=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+let view=new Date(), rate=Number(localStorage.getItem('rate')||8300), overrides=JSON.parse(localStorage.getItem('overrides')||'{}');
+function key(d){return d.toISOString().slice(0,10)}
+function baseWork(d){let x=Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-START)/86400000); return ((x%4)+4)%4<2}
+function isWork(d){let k=key(d);return overrides[k]!==undefined?overrides[k]:baseWork(d)}
+function fmt(n){return new Intl.NumberFormat('ru-RU').format(n)+' ₽'}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function render(){
+ document.getElementById('month').textContent=names[view.getMonth()]+' '+view.getFullYear();
+ const grid=document.getElementById('grid');grid.innerHTML='';
+ const first=new Date(view.getFullYear(),view.getMonth(),1), offset=(first.getDay()+6)%7;
+ for(let i=0;i<offset;i++){let b=document.createElement('div');b.className='day muted';grid.appendChild(b)}
+ for(let n=1;n<=daysInMonth(view.getFullYear(),view.getMonth());n++){
+  let d=new Date(view.getFullYear(),view.getMonth(),n), b=document.createElement('button');b.className='day '+(isWork(d)?'work':'off');
+  if(key(d)===key(new Date()))b.classList.add('today');
+  b.innerHTML='<div class="num">'+n+'</div><div class="status">'+(isWork(d)?'РАБОТА':'ВЫХОДНОЙ')+'</div>';
+  b.onclick=()=>{let k=key(d);overrides[k]=!isWork(d);localStorage.setItem('overrides',JSON.stringify(overrides));render()};grid.appendChild(b)
+ }
+ let y=view.getFullYear(),m=view.getMonth(),wc=0;for(let n=1;n<=daysInMonth(y,m);n++)if(isWork(new Date(y,m,n)))wc++;
+ document.getElementById('workCount').textContent=wc;document.getElementById('offCount').textContent=daysInMonth(y,m)-wc;document.getElementById('monthPay').textContent=fmt(wc*rate);
+ document.getElementById('fill').style.width=(wc/daysInMonth(y,m)*100)+'%';
+ document.getElementById('periodInfo').textContent='Нажми на любой день, чтобы вручную переключить его между работой и выходным.';
+ updateToday();updateNext();
+}
+function updateToday(){
+ let t=new Date();document.getElementById('todayStatus').textContent=isWork(t)?'Работа':'Выходной';
+ document.getElementById('todayDate').textContent=t.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+ let p=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+ let payDay=p.getDate()<=10?10:(p.getDate()<=25?25:10);
+ if(payDay===10&&p.getDate()>25)p.setMonth(p.getMonth()+1);
+ if(payDay===10&&t.getDate()<=10)p.setMonth(p.getMonth());
+ let target=new Date(p.getFullYear(),p.getMonth(),payDay);
+ if(target<=t){target=new Date(t.getFullYear(),t.getMonth(),t.getDate()<=10?25:10);if(target<=t&&t.getDate()>10)target.setMonth(target.getMonth()+1)}
+ let diff=Math.max(0,Math.ceil((target-t)/86400000));document.getElementById('pay').textContent=diff+' '+(diff===1?'день':'дн.');
+ document.getElementById('payDate').textContent='выплата '+target.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+}
+function updateNext(){
+ let d=new Date();for(let i=0;i<30;i++){if(isWork(d)){document.getElementById('nextShift').textContent=i===0?'Сегодня':d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'});document.getElementById('nextInfo').textContent='Смена принесёт '+fmt(rate)+'.';return}d.setDate(d.getDate()+1)}
+}
+function changeMonth(x){view.setMonth(view.getMonth()+x);render()}
+function openSettings(){document.getElementById('rate').value=rate;document.getElementById('modal').style.display='flex'}
+function closeSettings(){document.getElementById('modal').style.display='none'}
+function saveSettings(){rate=Number(document.getElementById('rate').value)||8300;localStorage.setItem('rate',rate);closeSettings();render()}
+function resetOverrides(){overrides={};localStorage.removeItem('overrides');render();closeSettings()}
+view=new Date();render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');
+</script>
+</body></html>
