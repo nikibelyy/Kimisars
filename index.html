@@ -1,65 +1,92 @@
 <!doctype html>
-<html lang="ru"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Смена">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="stylesheet" href="styles.css"><title>Смена</title></head>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#07050d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Мой график">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+  <title>Мой график</title>
+</head>
 <body>
-<div class="bg-orb orb-a"></div><div class="bg-orb orb-b"></div><div class="grain"></div>
-<main class="app">
-<header class="header">
-  <div><div class="tiny">МОЙ ГРАФИК</div><h1>Смена<span>·</span></h1></div>
-  <button class="round" id="settings">⌁</button>
-</header>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">РАБОЧИЙ РИТМ</div>
+        <h1 id="monthTitle"></h1>
+      </div>
+      <button class="glass icon-btn" id="todayBtn" aria-label="Сегодня">●</button>
+    </header>
 
-<section class="hero">
- <div class="hero-shine"></div>
- <div class="hero-label">ЗАРАБОТАНО В ЭТОМ МЕСЯЦЕ</div>
- <div class="money" id="income">0 ₽</div>
- <div class="hero-bottom"><span id="shiftCount">0 смен</span><span class="live"><i></i> 8 300 ₽ / смена</span></div>
- <div class="progress"><i id="progress"></i></div>
- <div class="hero-foot"><span>Текущий прогресс</span><b id="forecast">Прогноз 0 ₽</b></div>
-</section>
+    <main id="screens">
+      <section class="screen active" id="calendarScreen">
+        <div class="hero glass">
+          <div class="hero-copy">
+            <span class="muted">Этот месяц</span>
+            <strong id="monthIncome">0 ₽</strong>
+            <span id="monthWorkdays" class="muted">0 рабочих дней</span>
+          </div>
+          <div class="ring" id="monthRing"><span id="ringValue">0%</span></div>
+        </div>
 
-<div class="nav">
- <button class="navbtn active" data-page="home"><b>⌂</b><small>График</small></button>
- <button class="navbtn" data-page="stats"><b>◌</b><small>Статистика</small></button>
- <button class="navbtn" data-page="pay"><b>↗</b><small>Выплаты</small></button>
-</div>
+        <div class="calendar glass" id="calendar"></div>
 
-<section class="page active" id="home">
- <div class="title-row"><div><small>КАЛЕНДАРЬ</small><h2 id="month"></h2></div><div class="arrows"><button id="prev">‹</button><button id="next">›</button></div></div>
- <div class="week"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
- <div class="calendar" id="calendar"></div>
- <div class="hint"><span class="green-dot"></span> Работа &nbsp;&nbsp; <span class="white-dot"></span> Сегодня</div>
- <button class="action" id="auto"><span>✦</span> Заполнить график 2 / 2</button>
- </section>
+        <div class="legend">
+          <span><i class="dot work"></i>Работа</span>
+          <span><i class="dot rest"></i>Выходной</span>
+          <span><i class="dot pay"></i>Выплата</span>
+        </div>
+      </section>
 
-<section class="page" id="stats">
- <div class="title-row"><div><small>АНАЛИТИКА</small><h2>Твои результаты</h2></div></div>
- <div class="cards">
-  <div class="card"><small>СМЕНЫ</small><strong id="s1">0</strong><em>за месяц</em></div>
-  <div class="card"><small>НАЧИСЛЕНО</small><strong id="s2">0 ₽</strong><em>за месяц</em></div>
-  <div class="card"><small>СРЕДНЕЕ</small><strong id="s3">0 ₽</strong><em>в день</em></div>
-  <div class="card"><small>ЗАНЯТОСТЬ</small><strong id="s4">0%</strong><em>дней месяца</em></div>
- </div>
- <div class="chart"><div class="chart-head"><span>Накопление</span><small id="chartName"></small></div><div class="bars" id="bars"></div></div>
-</section>
+      <section class="screen" id="statsScreen">
+        <div class="section-title">Статистика</div>
+        <div class="stats-grid">
+          <div class="glass stat"><span>За месяц</span><b id="statMonth">0 ₽</b></div>
+          <div class="glass stat"><span>Рабочих дней</span><b id="statDays">0</b></div>
+          <div class="glass stat"><span>Выплат</span><b id="statPays">0</b></div>
+          <div class="glass stat"><span>За год</span><b id="statYear">0 ₽</b></div>
+        </div>
+        <div class="glass chart-card">
+          <div class="chart-head"><span>Доход по месяцам</span><span id="yearLabel"></span></div>
+          <div class="bars" id="bars"></div>
+        </div>
+      </section>
 
-<section class="page" id="pay">
- <div class="title-row"><div><small>КАЛЕНДАРЬ ДЕНЕГ</small><h2>Выплаты</h2></div></div>
- <div class="payout">
-  <div><span>10</span><p>Основная выплата</p><b id="p10">0 ₽</b></div>
-  <div><span>15</span><p>Аванс · по желанию</p><b id="p15">—</b></div>
-  <div><span>25</span><p>Основная выплата</p><b id="p25">0 ₽</b></div>
- </div>
- <button class="action" id="advance">＋ Указать аванс</button>
- <div class="info"><b>8 300 ₽</b><span>за каждую отмеченную смену</span></div>
-</section>
-</main>
+      <section class="screen" id="settingsScreen">
+        <div class="section-title">Настройки</div>
+        <div class="glass settings-card">
+          <label>Старт цикла 2/2
+            <input id="cycleStart" type="date">
+          </label>
+          <label>Первый день цикла
+            <select id="cycleType">
+              <option value="work">Работа</option>
+              <option value="rest">Выходной</option>
+            </select>
+          </label>
+          <label>День выплаты №1
+            <select id="pay1"><option>1</option><option>5</option><option>10</option><option>15</option></select>
+          </label>
+          <label>День выплаты №2
+            <select id="pay2"><option>15</option><option>20</option><option>25</option><option>30</option></select>
+          </label>
+          <button class="primary" id="resetBtn">Сбросить отметки</button>
+        </div>
+        <p class="privacy">Данные хранятся только на этом устройстве. Синхронизации и отправки в интернет нет.</p>
+      </section>
+    </main>
 
-<div class="sheet-bg" id="sheet"><div class="sheet"><div class="grab"></div><h3>Настройки</h3>
-<label>Оплата за смену<input id="rate" type="number" inputmode="numeric" value="8300"></label>
-<label>Аванс 15 числа<input id="adv" type="number" inputmode="numeric" placeholder="Не задан"></label>
-<button class="action" id="save">Сохранить</button><button class="cancel" id="cancel">Отмена</button>
-</div></div><div id="toast"></div>
-<script src="app.js"></script></body></html>
+    <nav class="tabbar glass">
+      <button class="tab active" data-screen="calendarScreen"><span>▦</span><small>График</small></button>
+      <button class="tab" data-screen="statsScreen"><span>◒</span><small>Статистика</small></button>
+      <button class="tab" data-screen="settingsScreen"><span>⌁</span><small>Настройки</small></button>
+    </nav>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

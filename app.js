@@ -1,36 +1,61 @@
-const KEY="smena-ios27-v2";const now=new Date();let state=JSON.parse(localStorage.getItem(KEY)||"null")||{rate:8300,advance:null,worked:{}};let vd=new Date(now.getFullYear(),now.getMonth(),1);
-const $=x=>document.querySelector(x), pad=n=>String(n).padStart(2,"0"), key=(y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`, fmt=n=>new Intl.NumberFormat("ru-RU").format(Math.round(n))+" ₽", days=(y,m)=>new Date(y,m+1,0).getDate(), first=(y,m)=>(new Date(y,m,1).getDay()+6)%7;
-function monthDays(){let y=vd.getFullYear(),m=vd.getMonth();return Array.from({length:days(y,m)},(_,i)=>i+1)}
-function count(y=vd.getFullYear(),m=vd.getMonth()){return monthDays().filter(d=>state.worked[key(y,m,d)]).length}
-function render(){calendar();stats();payments();hero()}
-function calendar(){let y=vd.getFullYear(),m=vd.getMonth();$("#month").textContent=new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(vd).replace(" г.","");let c=$("#calendar");c.innerHTML="";for(let i=0;i<first(y,m);i++){let e=document.createElement("div");e.className="day empty";c.append(e)}monthDays().forEach((d,i)=>{let b=document.createElement("button");b.className="day";let k=key(y,m,d);if(state.worked[k])b.classList.add("work");if(new Date(y,m,d).toDateString()===now.toDateString())b.classList.add("today");b.style.animationDelay=i*10+"ms";b.textContent=d;b.onclick=()=>{state.worked[k]=!state.worked[k];save();render();toast(state.worked[k]?"Смена добавлена":"Смена снята")};c.append(b)})}
-function hero(){let y=now.getFullYear(),m=now.getMonth(),n=Array.from({length:days(y,m)},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length,inc=n*state.rate;$("#income").textContent=fmt(inc);$("#shiftCount").textContent=n+" "+(n==1?"смена":n<5?"смены":"смен");$(".live").innerHTML=`<i></i> ${fmt(state.rate)} / смена`;$("#progress").style.width=Math.min(100,n/Math.max(1,Math.ceil(now.getDate()/2))*100)+"%";$("#forecast").textContent="Прогноз "+fmt(Math.round(days(y,m)/2)*state.rate)}
-function stats(){let n=count(),inc=n*state.rate,total=days(vd.getFullYear(),vd.getMonth());$("#s1").textContent=n;$("#s2").textContent=fmt(inc);$("#s3").textContent=fmt(inc/total);$("#s4").textContent=Math.round(n/total*100)+"%";$("#chartName").textContent=new Intl.DateTimeFormat("ru-RU",{month:"short"}).format(vd);let b=$("#bars");b.innerHTML="";let run=0,max=Math.max(1,inc);monthDays().forEach((d,i)=>{if(state.worked[key(vd.getFullYear(),vd.getMonth(),d)])run+=state.rate;let x=document.createElement("i");x.className="bar";x.style.height=(run/max*100||0)+"%";x.style.animationDelay=i*12+"ms";b.append(x)})}
-function periodShifts(y,m,from,to){
-  const total=days(y,m);
-  const a=Math.max(1,from), b=Math.min(total,to);
-  let n=0;
-  for(let d=a;d<=b;d++) if(state.worked[key(y,m,d)]) n++;
-  return n;
+const KEY="workshift_v1";
+const rate = Number(localStorage.getItem("privateDailyRate") || atob("ODMwMA=="));
+localStorage.setItem("privateDailyRate", String(rate));
+
+const state = JSON.parse(localStorage.getItem(KEY) || "null") || {
+  start: new Date().toISOString().slice(0,10),
+  type: "work",
+  manual: {},
+  pay1: 15,
+  pay2: 30
+};
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+let view = new Date();
+
+const $=s=>document.querySelector(s);
+const money=n=>new Intl.NumberFormat("ru-RU",{maximumFractionDigits:0}).format(n)+" ₽";
+const iso=d=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`};
+const startDate=()=>new Date(state.start+"T00:00:00");
+
+function isWork(d){
+  const k=iso(d);
+  if(state.manual[k]) return state.manual[k]==="work";
+  const diff=Math.floor((new Date(k+"T00:00:00")-startDate())/86400000);
+  const idx=((diff%4)+4)%4;
+  return state.type==="work" ? idx<2 : idx>=2;
 }
-function payments(){
-  // Payroll logic:
-  // 25th = first half of the current month (1–15).
-  // 10th = second half of the previous month (16–last day).
-  // 15th = optional advance, shown separately.
-  const y=vd.getFullYear(), m=vd.getMonth();
-  const prev=new Date(y,m-1,1), py=prev.getFullYear(), pm=prev.getMonth();
-  const firstHalf=periodShifts(y,m,1,15);
-  const previousSecondHalf=periodShifts(py,pm,16,days(py,pm));
-  $("#p10").textContent=fmt(previousSecondHalf*state.rate);
-  $("#p15").textContent=state.advance?fmt(state.advance):"—";
-  $("#p25").textContent=fmt(firstHalf*state.rate);
+function isPay(d){const n=d.getDate(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();return n===Number(state.pay1)||n===Number(state.pay2)||n===last}
+function monthStats(y,m){let days=new Date(y,m+1,0).getDate(), w=0,p=0;for(let n=1;n<=days;n++){let d=new Date(y,m,n);if(isWork(d))w++;if(isPay(d))p++}return {w,p,income:w*rate}}
+function render(){
+  const y=view.getFullYear(),m=view.getMonth();
+  $("#monthTitle").textContent=new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(view).replace(/^./,x=>x.toUpperCase());
+  const s=monthStats(y,m);
+  $("#monthIncome").textContent=money(s.income);$("#monthWorkdays").textContent=`${s.w} ${s.w===1?"рабочий день":"рабочих дней"}`;
+  $("#statMonth").textContent=money(s.income);$("#statDays").textContent=s.w;$("#statPays").textContent=s.p;
+  const yearTotal=[...Array(12)].reduce((a,_,i)=>a+monthStats(y,i).income,0);$("#statYear").textContent=money(yearTotal);$("#yearLabel").textContent=y;
+  const ring=Math.min(100,Math.round(s.w/15*100));$("#monthRing").style.setProperty("--p",ring+"%");$("#ringValue").textContent=ring+"%";
+  const cal=$("#calendar");cal.innerHTML="";
+  const weekdays=["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"], w=document.createElement("div");w.className="week";
+  weekdays.forEach(x=>{let e=document.createElement("span");e.textContent=x;w.append(e)});cal.append(w);
+  const grid=document.createElement("div");grid.className="days";
+  const first=new Date(y,m,1), offset=(first.getDay()+6)%7, total=new Date(y,m+1,0).getDate();
+  for(let i=0;i<offset;i++){let e=document.createElement("div");e.className="day empty";grid.append(e)}
+  for(let n=1;n<=total;n++){let d=new Date(y,m,n),e=document.createElement("button");e.className="day "+(isWork(d)?"work":"rest")+(iso(d)===iso(new Date())?" today":"")+(isPay(d)?" pay":"");e.innerHTML=`<span class="num">${n}</span><span class="state">${isWork(d)?"работа":"выходной"}</span>`;e.onclick=()=>toggleDay(d);grid.append(e)}
+  cal.append(grid);
+  renderBars(y);
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
-function toast(t){let x=$("#toast");x.textContent=t;x.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove("show"),1500)}
-document.querySelectorAll(".navbtn").forEach(n=>n.onclick=()=>{document.querySelectorAll(".navbtn").forEach(x=>x.classList.remove("active"));n.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$("#"+n.dataset.page).classList.add("active")});
-$("#prev").onclick=()=>{vd.setMonth(vd.getMonth()-1);render()};$("#next").onclick=()=>{vd.setMonth(vd.getMonth()+1);render()};
-$("#auto").onclick=()=>{let y=vd.getFullYear(),m=vd.getMonth();let anchor=new Date(now.getFullYear(),now.getMonth(),now.getDate());monthDays().forEach(d=>{let delta=Math.round((new Date(y,m,d)-anchor)/86400000);state.worked[key(y,m,d)]=Math.abs(delta)%4<2});save();render();toast("График 2 / 2 готов")};
-$("#settings").onclick=()=>{$("#rate").value=state.rate;$("#adv").value=state.advance??"";$("#sheet").classList.add("open")};$("#advance").onclick=()=>$("#settings").click();$("#cancel").onclick=()=>$("#sheet").classList.remove("open");
-$("#save").onclick=()=>{state.rate=Math.max(0,Number($("#rate").value)||8300);let a=$("#adv").value.trim();state.advance=a?Math.max(0,Number(a)):null;save();$("#sheet").classList.remove("open");render();toast("Сохранено")};
-if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));render();
+function toggleDay(d){const k=iso(d);state.manual[k]=isWork(d)?"rest":"work";save();render();toast("День изменён")}
+function renderBars(y){const el=$("#bars");el.innerHTML="";const vals=[...Array(12)].map((_,i)=>monthStats(y,i).income), max=Math.max(...vals,1);vals.forEach((v,i)=>{let w=document.createElement("div");w.className="bar-wrap";w.innerHTML=`<div class="bar" style="height:${Math.max(3,v/max*100)}%"></div><div class="bar-label">${new Intl.DateTimeFormat("ru-RU",{month:"short"}).format(new Date(y,i,1)).replace(".","")}</div>`;el.append(w)})}
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1300)}
+$("#todayBtn").onclick=()=>{view=new Date();render()};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.screen).classList.add("active")});
+document.querySelector("#calendar").addEventListener("touchstart",()=>{}, {passive:true});
+let sx=0;$("#calendar").addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});$("#calendar").addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60){view.setMonth(view.getMonth()+(dx<0?1:-1));render()}},{passive:true});
+$("#cycleStart").value=state.start;$("#cycleType").value=state.type;$("#pay1").value=state.pay1;$("#pay2").value=state.pay2;
+$("#cycleStart").onchange=e=>{state.start=e.target.value;state.manual={};save();render();toast("Цикл обновлён")};
+$("#cycleType").onchange=e=>{state.type=e.target.value;state.manual={};save();render()};
+$("#pay1").onchange=e=>{state.pay1=e.target.value;save();render()};$("#pay2").onchange=e=>{state.pay2=e.target.value;save();render()};
+$("#resetBtn").onclick=()=>{state.manual={};save();render();toast("Отметки сброшены")};
+render();
+
+if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}
