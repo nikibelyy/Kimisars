@@ -1,0 +1,12 @@
+{
+  "name":"Смена — зарплата и график",
+  "short_name":"Смена",
+  "description":"Учёт смен, зарплаты и аванса для графика 2/2.",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#050506",
+  "theme_color":"#050506",
+  "orientation":"portrait",
+  "lang":"ru",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

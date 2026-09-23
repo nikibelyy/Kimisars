@@ -1,98 +1,102 @@
-const RATE = 8300;
-const KEY = "shift-salary-pwa-v1";
-const state = JSON.parse(localStorage.getItem(KEY) || "null") || {
-  start: new Date().toISOString().slice(0,10),
-  overrides: {}
+const KEY="smena-v1";
+const now=new Date();
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{
+  rate:8300, advance:null, worked:{}
 };
-let view = new Date(); view.setDate(1);
+let viewDate=new Date(now.getFullYear(),now.getMonth(),1);
 
-const $ = id => document.getElementById(id);
-const pad = n => String(n).padStart(2,"0");
-const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
-const save = () => localStorage.setItem(KEY, JSON.stringify(state));
-const fmtMoney = n => `${Math.round(n).toLocaleString("ru-RU")} ₽`;
-const fmtDate = d => d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
-
-function diffDays(a,b){
-  const x = new Date(a.getFullYear(),a.getMonth(),a.getDate());
-  const y = new Date(b.getFullYear(),b.getMonth(),b.getDate());
-  return Math.round((x-y)/86400000);
-}
-function baseStatus(d){
-  const start = parse(state.start);
-  const diff = diffDays(d,start);
-  if(diff < 0) return "off";
-  return (diff % 4 < 2) ? "work" : "off";
-}
-function status(d){ return state.overrides[keyOf(d)] || baseStatus(d); }
+const $=s=>document.querySelector(s);
+const fmt=n=>new Intl.NumberFormat("ru-RU").format(Math.round(n))+" ₽";
+const pad=n=>String(n).padStart(2,"0");
+const key=(y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`;
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+const monthName=d=>new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(d);
+const monthKey=()=>`${viewDate.getFullYear()}-${pad(viewDate.getMonth()+1)}`;
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function firstMonday(y,m){let x=new Date(y,m,1).getDay();return (x+6)%7}
 
 function render(){
-  $("monthTitle").textContent = view.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
-  const first = new Date(view.getFullYear(),view.getMonth(),1);
-  const offset = (first.getDay()+6)%7;
-  const days = new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
-  const grid = $("grid"); grid.innerHTML="";
-  for(let i=0;i<offset;i++){ const e=document.createElement("div"); e.className="day empty"; grid.appendChild(e); }
-  const today = new Date();
-  for(let n=1;n<=days;n++){
-    const d = new Date(view.getFullYear(),view.getMonth(),n);
-    const k=keyOf(d), st=status(d), b=document.createElement("button");
-    b.className=`day ${st} ${k===keyOf(today)?"today":""} ${(n===10||n===25)?"pay":""}`;
-    b.innerHTML=`<span class="num">${n}</span><i class="dot"></i>`;
-    b.onclick=()=>cycle(k);
-    grid.appendChild(b);
+  renderCalendar(); renderStats(); renderPayments(); updateHero();
+}
+function renderCalendar(){
+  $("#monthTitle").textContent=monthName(viewDate).replace(" г.","");
+  const cal=$("#calendar"); cal.innerHTML="";
+  const y=viewDate.getFullYear(),m=viewDate.getMonth(), total=daysInMonth(y,m);
+  for(let i=0;i<firstMonday(y,m);i++){const e=document.createElement("div");e.className="day empty";cal.append(e)}
+  for(let d=1;d<=total;d++){
+    const el=document.createElement("button"); el.className="day";
+    const k=key(y,m,d); const date=new Date(y,m,d);
+    if(state.worked[k]) el.classList.add("work");
+    if(date.toDateString()===now.toDateString()) el.classList.add("today");
+    el.textContent=d;
+    el.onclick=()=>{state.worked[k]=!state.worked[k];save();render();toast(state.worked[k]?"Смена добавлена":"Смена снята")};
+    cal.append(el);
   }
-  updateStats();
-  $("startText").textContent = fmtDate(parse(state.start));
 }
-function cycle(k){
-  const d=parse(k), current=status(d);
-  const next={work:"off",off:"sick",sick:"work"}[current];
-  const base=baseStatus(d);
-  if(next===base) delete state.overrides[k]; else state.overrides[k]=next;
-  save(); render();
-  showToast(next==="work"?"Рабочий день":next==="off"?"Выходной":"Больничный");
+function monthWorked(){
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();
+  return Array.from({length:daysInMonth(y,m)},(_,i)=>state.worked[key(y,m,i+1)]?i+1:null).filter(Boolean);
 }
-function monthStats(){
-  const y=view.getFullYear(),m=view.getMonth(),days=new Date(y,m+1,0).getDate();
-  let work=0, earned=0;
-  for(let n=1;n<=days;n++){
-    const d=new Date(y,m,n);
-    if(status(d)==="work"){work++; earned+=RATE;}
+function renderStats(){
+  const shifts=monthWorked().length, earned=shifts*state.rate;
+  $("#statShifts").textContent=shifts;
+  $("#statEarned").textContent=fmt(earned);
+  $("#statAvg").textContent=fmt(daysInMonth(viewDate.getFullYear(),viewDate.getMonth())?earned/daysInMonth(viewDate.getFullYear(),viewDate.getMonth()):0);
+  $("#statPercent").textContent=Math.round(shifts/daysInMonth(viewDate.getFullYear(),viewDate.getMonth())*100)+"%";
+  $("#chartMonth").textContent=monthName(viewDate);
+  const bars=$("#bars"); bars.innerHTML="";
+  let max=Math.max(1,earned), run=0;
+  monthWorked().forEach((d,i)=>{run+=state.rate; const b=document.createElement("div");b.className="bar";b.style.height=(run/max*100)+"%";b.title=`${d} число · ${fmt(run)}`;b.style.animationDelay=(i*18)+"ms";bars.append(b)});
+}
+function updateHero(){
+  const y=now.getFullYear(),m=now.getMonth(), total=daysInMonth(y,m);
+  const shifts=Array.from({length:total},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length;
+  const income=shifts*state.rate;
+  $("#monthIncome").textContent=fmt(income);
+  $("#workedDays").textContent=shifts+" "+(shifts===1?"смена":shifts>=2&&shifts<=4?"смены":"смен");
+  $("#dailyRateLabel").textContent=fmt(state.rate)+" / смена";
+  const passed=Math.min(now.getDate(),total);
+  const progress=Math.min(100,shifts/Math.max(1,Math.ceil(passed/2))*100);
+  $("#incomeProgress").style.width=Math.min(100,progress)+"%";
+  const forecast=Math.round(total/2)*state.rate;
+  $("#forecast").textContent=fmt(forecast);
+}
+function renderPayments(){
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();
+  const shifts=monthWorked().length;
+  const before10=Array.from({length:Math.min(10,daysInMonth(y,m))},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length;
+  const before25=Array.from({length:Math.min(25,daysInMonth(y,m))},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length;
+  const p10=Math.min(shifts,before10)*state.rate;
+  const p25=Math.max(0,Math.min(shifts,before25)*state.rate-p10-(state.advance||0));
+  $("#pay10").textContent=fmt(p10);
+  $("#pay25").textContent=fmt(p25);
+  $("#pay15").textContent=state.advance?fmt(state.advance):"—";
+}
+function toast(t){const x=$("#toast");x.textContent=t;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),1700)}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));$("#"+b.dataset.tab+"View").classList.add("active");
+});
+$("#prevMonth").onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);render()};
+$("#nextMonth").onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);render()};
+$("#autoScheduleBtn").onclick=()=>{
+  const y=viewDate.getFullYear(),m=viewDate.getMonth(),total=daysInMonth(y,m);
+  // Starts with the current month on a clean 2/2 cycle anchored to today's parity.
+  // Users can still change any day manually.
+  const anchor=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  for(let d=1;d<=total;d++){
+    const delta=Math.round((new Date(y,m,d)-anchor)/86400000);
+    state.worked[key(y,m,d)]=Math.abs(delta)%4<2;
   }
-  return {work,earned};
-}
-function updateStats(){
-  const now=new Date(), y=view.getFullYear(),m=view.getMonth();
-  let earned=0, completed=0;
-  const days=new Date(y,m+1,0).getDate();
-  for(let n=1;n<=days;n++){
-    const d=new Date(y,m,n);
-    if(d<=now && status(d)==="work"){earned+=RATE;completed++;}
-  }
-  const all=monthStats();
-  $("earned").textContent=fmtMoney(earned);
-  $("earnedSub").textContent=`${completed} рабочих ${completed===1?"день":"дней"} уже прошло`;
-  $("forecast").textContent=fmtMoney(all.earned);
-  $("forecastSub").textContent=`${all.work} рабочих дней по текущему графику`;
-
-  let candidates=[10,25].map(day=>new Date(now.getFullYear(),now.getMonth(),day))
-    .filter(d=>d>=new Date(now.getFullYear(),now.getMonth(),now.getDate()));
-  if(!candidates.length)candidates=[new Date(now.getFullYear(),now.getMonth()+1,10)];
-  const next=candidates[0];
-  const left=Math.max(0,diffDays(next,now));
-  $("payday").textContent=left===0?"Сегодня":`${left} ${plural(left,"день","дня","дней")}`;
-  $("paydaySub").textContent=`Следующая выплата: ${next.toLocaleDateString("ru-RU",{day:"numeric",month:"long"})}`;
-}
-function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;return n>10&&n<20?c:n1>1&&n1<5?b:n1===1?a:c}
-function showToast(t){const x=$("toast");x.textContent=t;x.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove("show"),1100)}
-
-$("prev").onclick=()=>{view.setMonth(view.getMonth()-1);render()};
-$("next").onclick=()=>{view.setMonth(view.getMonth()+1);render()};
-$("todayBtn").onclick=()=>{view=new Date();view.setDate(1);render()};
-$("chooseStart").onclick=()=>{const i=$("startDate");i.value=state.start;i.showPicker ? i.showPicker() : i.click()};
-$("startDate").onchange=e=>{if(e.target.value){state.start=e.target.value;state.overrides={};save();view=parse(state.start);view.setDate(1);render();showToast("График обновлён")}};
-
+  save();render();toast("График 2/2 заполнен");
+};
+$("#settingsBtn").onclick=()=>{$("#rateInput").value=state.rate;$("#advanceInput").value=state.advance??"";$("#sheetBackdrop").classList.add("open")};
+$("#closeSettings").onclick=()=>$("#sheetBackdrop").classList.remove("open");
+$("#saveSettings").onclick=()=>{
+  state.rate=Math.max(0,Number($("#rateInput").value)||8300);
+  const a=$("#advanceInput").value.trim(); state.advance=a?Math.max(0,Number(a)):null;
+  save();render();$("#sheetBackdrop").classList.remove("open");toast("Настройки сохранены");
+};
+$("#advanceBtn").onclick=()=>{$("#settingsBtn").click();setTimeout(()=>$("#advanceInput").focus(),250)};
+if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 render();
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
