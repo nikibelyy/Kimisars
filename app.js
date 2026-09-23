@@ -6,7 +6,26 @@ function render(){calendar();stats();payments();hero()}
 function calendar(){let y=vd.getFullYear(),m=vd.getMonth();$("#month").textContent=new Intl.DateTimeFormat("ru-RU",{month:"long",year:"numeric"}).format(vd).replace(" г.","");let c=$("#calendar");c.innerHTML="";for(let i=0;i<first(y,m);i++){let e=document.createElement("div");e.className="day empty";c.append(e)}monthDays().forEach((d,i)=>{let b=document.createElement("button");b.className="day";let k=key(y,m,d);if(state.worked[k])b.classList.add("work");if(new Date(y,m,d).toDateString()===now.toDateString())b.classList.add("today");b.style.animationDelay=i*10+"ms";b.textContent=d;b.onclick=()=>{state.worked[k]=!state.worked[k];save();render();toast(state.worked[k]?"Смена добавлена":"Смена снята")};c.append(b)})}
 function hero(){let y=now.getFullYear(),m=now.getMonth(),n=Array.from({length:days(y,m)},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length,inc=n*state.rate;$("#income").textContent=fmt(inc);$("#shiftCount").textContent=n+" "+(n==1?"смена":n<5?"смены":"смен");$(".live").innerHTML=`<i></i> ${fmt(state.rate)} / смена`;$("#progress").style.width=Math.min(100,n/Math.max(1,Math.ceil(now.getDate()/2))*100)+"%";$("#forecast").textContent="Прогноз "+fmt(Math.round(days(y,m)/2)*state.rate)}
 function stats(){let n=count(),inc=n*state.rate,total=days(vd.getFullYear(),vd.getMonth());$("#s1").textContent=n;$("#s2").textContent=fmt(inc);$("#s3").textContent=fmt(inc/total);$("#s4").textContent=Math.round(n/total*100)+"%";$("#chartName").textContent=new Intl.DateTimeFormat("ru-RU",{month:"short"}).format(vd);let b=$("#bars");b.innerHTML="";let run=0,max=Math.max(1,inc);monthDays().forEach((d,i)=>{if(state.worked[key(vd.getFullYear(),vd.getMonth(),d)])run+=state.rate;let x=document.createElement("i");x.className="bar";x.style.height=(run/max*100||0)+"%";x.style.animationDelay=i*12+"ms";b.append(x)})}
-function payments(){let y=vd.getFullYear(),m=vd.getMonth(),n=count(),pre10=Array.from({length:Math.min(10,days(y,m))},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length,pre25=Array.from({length:Math.min(25,days(y,m))},(_,i)=>state.worked[key(y,m,i+1)]).filter(Boolean).length,p10=Math.min(n,pre10)*state.rate,p25=Math.max(0,Math.min(n,pre25)*state.rate-p10-(state.advance||0));$("#p10").textContent=fmt(p10);$("#p15").textContent=state.advance?fmt(state.advance):"—";$("#p25").textContent=fmt(p25)}
+function periodShifts(y,m,from,to){
+  const total=days(y,m);
+  const a=Math.max(1,from), b=Math.min(total,to);
+  let n=0;
+  for(let d=a;d<=b;d++) if(state.worked[key(y,m,d)]) n++;
+  return n;
+}
+function payments(){
+  // Payroll logic:
+  // 25th = first half of the current month (1–15).
+  // 10th = second half of the previous month (16–last day).
+  // 15th = optional advance, shown separately.
+  const y=vd.getFullYear(), m=vd.getMonth();
+  const prev=new Date(y,m-1,1), py=prev.getFullYear(), pm=prev.getMonth();
+  const firstHalf=periodShifts(y,m,1,15);
+  const previousSecondHalf=periodShifts(py,pm,16,days(py,pm));
+  $("#p10").textContent=fmt(previousSecondHalf*state.rate);
+  $("#p15").textContent=state.advance?fmt(state.advance):"—";
+  $("#p25").textContent=fmt(firstHalf*state.rate);
+}
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function toast(t){let x=$("#toast");x.textContent=t;x.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>x.classList.remove("show"),1500)}
 document.querySelectorAll(".navbtn").forEach(n=>n.onclick=()=>{document.querySelectorAll(".navbtn").forEach(x=>x.classList.remove("active"));n.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$("#"+n.dataset.page).classList.add("active")});
