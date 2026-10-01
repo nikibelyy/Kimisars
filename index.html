@@ -37,14 +37,13 @@
       </section>
 
       <section class="selected-card" id="selectedCard">
-        <div class="selected-head">
-          <div>
-            <div class="eyebrow">ВЫБРАННЫЙ ДЕНЬ</div>
-            <h2 id="selectedDate">Сегодня</h2>
-          </div>
-          <button class="add-btn" id="addBtn">+ Смена</button>
-        </div>
+        <div class="selected-head"><div><div class="eyebrow">ВЫБРАННЫЙ ДЕНЬ</div><h2 id="selectedDate">Сегодня</h2></div><div class="day-pay" id="dayPay">0 ₽</div></div>
+        <button class="work-toggle" id="workToggle" type="button"><span class="work-icon">✓</span><span><b id="workToggleTitle">Рабочий день</b><small id="workToggleSub">Нажми, чтобы добавить 8 300 ₽</small></span><span class="toggle-arrow">›</span></button>
         <div id="shiftList" class="shift-list"></div>
+      </section>
+      <section class="salary-card">
+        <div class="salary-top"><div><div class="eyebrow">ЗАРПЛАТА ЗА МЕСЯЦ</div><div class="salary-total" id="monthTotal">0 ₽</div></div><div class="days-count"><b id="workedDays">0</b><span>раб. дней</span></div></div>
+        <div class="payday-row"><div class="payday"><span>10</span><div><b id="pay10">0 ₽</b><small>выплата</small></div></div><div class="payday"><span>25</span><div><b id="pay25">0 ₽</b><small>выплата</small></div></div></div>
       </section>
     </main>
   </div>

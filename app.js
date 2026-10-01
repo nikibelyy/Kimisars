@@ -1,4 +1,28 @@
-const STORAGE_KEY = "work-calendar-shifts-v1";
+const STORAGE_KEY = "work-calendar-shifts-v3";
+const DAILY_RATE = 8300;
+const CYCLE_ANCHOR = '2026-09-30'; // first working day of the 2/2 cycle
+const CYCLE_WORK_DAYS = 2;
+const CYCLE_OFF_DAYS = 2;
+const CYCLE_LENGTH = CYCLE_WORK_DAYS + CYCLE_OFF_DAYS;
+
+function isoDateLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function daysBetweenISO(aISO, bISO) {
+  const a = new Date(`${aISO}T12:00:00`);
+  const b = new Date(`${bISO}T12:00:00`);
+  return Math.round((b - a) / 86400000);
+}
+
+function isScheduledWorkDay(dateISO) {
+  const diff = daysBetweenISO(CYCLE_ANCHOR, dateISO);
+  const pos = ((diff % CYCLE_LENGTH) + CYCLE_LENGTH) % CYCLE_LENGTH;
+  return pos < CYCLE_WORK_DAYS;
+}
 
 const state = {
   view: new Date(),
@@ -73,29 +97,10 @@ function renderCalendar() {
   }
 }
 
-function renderSelected() {
-  const d = state.selected;
-  $("selectedDate").textContent = d.toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"});
-  const list = $("shiftList");
-  const shifts = [...(state.shifts[keyOf(d)] || [])].sort((a,b)=>a.start.localeCompare(b.start));
-  list.innerHTML = "";
-  if (!shifts.length) {
-    list.innerHTML = `<div class="empty">На этот день смен нет</div>`;
-    return;
-  }
-  shifts.forEach((s, index) => {
-    const item = document.createElement("div");
-    item.className = "shift";
-    item.style.animationDelay = `${index*35}ms`;
-    item.innerHTML = `
-      <div class="shift-time">${s.start}<span>${s.end}</span></div>
-      <div><div class="shift-name">${escapeHtml(s.name || "Работа")}</div>${s.note ? `<div class="shift-note">${escapeHtml(s.note)}</div>` : ""}</div>
-      <button class="shift-edit" aria-label="Редактировать">•••</button>
-    `;
-    item.querySelector(".shift-edit").onclick = () => openSheet(s);
-    list.appendChild(item);
-  });
-}
+function formatMoney(n){return new Intl.NumberFormat("ru-RU").format(n);}
+function renderSelected(){const d=state.selected,k=keyOf(d),worked=!!state.shifts[k]?.length;$("selectedDate").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});$("dayPay").textContent=worked?`${formatMoney(DAILY_RATE)} ₽`:"0 ₽";$("workToggleTitle").textContent=worked?"Рабочий день добавлен":"Рабочий день";$("workToggleSub").textContent=worked?"8 300 ₽ уже учтены в зарплате":"Нажми, чтобы добавить 8 300 ₽";const list=$("shiftList");list.innerHTML="";if(!worked)list.innerHTML='<div class="empty">Выбери рабочий день — сумма добавится автоматически</div>';else{const item=document.createElement("div");item.className="shift";item.innerHTML=`<div class="shift-time">8 300 ₽<span>за день</span></div><div><div class="shift-name">Рабочая смена</div><div class="shift-note">${d.toLocaleDateString("ru-RU",{weekday:"long"})}</div></div><button class="shift-edit" type="button">×</button>`;item.querySelector(".shift-edit").onclick=()=>toggleWorkDay(d);list.appendChild(item);}renderSalary();}
+function renderSalary(){const y=state.view.getFullYear(),m=state.view.getMonth(),prefix=`${y}-${pad(m+1)}-`;let total=0,pay10=0,pay25=0,days=0;for(const [date,shifts] of Object.entries(state.shifts)){if(!date.startsWith(prefix))continue;const amount=shifts.length*DAILY_RATE;total+=amount;days+=shifts.length;const day=Number(date.slice(8,10));if(day<=9)pay10+=amount;else pay25+=amount;}$("monthTotal").textContent=`${formatMoney(total)} ₽`;$("workedDays").textContent=days;$("pay10").textContent=`${formatMoney(pay10)} ₽`;$("pay25").textContent=`${formatMoney(pay25)} ₽`;}
+function toggleWorkDay(date){const k=keyOf(date);if(state.shifts[k]?.length)delete state.shifts[k];else state.shifts[k]=[{id:crypto.randomUUID(),date:k,start:"00:00",end:"00:00",name:"Рабочий день",note:"8 300 ₽"}];saveShifts();render();}
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -131,7 +136,6 @@ function changeMonth(delta) {
 $("prevMonth").onclick = () => changeMonth(-1);
 $("nextMonth").onclick = () => changeMonth(1);
 $("todayBtn").onclick = () => { state.view = new Date(); state.selected = new Date(); render(); };
-$("addBtn").onclick = () => openSheet();
 $("closeSheet").onclick = closeSheet;
 $("sheetBackdrop").onclick = closeSheet;
 $("monthLabel").onclick = () => { state.view = new Date(state.selected); render(); };
@@ -183,3 +187,5 @@ calendarCard.addEventListener("touchend", e => {
   const dy = t.clientY - touchStartY;
   if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.25) changeMonth(dx < 0 ? 1 : -1);
 }, {passive:true});
+
+$("workToggle").onclick=()=>toggleWorkDay(state.selected);
