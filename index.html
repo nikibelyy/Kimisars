@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#130d18">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="График">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+  <title>График</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">МОЙ ГРАФИК</div>
+        <h1 id="monthTitle">Октябрь 2026</h1>
+      </div>
+      <button class="today-btn" id="todayBtn">Сегодня</button>
+    </header>
+
+    <main>
+      <section class="calendar-card">
+        <div class="month-nav">
+          <button class="icon-btn" id="prevMonth" aria-label="Предыдущий месяц">‹</button>
+          <button class="month-label" id="monthLabel">Октябрь 2026</button>
+          <button class="icon-btn" id="nextMonth" aria-label="Следующий месяц">›</button>
+        </div>
+
+        <div class="weekdays">
+          <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+
+      <section class="selected-card" id="selectedCard">
+        <div class="selected-head">
+          <div>
+            <div class="eyebrow">ВЫБРАННЫЙ ДЕНЬ</div>
+            <h2 id="selectedDate">Сегодня</h2>
+          </div>
+          <button class="add-btn" id="addBtn">+ Смена</button>
+        </div>
+        <div id="shiftList" class="shift-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <section class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div>
+        <div class="eyebrow">ГРАФИК РАБОТЫ</div>
+        <h2 id="sheetTitle">Новая смена</h2>
+      </div>
+      <button class="close-btn" id="closeSheet">×</button>
+    </div>
+
+    <form id="shiftForm">
+      <label>
+        Дата
+        <input id="shiftDate" type="date" required>
+      </label>
+      <div class="two-cols">
+        <label>
+          Начало
+          <input id="startTime" type="time" value="09:00" required>
+        </label>
+        <label>
+          Конец
+          <input id="endTime" type="time" value="18:00" required>
+        </label>
+      </div>
+      <label>
+        Название
+        <input id="shiftName" type="text" maxlength="40" placeholder="Работа">
+      </label>
+      <label>
+        Заметка
+        <input id="shiftNote" type="text" maxlength="80" placeholder="Необязательно">
+      </label>
+
+      <input id="editId" type="hidden">
+      <button class="save-btn" type="submit">Сохранить смену</button>
+      <button class="delete-btn" type="button" id="deleteBtn">Удалить</button>
+    </form>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
