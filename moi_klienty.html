@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мои клиенты</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#18212f;background:#f4f6f9}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:760px;margin:auto;padding:18px}
+header{background:#183b56;color:white;padding:22px;border-radius:18px;margin-bottom:16px}
+h1{margin:0 0 6px;font-size:26px}p{margin:5px 0;color:#607080}.sub{color:#d9e5ed}
+.card{background:white;border:1px solid #e1e7ee;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #12203308}
+label{display:block;font-weight:650;margin:10px 0 5px}input,textarea,button{font:inherit;width:100%;border-radius:10px;padding:12px;border:1px solid #ccd5df;background:white}
+textarea{min-height:72px;resize:vertical}button{border:0;background:#176b87;color:white;font-weight:700;cursor:pointer;margin-top:10px}button.secondary{background:#e9f0f4;color:#183b56}button.danger{background:#fff0f0;color:#9b2525;border:1px solid #f0cccc}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}.search{margin-bottom:10px}
+.client{display:flex;gap:11px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #edf0f3}.client:last-child{border-bottom:0}
+.client input[type=checkbox]{width:22px;height:22px;flex:0 0 22px;margin-top:3px}.details{flex:1;min-width:0}.name{font-weight:750;overflow-wrap:anywhere}.desc{font-size:14px;color:#5e6a77;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px}.code{font-size:12px;color:#728093;margin-top:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{width:auto;flex:1;min-width:130px}
+small{color:#607080;line-height:1.45;display:block;margin-top:8px}.count{font-weight:800;color:#176b87}.empty{text-align:center;padding:20px;color:#728093}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Мои клиенты</h1><div class="sub">Личный список клиентов · выбор и выгрузка файла для ТСД</div></header>
+<section class="card">
+<h2>Добавить клиента</h2>
+<label for="name">Название клиента *</label><input id="name" placeholder="Например, Магазин №15">
+<div class="row">
+<div><label for="code">Код / номер (необязательно)</label><input id="code" placeholder="Например, 0015"></div>
+<div><label for="desc">Краткое описание</label><input id="desc" placeholder="Продуктовый, адрес и т. п."></div>
+</div>
+<button id="save">Добавить клиента</button>
+<button class="secondary" id="cancel" hidden>Отменить редактирование</button>
+<small>Список хранится в этом браузере на этом устройстве. Чтобы не потерять его, периодически скачивай резервную копию JSON.</small>
+</section>
+<section class="card">
+<div class="row" style="align-items:center"><div><h2 style="margin:0">Список клиентов</h2><small>Отмечай тех, кого хочешь выгрузить.</small></div><div style="text-align:right"><span class="count" id="count">0</span><small>выбрано</small></div></div>
+<label for="search">Поиск</label><input class="search" id="search" placeholder="Название, код или описание">
+<div class="actions"><button class="secondary" id="selectVisible">Выбрать показанных</button><button class="secondary" id="clearSelected">Снять выбор</button></div>
+<div id="list"></div>
+<div class="actions"><button id="export">Скачать выбранных CSV</button><button class="secondary" id="backup">Резервная копия JSON</button></div>
+<div class="actions"><button class="secondary" id="importBtn">Импортировать JSON-копию</button><button class="danger" id="deleteSelected">Удалить выбранных</button></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+<small><b>Важно:</b> CSV пока универсальный (Код;Клиент;Описание), а не подтверждённый шаблон Cleverence. Для импорта внутрь «Магазина 15» может понадобиться изменить заголовки/поля под шаблон вашей базы. Сайт не подключается напрямую к рабочей базе или ТСД.</small>
+</section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const KEY='my_clients_site_v1';
+let clients=[];let selected=new Set();let editing=null;
+try{clients=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){clients=[]}
+function persist(){localStorage.setItem(KEY,JSON.stringify(clients))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ const q=$('search').value.trim().toLowerCase();
+ const visible=clients.filter(c=>(c.name+' '+c.code+' '+c.desc).toLowerCase().includes(q));
+ $('count').textContent=selected.size;
+ $('list').innerHTML=visible.length?visible.map(c=>`<div class="client">
+ <input type="checkbox" aria-label="Выбрать ${esc(c.name)}" data-check="${c.id}" ${selected.has(c.id)?'checked':''}>
+ <div class="details"><div class="name">${esc(c.name)}</div><div class="desc">${esc(c.desc||'Без описания')}</div>${c.code?`<div class="code">Код: ${esc(c.code)}</div>`:''}
+ <div class="actions"><button class="secondary" data-edit="${c.id}">Изменить</button><button class="danger" data-delete="${c.id}">Удалить</button></div></div></div>`).join(''):'<div class="empty">Клиентов пока нет. Добавь первого выше.</div>';
+}
+function clearForm(){editing=null;$('name').value='';$('code').value='';$('desc').value='';$('save').textContent='Добавить клиента';$('cancel').hidden=true}
+$('save').onclick=()=>{
+ const name=$('name').value.trim();if(!name){alert('Введи название клиента.');$('name').focus();return}
+ const item={id:editing||('c'+Date.now()+Math.random().toString(16).slice(2,6)),name,code:$('code').value.trim(),desc:$('desc').value.trim()};
+ if(editing){clients=clients.map(c=>c.id===editing?item:c)}else{clients.push(item)}
+ persist();clearForm();render();
+};
+$('cancel').onclick=clearForm;
+$('search').oninput=render;
+$('list').onclick=e=>{
+ const check=e.target.closest('[data-check]');if(check){const id=check.dataset.check;check.checked?selected.add(id):selected.delete(id);render();return}
+ const edit=e.target.closest('[data-edit]');if(edit){const c=clients.find(x=>x.id===edit.dataset.edit);editing=c.id;$('name').value=c.name;$('code').value=c.code;$('desc').value=c.desc;$('save').textContent='Сохранить изменения';$('cancel').hidden=false;window.scrollTo({top:0,behavior:'smooth'});return}
+ const del=e.target.closest('[data-delete]');if(del&&confirm('Удалить этого клиента?')){clients=clients.filter(c=>c.id!==del.dataset.delete);selected.delete(del.dataset.delete);persist();render()}
+};
+$('selectVisible').onclick=()=>{const q=$('search').value.trim().toLowerCase();clients.filter(c=>(c.name+' '+c.code+' '+c.desc).toLowerCase().includes(q)).forEach(c=>selected.add(c.id));render()};
+$('clearSelected').onclick=()=>{selected.clear();render()};
+$('deleteSelected').onclick=()=>{if(!selected.size){alert('Сначала выбери клиентов.');return}if(confirm('Удалить выбранных клиентов из этого списка?')){clients=clients.filter(c=>!selected.has(c.id));selected.clear();persist();render()}};
+function download(content,type,filename){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+$('export').onclick=()=>{const rows=clients.filter(c=>selected.has(c.id));if(!rows.length){alert('Сначала выбери клиентов.');return}
+ const csv=['Код;Клиент;Описание',...rows.map(c=>[c.code,c.name,c.desc].map(csvCell).join(';'))].join('\r\n');
+ download('\ufeff'+csv,'text/csv;charset=utf-8','clients_selected.csv')};
+$('backup').onclick=()=>download(JSON.stringify(clients,null,2),'application/json;charset=utf-8','my_clients_backup.json');
+$('importBtn').onclick=()=>$('file').click();
+$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data)||data.some(c=>!c.name))throw Error();const incoming=data.map(c=>({id:'c'+Date.now()+Math.random().toString(16).slice(2,7),name:String(c.name),code:String(c.code||''),desc:String(c.desc||'')}));if(confirm(`Добавить ${incoming.length} клиентов из копии?`)){clients.push(...incoming);persist();render()}}catch(err){alert('Не удалось прочитать JSON-копию.')}e.target.value=''};
+render();
+</script>
+</body>
+</html>
